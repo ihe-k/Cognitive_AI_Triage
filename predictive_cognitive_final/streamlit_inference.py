@@ -56,7 +56,31 @@ def load_alzheimer_model() -> Dict[str, Any]:
     return model_artifact
 
 ###
+import streamlit as st
 
+# Function to initialize and load the model
+def setup():
+    # Download and unzip model if needed
+    download_and_unzip_model()
+
+    # Load model
+    model = load_alzheimer_model()
+
+    return model
+
+# Streamlit app
+def main():
+    st.title("Alzheimer's Disease Image Classification")
+
+    # Call setup function to initialize the model
+    model = setup()
+
+    # Now you can use the model for predictions in your app
+    st.write("Model loaded successfully!")
+
+if __name__ == "__main__":
+    main()
+####
 
 # Conditional OpenCV import for cloud compatibility
 try:
