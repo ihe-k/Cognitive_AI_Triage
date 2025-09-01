@@ -599,7 +599,7 @@ def allocate_resources(severity_scores, capacity=10):
 # =============================================================================
 def run_app():
     # ---- Header ----
-    st.title("🧠 Resource Allocation Using Multimodal AI & Misinformation Modeling in Healthcare")
+    st.title("🧠 Resource Allocation Using Multimodal AI & Misinformation Modelling in Healthcare")
     st.caption("The UI below balances multimodal data interaction (audio, image, physiological signals) and real-time simulation of misinformation spread to prioritize patients for limited care resources.")
 
     # Model status check
