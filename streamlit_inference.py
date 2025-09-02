@@ -897,10 +897,10 @@ def run_app():
     plt.close(fig_misinfo)
 
     # Network Snapshot
-    st.subheader("🌐 Final Network State (Social Network Visualization)")
+    st.subheader("🌐 Final Network State (Social Network Visualisation)")
     fig_net, ax_net = plt.subplots(figsize=(7, 5))
     pos = nx.spring_layout(G_net_, seed=42)
-    c_map = {'S': '#003A6B', 'I': '#1B5886', 'R': '#3776A1'}
+    c_map = {'S': '#003A6B', 'I': '#3776A1', 'R': '#89CFF1'}
     node_colors = [c_map[G_net_.nodes[n]['state']] for n in G_net_.nodes()]
     nx.draw(G_net_, pos, node_color=node_colors, node_size=20, with_labels=False, ax=ax_net, edge_color='gray')
     st.pyplot(fig_net, use_container_width=True)
