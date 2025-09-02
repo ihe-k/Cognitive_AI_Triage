@@ -1,4 +1,5 @@
 import os
+import gzip
 import glob
 import pickle
 import random
@@ -12,48 +13,6 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from PIL import Image
 
-import os
-import gzip
-import shutil
-import pickle
-import requests
-
-# Constants for model paths
-MODEL_URL = "https://github.com/ihe-k/Cognitive_AI_Triage/raw/main/predictive_cognitive_final/artifacts/alzheimer_classifier.pkl.gz"
-MODEL_ZIPPED_PATH = "alzheimer_classifier.pkl.gz"
-MODEL_UNZIPPED_PATH = "alzheimer_classifier.pkl"
-
-# Check if model is unzipped, if not, download and unzip it
-def download_and_unzip_model():
-    if not os.path.exists(MODEL_UNZIPPED_PATH):
-        if not os.path.exists(MODEL_ZIPPED_PATH):
-            print("Downloading model file from GitHub...")
-            response = requests.get(MODEL_URL)
-            with open(MODEL_ZIPPED_PATH, 'wb') as f:
-                f.write(response.content)
-            print(f"Downloaded {MODEL_ZIPPED_PATH}.")
-        
-        # Unzipping the model
-        print("Unzipping the model file...")
-        with gzip.open(MODEL_ZIPPED_PATH, 'rb') as f_in:
-            with open(MODEL_UNZIPPED_PATH, 'wb') as f_out:
-                shutil.copyfileobj(f_in, f_out)
-        print(f"Unzipped {MODEL_ZIPPED_PATH} to {MODEL_UNZIPPED_PATH}.")
-
-# Call this function at the start of your Streamlit app
-download_and_unzip_model()
-
-def load_alzheimer_model() -> Dict[str, Any]:
-    """Load the trained Alzheimer classifier model."""
-    model_path = os.path.join("artifacts", "alzheimer_classifier.pkl")
-    
-    # If the model isn't in the expected directory, call the download/unzip function
-    if not os.path.exists(model_path):
-        download_and_unzip_model()
-    
-    with open(model_path, "rb") as f:
-        model_artifact = pickle.load(f)
-    return model_artifact
 
 
 ####
@@ -247,13 +206,19 @@ def check_alzheimer_model() -> bool:
     except Exception:
         return False
 
+#def load_alzheimer_model() -> Dict[str, Any]:
+#    """Load the trained Alzheimer classifier model."""
+ #   model_path = os.path.join("artifacts", "alzheimer_classifier.pkl")
+#    with open(model_path, "rb") as f:
+ #       model_artifact = pickle.load(f)
+  #  return model_artifact
 def load_alzheimer_model() -> Dict[str, Any]:
-    """Load the trained Alzheimer classifier model."""
-    model_path = os.path.join("artifacts", "alzheimer_classifier.pkl")
-    with open(model_path, "rb") as f:
+    """Load the trained Alzheimer classifier model (from .pkl.gz)."""
+    model_path = os.path.join("artifacts", "alzheimer_classifier.pkl.gz")
+    with gzip.open(model_path, "rb") as f:
         model_artifact = pickle.load(f)
     return model_artifact
-
+    
 def classify_alzheimer_image(image_file, alzheimer_model: Dict[str, Any]) -> Tuple[str, float, np.ndarray]:
     """Classify an uploaded image using the Alzheimer model."""
     try:
