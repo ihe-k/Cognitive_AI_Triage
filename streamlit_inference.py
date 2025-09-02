@@ -7,7 +7,7 @@ import random
 import argparse
 import sys
 from typing import Dict, List, Tuple, Optional, Any
-
+import matplotlib.patches as mpatches
 import numpy as np
 import pandas as pd
 import networkx as nx
@@ -902,7 +902,7 @@ def run_app():
     pos = nx.spring_layout(G_net_, seed=42)
     c_map = {'S': '#003A6B', 'I': '#3776A1', 'R': '#89CFF1'}
     node_colors = [c_map[G_net_.nodes[n]['state']] for n in G_net_.nodes()]
-    nx.draw(G_net_, pos, node_color=node_colors, node_size=20, with_labels=False, ax=ax_net, edge_color='gray')
+    nx.draw(G_net_, pos, node_color=node_colors, node_size=20, with_labels=False, ax=ax_net, edge_color='#414141')
     
     # Create legend patches
     legend_patches = [mpatches.Patch(color=color, label=state) for state, color in c_map.items()]
