@@ -903,6 +903,10 @@ def run_app():
     c_map = {'S': '#003A6B', 'I': '#3776A1', 'R': '#89CFF1'}
     node_colors = [c_map[G_net_.nodes[n]['state']] for n in G_net_.nodes()]
     nx.draw(G_net_, pos, node_color=node_colors, node_size=20, with_labels=False, ax=ax_net, edge_color='gray')
+    
+    # Create legend patches
+    legend_patches = [mpatches.Patch(color=color, label=state) for state, color in c_map.items()]
+    ax_net.legend(handles=legend_patches, title="Node State", loc='best')
     st.pyplot(fig_net, use_container_width=True)
     plt.close(fig_net)
 
