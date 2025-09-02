@@ -857,12 +857,27 @@ def run_app():
     else:
         st.subheader("🧠 SHAP Explanation")
         shap_vals_local = arts["explainer_shap"].shap_values(arts["X_sample_s"][patient_idx:patient_idx+1])
+        
+        # Round SHAP values and feature values to 2 decimals
+        shap_values_rounded = np.round(shap_vals_local[0], 2)
+        features_rounded = np.round(arts["X_sample_s"][patient_idx:patient_idx+1], 2)
+
         shap.force_plot(
             arts["explainer_shap"].expected_value,
-            shap_vals_local[0],
-            features=arts["X_sample_s"][patient_idx:patient_idx+1],
-            matplotlib=True, show=False
+            shap_values_rounded,
+            features=features_rounded,
+            matplotlib=True,
+            show=False
         )
+
+        
+        #shap.force_plot(
+        #    arts["explainer_shap"].expected_value,
+         #   shap_vals_local[0],
+          #  features=arts["X_sample_s"][patient_idx:patient_idx+1],
+           # matplotlib=True, show=False
+        #)
+        
         fig_local = plt.gcf()
         st.pyplot(fig_local, use_container_width=True)
         plt.close(fig_local)
