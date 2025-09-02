@@ -86,3 +86,4 @@ tzdata==2025.2
 urllib3==2.5.0
 watchdog==6.0.0
 webencodings==0.5.1
+gzip
