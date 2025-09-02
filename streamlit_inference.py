@@ -1,6 +1,7 @@
 import os
 import gzip
 import glob
+import joblib
 import pickle
 import random
 import argparse
@@ -212,12 +213,21 @@ def check_alzheimer_model() -> bool:
 #    with open(model_path, "rb") as f:
  #       model_artifact = pickle.load(f)
   #  return model_artifact
-def load_alzheimer_model() -> Dict[str, Any]:
-    """Load the trained Alzheimer classifier model (from .pkl.gz)."""
-    model_path = os.path.join("artifacts", "alzheimer_classifier.pkl.gz")
-    with gzip.open(model_path, "rb") as f:
-        model_artifact = pickle.load(f)
-    return model_artifact
+
+@st.cache_resource
+
+def load_alzheimer_model():
+    with gzip.open('artifacts/alzheimer_classifier.pkl.gz', 'rb') as f:
+        model = joblib.load(f)
+    return model
+
+def check_alzheimer_model():
+    try:
+        _ = load_alzheimer_model()
+        return True
+    except Exception as e:
+        print(f"Model load error: {e}")
+        return False
     
 def classify_alzheimer_image(image_file, alzheimer_model: Dict[str, Any]) -> Tuple[str, float, np.ndarray]:
     """Classify an uploaded image using the Alzheimer model."""
@@ -577,7 +587,7 @@ def run_app():
     # Alzheimer model status check
     if not check_alzheimer_model():
         st.sidebar.error("❌ Alzheimer model not found or invalid!")
-        st.sidebar.info("Please ensure 'artifacts/alzheimer_classifier.pkl' exists and contains a valid model.")
+        st.sidebar.info("Please ensure 'artifacts/alzheimer_classifier.pkl.gz' exists and contains a valid model.")
     else:
         st.sidebar.success("✅ Alzheimer model ready!")
     
@@ -847,12 +857,27 @@ def run_app():
     else:
         st.subheader("🧠 SHAP Explanation")
         shap_vals_local = arts["explainer_shap"].shap_values(arts["X_sample_s"][patient_idx:patient_idx+1])
+        
+        # Round SHAP values and feature values to 2 decimals
+        shap_values_rounded = np.round(shap_vals_local[0], 2)
+        features_rounded = np.round(arts["X_sample_s"][patient_idx:patient_idx+1], 2)
+
         shap.force_plot(
             arts["explainer_shap"].expected_value,
-            shap_vals_local[0],
-            features=arts["X_sample_s"][patient_idx:patient_idx+1],
-            matplotlib=True, show=False
+            shap_values_rounded,
+            features=features_rounded,
+            matplotlib=True,
+            show=False
         )
+
+        
+        #shap.force_plot(
+        #    arts["explainer_shap"].expected_value,
+         #   shap_vals_local[0],
+          #  features=arts["X_sample_s"][patient_idx:patient_idx+1],
+           # matplotlib=True, show=False
+        #)
+        
         fig_local = plt.gcf()
         st.pyplot(fig_local, use_container_width=True)
         plt.close(fig_local)
