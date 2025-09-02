@@ -212,6 +212,8 @@ def check_alzheimer_model() -> bool:
 #    with open(model_path, "rb") as f:
  #       model_artifact = pickle.load(f)
   #  return model_artifact
+
+@st.cache_resource
 def load_alzheimer_model() -> Dict[str, Any]:
     """Load the trained Alzheimer classifier model (from .pkl.gz)."""
     model_path = os.path.join("artifacts", "alzheimer_classifier.pkl.gz")
