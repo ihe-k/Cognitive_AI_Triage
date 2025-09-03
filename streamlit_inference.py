@@ -833,7 +833,10 @@ def run_app():
             arts["model"].predict,
             num_features=min(10, len(arts["feat_names"]))
         )
+        
         fig = lime_exp.as_pyplot_figure()
+        ax = fig.gca()
+        feature_weights = lime_exp.as_list()
         
         # Apply custom color scheme to LIME chart
         # custom_colors = ['#003A6B', '#1B5886', '#3776A1', '#5293BB', '#6EB1D6', '#89CFF1']
@@ -841,15 +844,8 @@ def run_app():
         color_increase = '#3776A1'
         color_decrease = '#6EB1D6'
 
-
-        color_increase = '#3776A1'
-        color_decrease = '#6EB1D6'
-
-        ax = fig.gca()
-        bars = ax.patches
-       # Get feature weights directly from the LIME explanation
-        feature_weights = explanation.as_list()
-
+         # Get feature weights directly from the LIME explanation
+       
         bars = ax.patches
 
         for bar, (feature, weight) in zip(bars, feature_weights):
@@ -875,15 +871,20 @@ def run_app():
         plt.close(fig)
     else:
         st.subheader("SHAP Explanation")
-        shap_vals_local = arts["explainer_shap"].shap_values(arts["X_sample_s"][patient_idx:patient_idx+1])
-        
+        shap_values = arts["explainer_shap"].shap_values(arts["X_sample_s"][patient_idx:patient_idx+1])
+        if isinstance(shap_values, list):
+        # Assuming binary classification, use the SHAP values for the positive class (index 1)
+            shap_values_local = shap_values[1]
+        else:
+            shap_values_local = shap_values
+
         # Round SHAP values and feature values to 2 decimals
-        shap_values_rounded = np.round(shap_vals_local[0], 2)
+        shap_values_rounded = np.round(shap_values_local, 2)
         features_rounded = np.round(arts["X_sample_s"][patient_idx:patient_idx+1], 2)
 
         shap.force_plot(
             arts["explainer_shap"].expected_value,
-            shap_values_rounded,
+            shap_values_local_rounded,
             features=features_rounded,
             matplotlib=True,
             show=False
@@ -898,7 +899,7 @@ def run_app():
         #)
         
         fig_local = plt.gcf()
-        st.pyplot(fig_local, use_container_width=True)
+        st.pyplot(fig, use_container_width=True)
         plt.close(fig_local)
 
 
