@@ -884,7 +884,7 @@ def run_app():
 
         shap.force_plot(
             arts["explainer_shap"].expected_value,
-            shap_values_local_rounded,
+            shap_values_rounded,
             features=features_rounded,
             matplotlib=True,
             show=False
