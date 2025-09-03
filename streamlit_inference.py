@@ -827,7 +827,7 @@ def run_app():
 
     # Explanation block (LIME default like your sketch; SHAP optional)
     if method == "LIME":
-        st.subheader("🔍 LIME Explanation")
+        st.subheader("LIME Explanation")
         lime_exp = arts["explainer_lime"].explain_instance(
             arts["X_sample_s"][patient_idx],
             arts["model"].predict,
@@ -847,25 +847,18 @@ def run_app():
 
         ax = fig.gca()
         bars = ax.patches
-        bar_labels = [text.get_text() for text in ax.get_yticklabels()]
+       # Get feature weights directly from the LIME explanation
+        feature_weights = explanation.as_list()
 
-        for i, (bar, label) in enumerate(zip(bars, bar_labels)):
-            if not isinstance(label, str):
-                label = str(label) if label is not None else ""
+        bars = ax.patches
 
-            print(f"Label: {label}")
-
-            match = re.search(r"\(([-+]?\d*\.?\d+)\)", label)
-            if match:
-                weight = float(match.group(1))
-                if weight >= 0:
-                    bar.set_color(color_increase)
-                else:
-                    bar.set_color(color_decrease)
+        for bar, (feature, weight) in zip(bars, feature_weights):
+            if weight >= 0:
+                bar.set_color(color_increase)
             else:
-                bar.set_color("gray")
-    
+                bar.set_color(color_decrease)
             bar.set_alpha(0.8)
+
 
         #    bar.set_color(custom_colors[color_idx])
         #    bar.set_alpha(0.8)  # Add some transparency for better aesthetics
@@ -881,7 +874,7 @@ def run_app():
         st.pyplot(fig, use_container_width=True)
         plt.close(fig)
     else:
-        st.subheader("🧠 SHAP Explanation")
+        st.subheader("SHAP Explanation")
         shap_vals_local = arts["explainer_shap"].shap_values(arts["X_sample_s"][patient_idx:patient_idx+1])
         
         # Round SHAP values and feature values to 2 decimals
