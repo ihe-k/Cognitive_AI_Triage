@@ -779,8 +779,14 @@ def run_app():
         st.session_state["physio_data"] = physio_data
         st.session_state["show_physio"] = True
         st.success(f"Generated {n_samples} physiological samples!")
+###
+    # Check if physiological data exists and display it
+    if "physio_data" in st.session_state and st.session_state["show_physio"]:
+        st.write("Generated Physiological Data:")
+        # Display the simulated physiological data
+        st.dataframe(st.session_state["physio_data"], use_container_width=True)  # Display as a dataframe
 
-
+   ### 
     if "arts" not in st.session_state:
         st.info("Click **Run Inference** to load the pretrained model and run inference.")
         return
