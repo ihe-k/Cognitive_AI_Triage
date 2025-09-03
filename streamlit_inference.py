@@ -575,7 +575,7 @@ def allocate_resources(severity_scores, capacity=10):
 def run_app():
     # ---- Header ----
     st.title("🧠 Resource Allocation Using Multimodal AI & Misinformation Modelling in Healthcare")
-    st.caption("The UI below balances multimodal data interaction (audio, image, physiological signals) and real-time simulation of misinformation spread to prioritize patients for limited care resources.")
+    st.caption("The UI below balances multimodal data interaction (audio, image and physiological signals) with a simulation of misinformation spread to prioritise patients within limited care resource settings.")
 
     # Model status check
     if not check_pretrained_model():
@@ -837,29 +837,26 @@ def run_app():
         
         # Apply custom color scheme to LIME chart
         # custom_colors = ['#003A6B', '#1B5886', '#3776A1', '#5293BB', '#6EB1D6', '#89CFF1']
-        color_increase = '#3776A1'  # Any shade you like
+
+        color_increase = '#3776A1'
         color_decrease = '#6EB1D6'
 
-        # Get the axes and modify colors
         ax = fig.gca()
         bars = ax.patches
-        bar_labels = [text.get_text() for text in ax.get_yticklabels()]  # Feature effects with sign
+        bar_labels = [text.get_text() for text in ax.get_yticklabels()]
 
-        # Apply custom colors to bars (cycling through the palette)
-        for i, bar in enumerate(zip(bars, bar_labels)):
-           # color_idx = i % len(custom_colors)
+        for i, (bar, label) in enumerate(zip(bars, bar_labels)):
             match = re.search(r"\(([-+]?\d*\.?\d+)\)", label)
             if match:
                 weight = float(match.group(1))
-            # weight = float(label.split()[-1].strip('()'))  # e.g., extract "0.54" or "-0.12"
                 if weight >= 0:
                     bar.set_color(color_increase)
-                else:    
+                else:
                     bar.set_color(color_decrease)
             else:
-                bar.set_color("gray")  # or skip, or log
+                bar.set_color("gray")  # fallback for labels without weights
             bar.set_alpha(0.8)
-        
+       
         #    bar.set_color(custom_colors[color_idx])
         #    bar.set_alpha(0.8)  # Add some transparency for better aesthetics
 
