@@ -901,12 +901,15 @@ def run_app():
     fig_net, ax_net = plt.subplots(figsize=(7, 5))
     pos = nx.spring_layout(G_net_, seed=42)
     c_map = {'S': '#003A6B', 'I': '#3776A1', 'R': '#89CFF1'}
+    label_map = {'S': 'Susceptible', 'I': 'Infected', 'R': 'Recovered'}
+    
     node_colors = [c_map[G_net_.nodes[n]['state']] for n in G_net_.nodes()]
     nx.draw(G_net_, pos, node_color=node_colors, node_size=20, with_labels=False, ax=ax_net, edge_color='#414141')
     
     # Create legend patches
     legend_patches = [mpatches.Patch(color=color, label=label_map[state]) for state, color in c_map.items()]
     ax_net.legend(handles=legend_patches, title="Node State", loc='best')
+    
     st.pyplot(fig_net, use_container_width=True)
     plt.close(fig_net)
 
