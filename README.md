@@ -19,6 +19,41 @@ The entire pipeline is visualised through a Streamlit app, including model predi
 * Explainability: Visual explanations using SHAP and LIME for transparent predictions.
 * Web App: Interactive UI built with Streamlit for simulations, explanations, and visualisations.
 
+## Interpreting Results
+
+### MFCC Mean Ranges: Depression Severity
+
+MFCC Mean Range | Interactive Speech Profile | Possible Depression Severity
+--------------- | -------------------------- | ----------------------------
+> -10           | Clear/expressive/energetic | None/Minimal
+-10 - 18        | Reduced variability/energy | Mild            
+-18 - 24        | Flat/monotonic tone        | Moderate
+-24 - 30        | Dull/low-affect/low-volume | Moderately Severe
+< -30           | Flat/withdrawn             | Severe
+
+
+### Misinformation Risk Score: Mental Health Influence
+
+MFCC Mean Range | Interpretation                        | Possible Impact on Mental State
+--------------- | ------------------------------------- | -------------------------------
+0.00 - 0.10     | Minimal exposure/resistance           | None/Minimal
+0.11 - 0.25     | Low exposure/weak influence           | Mild            
+0.26 - 0.50     | Moderate exposure/internalisation     | Moderate
+0.51 - 0.75     | High exposure/psychological impact    | Moderately Severe
+0.76 - 1.00     | Very high exposure/echo chamber efect | Severe
+
+
+### Raw Severity Score: PHQ-8 Depression Severity Score Prediction from the Model)
+
+Score Range   | Interpretation
+-----------   | --------------
+0 - 4         | None/Minimal
+5 - 9         | Mild
+10 -14        | Moderate
+15 - 19       | Moderately Severe
+20 - 24       | Severe
+
+
 ## Project Structure
 ```plaintext
 project/
