@@ -847,6 +847,11 @@ def run_app():
             color_idx = i % len(custom_colors)
             bar.set_color(custom_colors[color_idx])
             bar.set_alpha(0.8)  # Add some transparency for better aesthetics
+
+        increase_patch = mpatches.Patch(color='#3776A1', label='↑ Increases PHQ-8 Score')
+        decrease_patch = mpatches.Patch(color='#6EB1D6', label='↓ Decreases PHQ-8 Score')
+        ax.legend(handles=[increase_patch, decrease_patch], loc='lower right', title="Feature Effect")
+
         
         # Update the figure style
         fig.patch.set_facecolor('white')
