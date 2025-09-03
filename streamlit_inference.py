@@ -905,7 +905,7 @@ def run_app():
     nx.draw(G_net_, pos, node_color=node_colors, node_size=20, with_labels=False, ax=ax_net, edge_color='#414141')
     
     # Create legend patches
-    legend_patches = [mpatches.Patch(color=color, label=state) for state, color in c_map.items()]
+    legend_patches = [mpatches.Patch(color=color, label=label_map[state]) for state, color in c_map.items()]
     ax_net.legend(handles=legend_patches, title="Node State", loc='best')
     st.pyplot(fig_net, use_container_width=True)
     plt.close(fig_net)
