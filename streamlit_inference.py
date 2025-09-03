@@ -903,6 +903,13 @@ def run_app():
 
         ax.xaxis.set_major_formatter(mtick.FuncFormatter(lambda x, pos: f"{x:.2f}"))
         ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda y, pos: f"{y:.2f}"))
+
+        ax.tick_params(axis="x", labelsize=10, rotation=45)
+        ax.tick_params(axis="y", labelsize=10, rotation=45)
+
+        # Disable scientific notation on axes
+        plt.ticklabel_format(style='plain', axis='x')
+        plt.ticklabel_format(style='plain', axis='y')
         
         st.pyplot(fig_local, use_container_width=True)
         plt.close(fig_local)
