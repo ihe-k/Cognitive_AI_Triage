@@ -848,11 +848,16 @@ def run_app():
         # Apply custom colors to bars (cycling through the palette)
         for i, bar in enumerate(zip(bars, bar_labels)):
            # color_idx = i % len(custom_colors)
-            weight = float(label.split()[-1].strip('()'))  # e.g., extract "0.54" or "-0.12"
-            if weight >= 0:
-                bar.set_color(color_increase)
-            else:    
-                bar.set_color(color_decrease)
+            match = re.search(r"\(([-+]?\d*\.?\d+)\)", label)
+            if match:
+                weight = float(match.group(1))
+            # weight = float(label.split()[-1].strip('()'))  # e.g., extract "0.54" or "-0.12"
+                if weight >= 0:
+                    bar.set_color(color_increase)
+                else:    
+                    bar.set_color(color_decrease)
+            else:
+                bar.set_color("gray")  # or skip, or log
             bar.set_alpha(0.8)
         
         #    bar.set_color(custom_colors[color_idx])
