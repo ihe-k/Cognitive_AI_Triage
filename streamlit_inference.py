@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 from PIL import Image
 import re
 import matplotlib.ticker as mtick
-
+import shap
 ####
 
 # Conditional OpenCV import for cloud compatibility
