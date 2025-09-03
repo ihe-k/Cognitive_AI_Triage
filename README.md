@@ -25,11 +25,11 @@ The entire pipeline is visualised through a Streamlit app, including model predi
 
 MFCC Mean Range | Interactive Speech Profile | Possible Depression Severity
 --------------- | -------------------------- | ----------------------------
-> -10           | Clear/expressive/energetic | None/Minimal
--10 - 18        | Reduced variability/energy | Mild            
--18 - 24        | Flat/monotonic tone        | Moderate
--24 - 30        | Dull/low-affect/low-volume | Moderately Severe
-< -30           | Flat/withdrawn             | Severe
+\> -10           | Clear/expressive/energetic | None/Minimal
+\-10 - 18        | Reduced variability/energy | Mild            
+\-18 - 24        | Flat/monotonic tone        | Moderate
+\-24 - 30        | Dull/low-affect/low-volume | Moderately Severe
+\< -30           | Flat/withdrawn             | Severe
 
 
 ### Misinformation Risk Score: Mental Health Influence
