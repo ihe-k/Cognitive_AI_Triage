@@ -901,8 +901,11 @@ def run_app():
         fig_local = plt.gcf()
         ax = plt.gca()
 
-        ax.xaxis.set_major_formatter(mtick.FormatStrFormatter('%.2f'))
-        ax.yaxis.set_major_formatter(mtick.FormatStrFormatter('%.2f'))
+        def format_func(value, tick_position):
+            return f"{value:.2f}"  # Force rounding to 2 decimal places
+
+        ax.xaxis.set_major_formatter(mtick.FuncFormatter(format_func))
+        ax.yaxis.set_major_formatter(mtick.FuncFormatter(format_func))
 
         ax.xaxis.set_major_locator(mtick.MaxNLocator(integer=True, prune='lower'))  # Integer formatting for x-axis
         ax.yaxis.set_major_locator(mtick.MaxNLocator(integer=True, prune='lower'))  # Integer formatting for y-axis
