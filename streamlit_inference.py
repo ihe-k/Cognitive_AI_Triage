@@ -841,11 +841,18 @@ def run_app():
         color_increase = '#3776A1'
         color_decrease = '#6EB1D6'
 
+
+        color_increase = '#3776A1'
+        color_decrease = '#6EB1D6'
+
         ax = fig.gca()
         bars = ax.patches
         bar_labels = [text.get_text() for text in ax.get_yticklabels()]
 
         for i, (bar, label) in enumerate(zip(bars, bar_labels)):
+            if not isinstance(label, str):
+                label = str(label) if label is not None else ""
+    
             match = re.search(r"\(([-+]?\d*\.?\d+)\)", label)
             if match:
                 weight = float(match.group(1))
@@ -854,9 +861,10 @@ def run_app():
                 else:
                     bar.set_color(color_decrease)
             else:
-                bar.set_color("gray")  # fallback for labels without weights
+                bar.set_color("gray")
+    
             bar.set_alpha(0.8)
-       
+
         #    bar.set_color(custom_colors[color_idx])
         #    bar.set_alpha(0.8)  # Add some transparency for better aesthetics
 
