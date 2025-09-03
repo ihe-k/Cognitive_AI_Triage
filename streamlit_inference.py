@@ -836,22 +836,31 @@ def run_app():
         fig = lime_exp.as_pyplot_figure()
         
         # Apply custom color scheme to LIME chart
-        custom_colors = ['#003A6B', '#1B5886', '#3776A1', '#5293BB', '#6EB1D6', '#89CFF1']
-        
+        # custom_colors = ['#003A6B', '#1B5886', '#3776A1', '#5293BB', '#6EB1D6', '#89CFF1']
+        color_increase = '#3776A1'  # Any shade you like
+        color_decrease = '#6EB1D6'
+
         # Get the axes and modify colors
         ax = fig.gca()
         bars = ax.patches
-        
+        bar_labels = [text.get_text() for text in ax.get_yticklabels()]  # Feature effects with sign
+
         # Apply custom colors to bars (cycling through the palette)
-        for i, bar in enumerate(bars):
-            color_idx = i % len(custom_colors)
-            bar.set_color(custom_colors[color_idx])
-            bar.set_alpha(0.8)  # Add some transparency for better aesthetics
+        for i, bar in enumerate(zip(bars, bar_labels)):
+           # color_idx = i % len(custom_colors)
+            weight = float(label.split()[-1].strip('()'))  # e.g., extract "0.54" or "-0.12"
+            if weight >= 0:
+                bar.set_color(color_increase)
+            else:    
+                bar.set_color(color_decrease)
+            bar.set_alpha(0.8)
+        
+        #    bar.set_color(custom_colors[color_idx])
+        #    bar.set_alpha(0.8)  # Add some transparency for better aesthetics
 
-        increase_patch = mpatches.Patch(color='#3776A1', label='↑ Increases PHQ-8 Score')
-        decrease_patch = mpatches.Patch(color='#6EB1D6', label='↓ Decreases PHQ-8 Score')
+        increase_patch = mpatches.Patch(color=color_increase, label='↑ Increases PHQ-8 Score')
+        decrease_patch = mpatches.Patch(color=color_decrease, label='↓ Decreases PHQ-8 Score')
         ax.legend(handles=[increase_patch, decrease_patch], loc='lower right', title="Feature Effect")
-
         
         # Update the figure style
         fig.patch.set_facecolor('white')
