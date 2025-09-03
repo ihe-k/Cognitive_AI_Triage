@@ -897,7 +897,7 @@ def run_app():
     plt.close(fig_misinfo)
 
     # Network Snapshot
-    st.subheader("🌐 Final Network State (Social Network Visualisation)")
+    st.subheader("🌐 Social Network Visualisation: Final Network State")
     fig_net, ax_net = plt.subplots(figsize=(7, 5))
     pos = nx.spring_layout(G_net_, seed=42)
     c_map = {'S': '#003A6B', 'I': '#3776A1', 'R': '#89CFF1'}
