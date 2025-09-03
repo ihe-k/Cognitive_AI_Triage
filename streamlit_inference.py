@@ -861,7 +861,7 @@ def run_app():
 
         increase_patch = mpatches.Patch(color=color_increase, label='↑ Increases PHQ-8 Score')
         decrease_patch = mpatches.Patch(color=color_decrease, label='↓ Decreases PHQ-8 Score')
-        ax.legend(handles=[increase_patch, decrease_patch], loc='lower right', title="Feature Effect")
+        ax.legend(handles=[increase_patch, decrease_patch], loc='lower left', bbox_to_anchor=(0, 0), title="Feature Effect")
         
         # Update the figure style
         fig.patch.set_facecolor('white')
