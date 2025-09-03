@@ -852,7 +852,9 @@ def run_app():
         for i, (bar, label) in enumerate(zip(bars, bar_labels)):
             if not isinstance(label, str):
                 label = str(label) if label is not None else ""
-    
+
+            print(f"Label: {label}")
+
             match = re.search(r"\(([-+]?\d*\.?\d+)\)", label)
             if match:
                 weight = float(match.group(1))
