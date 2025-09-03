@@ -899,7 +899,11 @@ def run_app():
         #)
         
         fig_local = plt.gcf()
-        st.pyplot(fig, use_container_width=True)
+        ax = plt.gca()
+
+        ax.xaxis.set_major_formatter(mtick.FormatStrFormatter('%.2f'))
+
+        st.pyplot(fig_local, use_container_width=True)
         plt.close(fig_local)
 
 
