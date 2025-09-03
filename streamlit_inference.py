@@ -904,6 +904,10 @@ def run_app():
         ax.xaxis.set_major_formatter(mtick.FormatStrFormatter('%.2f'))
         ax.yaxis.set_major_formatter(mtick.FormatStrFormatter('%.2f'))
 
+        ax.xaxis.set_major_locator(mtick.MaxNLocator(integer=True, prune='lower'))  # Integer formatting for x-axis
+        ax.yaxis.set_major_locator(mtick.MaxNLocator(integer=True, prune='lower'))  # Integer formatting for y-axis
+
+        
         st.pyplot(fig_local, use_container_width=True)
         plt.close(fig_local)
 
