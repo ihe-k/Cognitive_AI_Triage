@@ -903,10 +903,6 @@ def run_app():
 
         ax.xaxis.set_major_formatter(mtick.FuncFormatter(lambda x, pos: f"{x:.2f}"))
         ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda y, pos: f"{y:.2f}"))
-
-        ax.xaxis.set_major_formatter(mtick.StrMethodFormatter('{x:0.2f}'))
-        ax.yaxis.set_major_formatter(mtick.StrMethodFormatter('{x:0.2f}'))
-
         
         st.pyplot(fig_local, use_container_width=True)
         plt.close(fig_local)
