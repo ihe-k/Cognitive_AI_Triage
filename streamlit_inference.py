@@ -881,22 +881,19 @@ def run_app():
         # Round SHAP values and feature values to 2 decimals
         shap_values_rounded = np.round(shap_values_local, 2)
         features_rounded = np.round(arts["X_sample_s"][patient_idx:patient_idx+1], 2)
+        
+        shap_value_display = {f"Feature {i}": f"{shap_values_rounded[i]:.2f}" for i in range(len(shap_values_rounded))}
 
+        st.write("### Rounded SHAP Values for Features")
+        for feature, shap_value in shap_value_display.items():
+            st.write(f"{feature}: {shap_value}")
+        
         shap.force_plot(
             arts["explainer_shap"].expected_value,
             shap_values_rounded,
             features=features_rounded,
-            matplotlib=True,
-            show=False
+            matplotlib=True, show=False
         )
-
-        
-        #shap.force_plot(
-        #    arts["explainer_shap"].expected_value,
-         #   shap_vals_local[0],
-          #  features=arts["X_sample_s"][patient_idx:patient_idx+1],
-           # matplotlib=True, show=False
-        #)
         
         fig_local = plt.gcf()
         ax = plt.gca()
@@ -905,10 +902,10 @@ def run_app():
         ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda y, pos: f"{y:.2f}"))
 
         for tick in ax.get_xticklabels():
-            tick.set_rotation(45)
+            tick.set_rotation(0)
             tick.set_fontsize(10)
         for tick in ax.get_yticklabels():
-            tick.set_rotation(45)
+            tick.set_rotation(0)
             tick.set_fontsize(10)
         
         st.pyplot(fig_local, use_container_width=True)
