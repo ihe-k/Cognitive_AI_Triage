@@ -882,17 +882,23 @@ def run_app():
         shap_values_rounded = np.round(shap_values_local, 2)
         features_rounded = np.round(arts["X_sample_s"][patient_idx:patient_idx+1], 2)
         
-        shap.force_plot(
-            arts["explainer_shap"].expected_value,
-            shap_values_local_rounded,
-            features=features_rounded,
-            matplotlib=True,
-            show=False
-        )
+        shap_value_display = {
+            f"Feature {i}": f"{shap_values_rounded[0][i]:.2f}"  # Accessing the individual value within the inner array
+            for i in range(len(shap_values_rounded[0]))
+        }
+
         st.write("### Rounded SHAP Values for Features")
         for feature, shap_value in shap_value_display.items():
             st.write(f"{feature}: {shap_value}")
-            
+
+        shap.force_plot(
+            arts["explainer_shap"].expected_value,  # Expected value
+            shap_values_rounded[0],  # Rounded SHAP values for the selected instance (access the first instance)
+            features=features_rounded[0],  # Feature values for the selected instance
+            matplotlib=True,  # Using Matplotlib for plotting
+            show=False  # Don't show the plot immediately, we'll customize it
+        )
+        
         fig_local = plt.gcf()
         ax = plt.gca()
 
