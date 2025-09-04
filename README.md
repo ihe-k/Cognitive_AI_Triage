@@ -53,6 +53,7 @@ Score Range   | Interpretation
 15 - 19       | Moderately Severe
 20 - 24       | Severe
 
+NB: The model achieves an R² of 0.71 and MAE of 2.43 on the validation set, showing strong ability to learn PHQ-8 severity from physiological and behavioural features.  However, generalisation to the test set suggests the need for more diverse training data or regularisation.
 
 ## Project Structure
 ```plaintext
