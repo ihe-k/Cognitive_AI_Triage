@@ -836,8 +836,7 @@ def run_app():
         st.dataframe(summary_df, use_container_width=True)
 
         # Show reference table
-        st.markdown("### ℹ️ MFCC Reference Table")
-        mfcc_table = {
+        reference_df = pd.DataFrame({
             "MFCC Mean Range": ["> -10", "-10 to -18", "-18 to -24", "-24 to -30", "< -30"],
             "Speech Profile": [
                 "Clear/expressive/energetic",
@@ -854,9 +853,8 @@ def run_app():
                 "Severe"
             ]
         }
-        st.table(pd.DataFrame(mfcc_table))
-
-####
+        st.markdown("### ℹ️ MFCC Reference Table")
+        st.dataframe(reference_df, use_container_width=True)####
     
     # Run inference button
     if check_pretrained_model():
