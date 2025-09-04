@@ -794,7 +794,7 @@ def run_app():
     # Check if physiological data exists and display it
     if "physio_data" in st.session_state and st.session_state["show_physio"]:
         physio_df = st.session_state["physio_data"].round(2)
-
+        
         ###  st.write("Generated Physiological Data:")
         # Display the simulated physiological data
         #st.subheader("🧬 Generated Physiological Data")
@@ -822,7 +822,8 @@ def run_app():
         st.pyplot(fig, use_container_width=True)
         plt.close(fig)
 
-        st.subheader("📋 Physiological Data (Rounded to 2 Decimals)")
+        st.subheader("📋 Physiological Data")
+
         
         #st.dataframe(st.session_state["physio_data"], use_container_width=True)  # Display as a dataframe
         st.dataframe(physio_df, use_container_width=True)
