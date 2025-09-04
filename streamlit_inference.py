@@ -1109,16 +1109,22 @@ if __name__ == "__main__":
                     print(f"✅ Loaded Alzheimer model with classes: {alzheimer_model['classes']}")
 
                     
-                    if "train_accuracy" in alzheimer_model or "test_accuracy" in alzheimer_model:
-                        print("Model Performance:")
-                        if "train_accuracy" in alzheimer_model:
-                            print(f"  Train accuracy: {alzheimer_model['train_accuracy']}")
-                        if "test_accuracy" in alzheimer_model:
-                            print(f"  Test accuracy: {alzheimer_model['test_accuracy']}")
-                        if "confusion_matrix" in alzheimer_model:
-                            print(f"  Confusion matrix:\n{alzheimer_model['confusion_matrix']}")
+                    # Direct access to existing keys
+                    train_acc = alzheimer_model.get("train_accuracy")
+                    test_acc = alzheimer_model.get("test_accuracy")
+                    conf_matrix = alzheimer_model.get("confusion_matrix")
+
+                    if train_acc is not None or test_acc is not None:
+                        print("🧪 Model Performance:")
+                        if train_acc is not None:
+                            print(f"  ✅ Train Accuracy: {train_acc:.2%}")
+                        if test_acc is not None:
+                            print(f"  ✅ Test Accuracy: {test_acc:.2%}")
+                        if conf_matrix is not None:
+                            print(f"  🧾 Confusion Matrix:\n{conf_matrix}")
                     else:
                         print("No performance metrics found in model artifact")
+
 
                     
                     # Check if image file exists
