@@ -633,7 +633,7 @@ def run_app():
     
 
    #### 
-    if st.checkbox("Show Alzheimer Model Performance"):
+    if st.sidebar.checkbox("Show Alzheimer Model Performance"):
         try:
             alzheimer_model = load_alzheimer_model()
             train_acc = alzheimer_model.get("train_accuracy")
