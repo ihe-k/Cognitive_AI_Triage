@@ -407,11 +407,7 @@ def run_simple_inference() -> Dict[str, Any]:
     pred_sample = model.predict(X_sample_s)
 
 ####
-    if "performance" in model_artifact:
-        perf = model_artifact["performance"]
-        print("Severity Model Performance:")
-        print(f"  RMSE: {perf.get('rmse', 'N/A')}")
-        print(f"  R^2: {perf.get('r2', 'N/A')}")
+
 ####
     
     # Create explainability objects
@@ -654,35 +650,7 @@ def run_app():
         except Exception as e:
             st.error(f"❌ Failed to load or process model: {e}")
 #####
-    
-    if st.sidebar.checkbox("Show Depression Severity Regressor Performance"):
-        try:
-            with open("artifacts/severity_model.pkl", "rb") as f:
-                severity_model = pickle.load(f)
-
-            test_metrics = severity_model.get("test_metrics", {})
-            train_metrics = severity_model.get("train_metrics", {})
-            valid_metrics = severity_model.get("valid_metrics", {})
-
-            st.subheader("📊 Depression Severity Model Performance")
-
-            if test_metrics:
-                st.write("**Test Metrics:**")
-                st.write(f"• MAE: {test_metrics.get('mae', 'N/A'):.3f}")
-                st.write(f"• RMSE: {test_metrics.get('rmse', 'N/A'):.3f}")
-                st.write(f"• R² Score: {test_metrics.get('r2', 'N/A'):.3f}")
-            else:
-                st.warning("No test performance metrics available.")
-
-            if valid_metrics:
-                st.write("**Validation Metrics (optional):**")
-                st.write(f"• MAE: {valid_metrics.get('mae', 'N/A'):.3f}")
-                st.write(f"• RMSE: {valid_metrics.get('rmse', 'N/A'):.3f}")
-                st.write(f"• R² Score: {valid_metrics.get('r2', 'N/A'):.3f}")
-
-        except Exception as e:
-            st.error(f"❌ Failed to load severity model: {e}")
-    
+  
         # Physiological markers controls
     st.sidebar.header("Physiological Markers")
     breathing_min = st.sidebar.number_input("Breathing Min (bpm)", min_value=8, max_value=30, value=12, step=1)
