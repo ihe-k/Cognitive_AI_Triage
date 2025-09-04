@@ -770,8 +770,8 @@ def run_app():
     # Physiological markers simulation
     if st.button("🧬 Simulate Physiological Data"):
         n_samples = st.session_state.get("n_samples_ui", 10)
-        raw_data = simulate_physiological_markers(
-        #physio_data = simulate_physiological_markers(
+        # raw_data = simulate_physiological_markers(
+        physio_data = simulate_physiological_markers(
             n_samples=n_samples,
             breathing_range=(breathing_min, breathing_max),
             tapping_range=(tapping_min, tapping_max),
@@ -779,24 +779,24 @@ def run_app():
         )
 
         physio_df = pd.DataFrame(
-            raw_data,
+            physio_data,
             columns=["Breathing Rate (bpm)", "Tapping Rate (taps/sec)", "Heart Rate (bpm)"]
         )
 
         st.session_state["physio_data"] = physio_df
         st.session_state["show_physio"] = True    
         
-        st.session_state["physio_data"] = physio_data
-        st.session_state["show_physio"] = True
+     #   st.session_state["physio_data"] = physio_data
+     #   st.session_state["show_physio"] = True
         st.success(f"Generated {n_samples} physiological samples!")
 ###
     # Check if physiological data exists and display it
     if "physio_data" in st.session_state and st.session_state["show_physio"]:
-        st.write("Generated Physiological Data:")
+      ###  st.write("Generated Physiological Data:")
         # Display the simulated physiological data
         st.subheader("🧬 Generated Physiological Data")
-        #st.dataframe(st.session_state["physio_data"], use_container_width=True)  # Display as a dataframe
-        st.dataframe(physio_df, use_container_width=True)
+        st.dataframe(st.session_state["physio_data"], use_container_width=True)  # Display as a dataframe
+       # st.dataframe(physio_df, use_container_width=True)
    ### 
     if "arts" not in st.session_state:
         st.info("Click **Run Inference** to load the pretrained model and run inference.")
