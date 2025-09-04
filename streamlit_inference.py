@@ -747,7 +747,60 @@ def run_app():
 
         #####
 
+        st.subheader("📥 Upload Audio & Image (Optional)")
+        uploaded_audio_files = st.file_uploader(
+            "Upload audio files (.wav)", type=["wav"], accept_multiple_files=True
+        )
 
+        # === Place MFCC analysis here ===
+        if uploaded_audio_files:
+            st.markdown("### 🔊 Audio Analysis (MFCC-based Depression Risk)")
+    
+        # Extract MFCC features
+            mfcc_features, file_names = extract_mfcc_features(uploaded_audio_files)
+
+            if mfcc_features is not None:
+                mfcc_mean = np.mean(mfcc_features)
+
+            # Assign class name based on MFCC mean
+                if mfcc_mean > -10:
+                    class_name = "Minimal risk of depression"
+                elif -18 < mfcc_mean <= -10:
+                    class_name = "Mild risk of depression"
+                elif -24 < mfcc_mean <= -18:
+                    class_name = "Moderate risk of depression"
+                elif -30 < mfcc_mean <= -24:
+                    class_name = "Moderately severe risk of depression"
+                else:
+                    class_name = "Severe risk of depression"
+
+                # Show results
+                st.subheader("🎧 Depression Risk Based on MFCC")
+                st.write(f"🎙️ **MFCC Mean:** {mfcc_mean:.2f}")
+                st.write(f"🔍 **Predicted Severity:** {class_name}")
+
+                # Optional: show reference table
+                mfcc_table = {
+                    "MFCC Mean Range": ["> -10", "-10 to -18", "-18 to -24", "-24 to -30", "< -30"],
+                    "Speech Profile": [
+                        "Clear/expressive/energetic",
+                    "Reduced variability/energy",
+                    "Flat/monotonic tone",
+                    "Dull/low-affect/low-volume",
+                    "Flat/withdrawn"
+                    ],
+                    "Depression Severity": [
+                    "None/Minimal",
+                    "Mild",
+                    "Moderate",
+                    "Moderately Severe",
+                    "Severe"
+                ]
+            }
+            st.table(pd.DataFrame(mfcc_table))
+        else:
+            st.error("❌ Failed to extract MFCC features.")
+        ###
 
         
         # Show OpenCV status for image processing
@@ -1266,46 +1319,6 @@ if __name__ == "__main__":
                         
                 except Exception as e:
                     print(f"❌ Audio processing failed: {e}")
-#####
-                    mfcc_mean = np.mean(mfcc_features)
-
-                    #Assign class name based on MFCC mean
-                    if mfcc_mean > -10:
-                        class_name = "Minimal risk of depression"
-                    elif -18 < mfcc_mean <= -10:
-                        class_name = "Mild risk of depression"
-                    elif -24 < mfcc_mean <= -18:
-                        class_name = "Moderate risk of depression"
-                    elif -30 < mfcc_mean <= -24:
-                        class_name = "Moderately severe risk of depression"
-                    else:
-                        class_name = "Severe risk of depression"
-
-                    st.subheader("🎧 Depression Risk Based on MFCC")
-                    st.write(f"🎙️ **MFCC Mean:** {mfcc_mean:.2f}")
-                    st.write(f"🔍 **Predicted Severity:** {class_name}")
-
-
-                    mfcc_table = {
-                        "MFCC Mean Range": ["> -10", "-10 to -18", "-18 to -24", "-24 to -30", "< -30"],
-                        "Speech Profile": [
-                            "Clear/expressive/energetic",
-                            "Reduced variability/energy",
-                            "Flat/monotonic tone",
-                            "Dull/low-affect/low-volume",
-                            "Flat/withdrawn"
-                    ],
-                    "Depression Severity": [
-                        "None/Minimal",
-                        "Mild",
-                        "Moderate",
-                        "Moderately Severe",
-                        "Severe"
-                    ]
-                }
-                st.table(pd.DataFrame(mfcc_table))
-
-       #### 
         
         # Save heatmap
         os.makedirs("artifacts", exist_ok=True)
