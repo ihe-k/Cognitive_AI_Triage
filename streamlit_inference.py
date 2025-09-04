@@ -615,7 +615,8 @@ def run_app():
         st.sidebar.success("✅ Audio processing ready!")
 
  #### 
-    if st.sidebar.checkbox("Show Alzheimer Model Performance"):
+    st.sidebar.header("Model Evaluations")
+    if st.sidebar.checkbox("Show Alzheimer's Model Performance"):
         try:
             alzheimer_model = load_alzheimer_model()
             train_acc = alzheimer_model.get("train_accuracy")
@@ -653,6 +654,30 @@ def run_app():
         except Exception as e:
             st.error(f"❌ Failed to load or process model: {e}")
 #####
+    
+    if st.checkbox("Show Depression Severity Regressor Performance"):
+    try:
+        with open("artifacts/severity_model.pkl", "rb") as f:
+            severity_model = pickle.load(f)
+
+        metrics = severity_model.get("metrics", {})
+        r2 = metrics.get("r2")
+        mae = metrics.get("mae")
+        rmse = metrics.get("rmse")
+
+        st.subheader("📉 Depression Severity Regressor Performance")
+
+        if any(v is not None for v in [r2, mae, rmse]):
+            if r2 is not None:
+                st.write(f"**R² Score:** {r2:.3f}")
+            if mae is not None:
+                st.write(f"**Mean Absolute Error (MAE):** {mae:.2f}")
+            if rmse is not None:
+                st.write(f"**Root Mean Squared Error (RMSE):** {rmse:.2f}")
+        else:
+            st.warning("⚠️ No performance metrics found in severity model.")
+    except Exception as e:
+        st.error(f"❌ Failed to load severity model: {e}")
 
     
         # Physiological markers controls
