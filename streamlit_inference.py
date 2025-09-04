@@ -16,6 +16,7 @@ from PIL import Image
 import re
 import matplotlib.ticker as mtick
 import shap
+import seaborn as sns
 ####
 
 # Conditional OpenCV import for cloud compatibility
@@ -792,9 +793,35 @@ def run_app():
 ###
     # Check if physiological data exists and display it
     if "physio_data" in st.session_state and st.session_state["show_physio"]:
-      ###  st.write("Generated Physiological Data:")
+        physio_df = st.session_state["physio_data"]
+
+        ###  st.write("Generated Physiological Data:")
         # Display the simulated physiological data
         st.subheader("🧬 Generated Physiological Data")
+        st.dataframe(physio_df, use_container_width=True)
+
+        # Summary stats
+        st.subheader("📊 Summary Statistics")
+        st.write(physio_df.describe().T.style.format("{:.2f}"))
+
+        # Plotting
+        st.subheader("📈 Feature Distributions")
+        
+        
+
+        fig, axes = plt.subplots(1, 3, figsize=(18, 4))
+        sns.histplot(physio_df["Breathing Rate (bpm)"], ax=axes[0], kde=True, color="#3776A1")
+        axes[0].set_title("Breathing Rate Distribution")
+
+        sns.histplot(physio_df["Tapping Rate (taps/sec)"], ax=axes[1], kde=True, color="#6EB1D6")
+        axes[1].set_title("Tapping Rate Distribution")
+
+        sns.histplot(physio_df["Heart Rate (bpm)"], ax=axes[2], kde=True, color="#003A6B")
+        axes[2].set_title("Heart Rate Distribution")
+
+        st.pyplot(fig, use_container_width=True)
+        plt.close(fig)
+        
         st.dataframe(st.session_state["physio_data"], use_container_width=True)  # Display as a dataframe
        # st.dataframe(physio_df, use_container_width=True)
    ### 
