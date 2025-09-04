@@ -747,59 +747,7 @@ def run_app():
 
         #####
 
-        st.subheader("📥 Upload Audio & Image (Optional)")
-        uploaded_audio_files = st.file_uploader(
-            "Upload audio files (.wav)", type=["wav"], accept_multiple_files=True
-        )
 
-        # === Place MFCC analysis here ===
-        if uploaded_audio_files:
-            st.markdown("### 🔊 Audio Analysis (MFCC-based Depression Risk)")
-    
-        # Extract MFCC features
-            mfcc_features, file_names = extract_mfcc_features(uploaded_audio_files)
-
-            if mfcc_features is not None:
-                mfcc_mean = np.mean(mfcc_features)
-
-            # Assign class name based on MFCC mean
-                if mfcc_mean > -10:
-                    class_name = "Minimal risk of depression"
-                elif -18 < mfcc_mean <= -10:
-                    class_name = "Mild risk of depression"
-                elif -24 < mfcc_mean <= -18:
-                    class_name = "Moderate risk of depression"
-                elif -30 < mfcc_mean <= -24:
-                    class_name = "Moderately severe risk of depression"
-                else:
-                    class_name = "Severe risk of depression"
-
-                # Show results
-                st.subheader("🎧 Depression Risk Based on MFCC")
-                st.write(f"🎙️ **MFCC Mean:** {mfcc_mean:.2f}")
-                st.write(f"🔍 **Predicted Severity:** {class_name}")
-
-                # Optional: show reference table
-                mfcc_table = {
-                    "MFCC Mean Range": ["> -10", "-10 to -18", "-18 to -24", "-24 to -30", "< -30"],
-                    "Speech Profile": [
-                        "Clear/expressive/energetic",
-                    "Reduced variability/energy",
-                    "Flat/monotonic tone",
-                    "Dull/low-affect/low-volume",
-                    "Flat/withdrawn"
-                    ],
-                    "Depression Severity": [
-                    "None/Minimal",
-                    "Mild",
-                    "Moderate",
-                    "Moderately Severe",
-                    "Severe"
-                ]
-            }
-            st.table(pd.DataFrame(mfcc_table))
-        else:
-            st.error("❌ Failed to extract MFCC features.")
         ###
 
         
@@ -873,7 +821,73 @@ def run_app():
         st.button("▶️ Run Inference", disabled=True)
         st.warning("Cannot run inference: Pretrained model not available.")
 
+    ####
+        if uploaded_audio_files:
+            st.markdown("### 🔊 Audio Analysis (MFCC-based Depression Risk)")
     
+            mfcc_features, file_names = extract_mfcc_features(uploaded_audio_files)
+
+        if mfcc_features is not None:
+            mfcc_mean = np.mean(mfcc_features)
+        
+            # Create summary DataFrame
+            summary_data = []
+            for idx, fname in enumerate(file_names):
+                mean_val = np.mean(mfcc_features[idx])
+            
+            # Determine MFCC range label and severity
+                if mean_val > -10:
+                    mfcc_range = "> -10"
+                    severity = "None/Minimal"
+                elif -18 < mean_val <= -10:
+                    mfcc_range = "-10 to -18"
+                    severity = "Mild"
+                elif -24 < mean_val <= -18:
+                    mfcc_range = "-18 to -24"
+                    severity = "Moderate"
+                elif -30 < mean_val <= -24:
+                    mfcc_range = "-24 to -30"
+                    severity = "Moderately Severe"
+                else:
+                    mfcc_range = "< -30"
+                    severity = "Severe"
+
+                summary_data.append({
+                    "File": fname,
+                    "MFCC_Mean": f"{mean_val:.2f}",
+                    "MFCC_Range": mfcc_range,
+                    "Predicted Severity": severity
+                })
+
+            summary_df = pd.DataFrame(summary_data)
+            st.dataframe(summary_df)
+
+            # Show reference table below
+            st.markdown("### ℹ️ MFCC Reference Table")
+            mfcc_table = {
+                "MFCC Mean Range": ["> -10", "-10 to -18", "-18 to -24", "-24 to -30", "< -30"],
+                "Speech Profile": [
+                    "Clear/expressive/energetic",
+                    "Reduced variability/energy",
+                    "Flat/monotonic tone",
+                    "Dull/low-affect/low-volume",
+                    "Flat/withdrawn"
+                ],
+                "Depression Severity": [
+                    "None/Minimal",
+                    "Mild",
+                    "Moderate",
+                    "Moderately Severe",
+                    "Severe"
+                ]
+            }
+            st.table(pd.DataFrame(mfcc_table))
+
+        else:
+            st.error("❌ Failed to extract MFCC features.")
+
+
+    ####
 
     
     # Physiological markers simulation
