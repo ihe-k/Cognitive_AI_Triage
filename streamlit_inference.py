@@ -893,7 +893,7 @@ def run_app():
     arts = st.session_state["arts"]
 
     # Dataset Summary
-    st.subheader("📊 Inference Results")
+    st.subheader("📊 Predicted Depression Severity: Inference Results")
     st.write(
         f"**Samples**: {arts['TOTAL_N']}  |  **Features**: {len(arts['feat_names'])}"
     )
