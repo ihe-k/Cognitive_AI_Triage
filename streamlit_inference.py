@@ -1108,12 +1108,17 @@ if __name__ == "__main__":
                     alzheimer_model = load_alzheimer_model()
                     print(f"✅ Loaded Alzheimer model with classes: {alzheimer_model['classes']}")
 
-                    if "performance" in alzheimer_model:
-                        perf = alzheimer_model["performance"]
+                    
+                    if "train_accuracy" in alzheimer_model or "test_accuracy" in alzheimer_model:
                         print("Model Performance:")
-                        print(f"  Accuracy: {perf.get('accuracy', 'N/A')}")
-                        print(f"  F1-score: {perf.get('f1_score', 'N/A')}")
-                
+                        if "train_accuracy" in alzheimer_model:
+                            print(f"  Train accuracy: {alzheimer_model['train_accuracy']}")
+                        if "test_accuracy" in alzheimer_model:
+                            print(f"  Test accuracy: {alzheimer_model['test_accuracy']}")
+                        if "confusion_matrix" in alzheimer_model:
+                            print(f"  Confusion matrix:\n{alzheimer_model['confusion_matrix']}")
+                    else:
+                        print("No performance metrics found in model artifact")
 
                     
                     # Check if image file exists
