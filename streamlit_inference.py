@@ -649,7 +649,7 @@ def run_app():
                 "Severe Dementia"
             ]
 
-            st.subheader("🧠 Alzheimer's Classifier Performance")
+            st.subheader("Alzheimer's Classifier Performance")
 
             if train_acc is not None:
                 st.write(f"✅ **Train Accuracy:** {train_acc:.2%}")
