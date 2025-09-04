@@ -655,27 +655,31 @@ def run_app():
             st.error(f"❌ Failed to load or process model: {e}")
 #####
     
-    if st.checkbox("Show Depression Severity Regressor Performance"):
+    if st.sidebar.checkbox("Show Depression Severity Regressor Performance"):
         try:
             with open("artifacts/severity_model.pkl", "rb") as f:
                 severity_model = pickle.load(f)
 
-            metrics = severity_model.get("metrics", {})
-            r2 = metrics.get("r2")
-            mae = metrics.get("mae")
-            rmse = metrics.get("rmse")
+            test_metrics = severity_model.get("test_metrics", {})
+            train_metrics = severity_model.get("train_metrics", {})
+            valid_metrics = severity_model.get("valid_metrics", {})
 
-            st.subheader("📉 Depression Severity Regressor Performance")
+            st.subheader("📊 Depression Severity Model Performance")
 
-            if any(v is not None for v in [r2, mae, rmse]):
-                if r2 is not None:
-                    st.write(f"**R² Score:** {r2:.3f}")
-                if mae is not None:
-                    st.write(f"**Mean Absolute Error (MAE):** {mae:.2f}")
-                if rmse is not None:
-                    st.write(f"**Root Mean Squared Error (RMSE):** {rmse:.2f}")
+            if test_metrics:
+                st.write("**Test Metrics:**")
+                st.write(f"• MAE: {test_metrics.get('mae', 'N/A'):.3f}")
+                st.write(f"• RMSE: {test_metrics.get('rmse', 'N/A'):.3f}")
+                st.write(f"• R² Score: {test_metrics.get('r2', 'N/A'):.3f}")
             else:
-                st.warning("⚠️ No performance metrics found in severity model.")
+                st.warning("No test performance metrics available.")
+
+            if valid_metrics:
+                st.write("**Validation Metrics (optional):**")
+                st.write(f"• MAE: {valid_metrics.get('mae', 'N/A'):.3f}")
+                st.write(f"• RMSE: {valid_metrics.get('rmse', 'N/A'):.3f}")
+                st.write(f"• R² Score: {valid_metrics.get('r2', 'N/A'):.3f}")
+
         except Exception as e:
             st.error(f"❌ Failed to load severity model: {e}")
     
