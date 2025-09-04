@@ -1102,7 +1102,7 @@ if __name__ == "__main__":
             print(f"\n=== ALZHEIMER'S DISEASE CLASSIFICATION ===")
             if not check_alzheimer_model():
                 print("❌ Error: Alzheimer model not found or invalid!")
-                print("Please ensure 'artifacts/alzheimer_classifier.pkl' exists and contains a valid model.")
+                print("Please ensure 'artifacts/alzheimer_classifier.pkl.gz' exists and contains a valid model.")
             else:
                 try:
                     alzheimer_model = load_alzheimer_model()
