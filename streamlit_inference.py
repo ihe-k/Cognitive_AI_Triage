@@ -709,7 +709,7 @@ def run_app():
 
         #####
 
-        # 💡 Insert performance display button here
+        #Insert performance display button here
         if st.sidebar.button("Show Alzheimer Model Performance"):
             try:
                 alzheimer_model = load_alzheimer_model()
@@ -717,20 +717,36 @@ def run_app():
                 test_acc = alzheimer_model.get("test_accuracy")
                 cm = alzheimer_model.get("confusion_matrix")
 
-                st.subheader("📊 Alzheimer Classifier Performance")
+                # Define class names in order of index
+                class_labels = [
+                    "Non-Demented",
+                    "Very Mild Dementia",
+                    "Mild Dementia",
+                    "Moderate Dementia",
+                    "Severe Dementia"
+                ]
+
+                st.subheader("🧠 Alzheimer's Classifier Performance")
+
                 if train_acc is not None:
                     st.write(f"✅ **Train Accuracy:** {train_acc:.2%}")
                 if test_acc is not None:
                     st.write(f"✅ **Test Accuracy:** {test_acc:.2%}")
-                if cm is not None:
-                    st.write("🧾 **Confusion Matrix:**")
-                    st.dataframe(cm)
-                if all(v is None for v in [train_acc, test_acc, cm]):
-                    st.warning("No performance metrics found in model.")
-            except Exception as e:
-                st.error(f"Failed to load model: {e}")
-       
 
+                if cm is not None:
+                    fig, ax = plt.subplots(figsize=(8, 6))
+                    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
+                                xticklabels=class_labels,
+                                yticklabels=class_labels,
+                                ax=ax)
+                    ax.set_xlabel("Predicted Label")
+                    ax.set_ylabel("True Label")
+                    ax.set_title("Confusion Matrix")
+                    st.pyplot(fig)
+                else:
+                    st.warning("⚠️ No confusion matrix found in the model.")
+            except Exception as e:
+                st.error(f"❌ Failed to load or process model: {e}")
 #####
 
 
