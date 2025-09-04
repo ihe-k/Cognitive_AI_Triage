@@ -655,7 +655,7 @@ def run_app():
             st.error(f"❌ Failed to load or process model: {e}")
 #####
     
-    if st.checkbox("Show Depression Severity Regressor Performance"):
+if st.checkbox("Show Depression Severity Regressor Performance"):
     try:
         with open("artifacts/severity_model.pkl", "rb") as f:
             severity_model = pickle.load(f)
