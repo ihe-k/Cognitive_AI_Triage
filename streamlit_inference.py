@@ -398,13 +398,21 @@ def run_simple_inference() -> Dict[str, Any]:
     model = model_artifact["model"]
     scaler = model_artifact["scaler"]
     feat_names = model_artifact["feature_names"]
-    
+
     # For demo purposes, create some sample data
     # In real usage, you would load actual test data
     n_samples = 100
     X_sample = np.random.randn(n_samples, len(feat_names)).astype(np.float32)
     X_sample_s = scaler.transform(X_sample)
     pred_sample = model.predict(X_sample_s)
+
+####
+    if "performance" in model_artifact:
+        perf = model_artifact["performance"]
+        print("Severity Model Performance:")
+        print(f"  RMSE: {perf.get('rmse', 'N/A')}")
+        print(f"  R^2: {perf.get('r2', 'N/A')}")
+####
     
     # Create explainability objects
     explainer_shap = shap.TreeExplainer(model)
@@ -1099,6 +1107,14 @@ if __name__ == "__main__":
                 try:
                     alzheimer_model = load_alzheimer_model()
                     print(f"✅ Loaded Alzheimer model with classes: {alzheimer_model['classes']}")
+
+                    if "performance" in alzheimer_model:
+                        perf = alzheimer_model["performance"]
+                        print("Model Performance:")
+                        print(f"  Accuracy: {perf.get('accuracy', 'N/A')}")
+                        print(f"  F1-score: {perf.get('f1_score', 'N/A')}")
+                
+
                     
                     # Check if image file exists
                     if not os.path.exists(args.alzheimer_image):
@@ -1139,6 +1155,8 @@ if __name__ == "__main__":
                 except Exception as e:
                     print(f"❌ Alzheimer classification failed: {e}")
 
+
+        
         # Audio processing (CLI mode)
         if args.audio_files:
             print(f"\n=== AUDIO MFCC ANALYSIS ===")
