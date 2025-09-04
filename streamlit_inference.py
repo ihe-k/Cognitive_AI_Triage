@@ -1266,7 +1266,26 @@ if __name__ == "__main__":
                         
                 except Exception as e:
                     print(f"❌ Audio processing failed: {e}")
+#####
+                    mfcc_mean = np.mean(mfcc_features)
 
+                    #Assign class name based on MFCC mean
+                    if mfcc_mean > -10:
+                        class_name = "Minimal risk of depression"
+                    elif -18 < mfcc_mean <= -10:
+                        class_name = "Mild risk of depression"
+                    elif -24 < mfcc_mean <= -18:
+                        class_name = "Moderate risk of depression"
+                    elif -30 < mfcc_mean <= -24:
+                        class_name = "Moderately severe risk of depression"
+                    else:
+                        class_name = "Severe risk of depression"
+
+                    print(f"🔍 Prediction: {class_name}")
+                    print(f"🎙️ MFCC Mean: {mfcc_mean:.2f}")
+                    print(f"🔍 Prediction: {class_name}")
+       #### 
+        
         # Save heatmap
         os.makedirs("artifacts", exist_ok=True)
         fig, ax = plt.subplots()
