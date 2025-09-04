@@ -605,6 +605,15 @@ def run_app():
         st.sidebar.info("Install librosa for audio file analysis: pip install librosa")
     else:
         st.sidebar.success("✅ Audio processing ready!")
+
+        # Physiological markers controls
+    st.sidebar.header("🧬 Physiological Markers")
+    breathing_min = st.sidebar.number_input("Breathing Min (bpm)", min_value=8, max_value=30, value=12, step=1)
+    breathing_max = st.sidebar.number_input("Breathing Max (bpm)", min_value=8, max_value=30, value=20, step=1)
+    tapping_min = st.sidebar.number_input("Tapping Min (taps/sec)", min_value=0.5, max_value=10.0, value=1.0, step=0.5)
+    tapping_max = st.sidebar.number_input("Tapping Max (taps/sec)", min_value=0.5, max_value=10.0, value=5.0, step=0.5)
+    heart_rate_min = st.sidebar.number_input("Heart Rate Min (bpm)", min_value=40, max_value=200, value=60, step=5)
+    heart_rate_max = st.sidebar.number_input("Heart Rate Max (bpm)", min_value=40, max_value=200, value=100, step=5)
     
     # Sidebar controls (misinfo + capacity)
     st.sidebar.header("Simulation & Allocation Controls")
@@ -614,15 +623,7 @@ def run_app():
     capacity   = st.sidebar.number_input("Treatment Capacity", min_value=1, max_value=500, value=10)
     method     = st.sidebar.radio("Explanation Method", ["LIME", "SHAP"], index=0, horizontal=True)
     
-    # Physiological markers controls
-    st.sidebar.header("🧬 Physiological Markers")
-    breathing_min = st.sidebar.number_input("Breathing Min (bpm)", min_value=8, max_value=30, value=12, step=1)
-    breathing_max = st.sidebar.number_input("Breathing Max (bpm)", min_value=8, max_value=30, value=20, step=1)
-    tapping_min = st.sidebar.number_input("Tapping Min (taps/sec)", min_value=0.5, max_value=10.0, value=1.0, step=0.5)
-    tapping_max = st.sidebar.number_input("Tapping Max (taps/sec)", min_value=0.5, max_value=10.0, value=5.0, step=0.5)
-    heart_rate_min = st.sidebar.number_input("Heart Rate Min (bpm)", min_value=40, max_value=200, value=60, step=5)
-    heart_rate_max = st.sidebar.number_input("Heart Rate Max (bpm)", min_value=40, max_value=200, value=100, step=5)
-    
+
 
     # Uploaders (optional)
     st.subheader("📥 Upload Audio & Image (Optional)")
