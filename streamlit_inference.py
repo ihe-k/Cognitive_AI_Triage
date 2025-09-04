@@ -1281,9 +1281,30 @@ if __name__ == "__main__":
                     else:
                         class_name = "Severe risk of depression"
 
-                    print(f"🔍 Prediction: {class_name}")
-                    print(f"🎙️ MFCC Mean: {mfcc_mean:.2f}")
-                    print(f"🔍 Prediction: {class_name}")
+                    st.subheader("🎧 Depression Risk Based on MFCC")
+                    st.write(f"🎙️ **MFCC Mean:** {mfcc_mean:.2f}")
+                    st.write(f"🔍 **Predicted Severity:** {class_name}")
+
+
+                    mfcc_table = {
+                        "MFCC Mean Range": ["> -10", "-10 to -18", "-18 to -24", "-24 to -30", "< -30"],
+                        "Speech Profile": [
+                            "Clear/expressive/energetic",
+                            "Reduced variability/energy",
+                            "Flat/monotonic tone",
+                            "Dull/low-affect/low-volume",
+                            "Flat/withdrawn"
+                    ],
+                    "Depression Severity": [
+                        "None/Minimal",
+                        "Mild",
+                        "Moderate",
+                        "Moderately Severe",
+                        "Severe"
+                    ]
+                }
+                st.table(pd.DataFrame(mfcc_table))
+
        #### 
         
         # Save heatmap
