@@ -614,6 +614,47 @@ def run_app():
     else:
         st.sidebar.success("✅ Audio processing ready!")
 
+ #### 
+    if st.sidebar.checkbox("Show Alzheimer Model Performance"):
+        try:
+            alzheimer_model = load_alzheimer_model()
+            train_acc = alzheimer_model.get("train_accuracy")
+            test_acc = alzheimer_model.get("test_accuracy")
+            cm = alzheimer_model.get("confusion_matrix")
+
+            # Define class names in order of index
+            class_labels = [
+                "Non-Demented",
+                "Very Mild Dementia",
+                "Mild Dementia",
+                "Moderate Dementia",
+                "Severe Dementia"
+            ]
+
+            st.subheader("Alzheimer's Classifier Performance")
+
+            if train_acc is not None:
+                st.write(f"✅ **Train Accuracy:** {train_acc:.2%}")
+            if test_acc is not None:
+                st.write(f"✅ **Test Accuracy:** {test_acc:.2%}")
+
+            if cm is not None:
+                fig, ax = plt.subplots(figsize=(8, 6))
+                sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
+                            xticklabels=class_labels,
+                            yticklabels=class_labels,
+                            ax=ax)
+                ax.set_xlabel("Predicted Label")
+                ax.set_ylabel("True Label")
+                ax.set_title("Confusion Matrix")
+                st.pyplot(fig)
+            else:
+                st.warning("⚠️ No confusion matrix found in the model.")
+        except Exception as e:
+            st.error(f"❌ Failed to load or process model: {e}")
+#####
+
+    
         # Physiological markers controls
     st.sidebar.header("Physiological Markers")
     breathing_min = st.sidebar.number_input("Breathing Min (bpm)", min_value=8, max_value=30, value=12, step=1)
@@ -783,45 +824,7 @@ def run_app():
         st.button("▶️ Run Inference", disabled=True)
         st.warning("Cannot run inference: Pretrained model not available.")
 
-     #### 
-    if st.sidebar.checkbox("Show Alzheimer Model Performance"):
-        try:
-            alzheimer_model = load_alzheimer_model()
-            train_acc = alzheimer_model.get("train_accuracy")
-            test_acc = alzheimer_model.get("test_accuracy")
-            cm = alzheimer_model.get("confusion_matrix")
-
-            # Define class names in order of index
-            class_labels = [
-                "Non-Demented",
-                "Very Mild Dementia",
-                "Mild Dementia",
-                "Moderate Dementia",
-                "Severe Dementia"
-            ]
-
-            st.subheader("Alzheimer's Classifier Performance")
-
-            if train_acc is not None:
-                st.write(f"✅ **Train Accuracy:** {train_acc:.2%}")
-            if test_acc is not None:
-                st.write(f"✅ **Test Accuracy:** {test_acc:.2%}")
-
-            if cm is not None:
-                fig, ax = plt.subplots(figsize=(8, 6))
-                sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
-                            xticklabels=class_labels,
-                            yticklabels=class_labels,
-                            ax=ax)
-                ax.set_xlabel("Predicted Label")
-                ax.set_ylabel("True Label")
-                ax.set_title("Confusion Matrix")
-                st.pyplot(fig)
-            else:
-                st.warning("⚠️ No confusion matrix found in the model.")
-        except Exception as e:
-            st.error(f"❌ Failed to load or process model: {e}")
-#####
+    
 
     
     # Physiological markers simulation
