@@ -852,10 +852,29 @@ def run_app():
                 "Moderately Severe",
                 "Severe"
             ]
-        }
+        })
+
+        
+        # Define coloring function
+        def highlight_severity(val):
+            color = ""
+            if val.lower() in ["none / minimal"]:
+                color = "background-color: #d4edda; color: #155724;"  # green
+            elif val.lower() in ["mild", "moderate"]:
+                color = "background-color: #fff3cd; color: #856404;"  # amber
+            elif val.lower() in ["moderately severe", "severe"]:
+                color = "background-color: #f8d7da; color: #721c24;"  # red
+            return color
+
+        # Apply style
+        styled_ref_df = reference_df.style.applymap(highlight_severity, subset=["Depression Severity"])
+        
+        
         st.markdown("### ℹ️ MFCC Reference Table")
         st.dataframe(reference_df, use_container_width=True)####
-    
+
+
+
     # Run inference button
     if check_pretrained_model():
         if st.button("▶️ Run Inference"):
