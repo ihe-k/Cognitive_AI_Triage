@@ -856,8 +856,8 @@ def run_app():
     # Patient table (first 100 for speed)
     df_all = pd.DataFrame({
         "Patient ID": list(range(len(adjusted_all_))),
-        "Raw Severity": np.round(arts["pred_sample"], 3),
-        "Adjusted Severity": np.round(adjusted_all_, 3),
+        "Raw Severity": np.round(arts["pred_sample"], 2),
+        "Adjusted Severity": np.round(adjusted_all_, 2),
         "Priority": ["✅ Yes" if i in treated else "❌ No" for i in range(len(adjusted_all_))]
     })
     st.dataframe(df_all.head(100), use_container_width=True)
@@ -871,7 +871,7 @@ def run_app():
     with col2:
         st.metric("Adjusted Severity", f"{adjusted_all_[patient_idx]:.2f}")
     with col3:
-        st.metric("Prioritized for Treatment", "Yes" if patient_idx in treated else "No")
+        st.metric("Prioritised for Treatment", "Yes" if patient_idx in treated else "No")
     with col4:
         st.metric("Misinformation Risk", f"{misinfo_risk_:.2f}")
 
