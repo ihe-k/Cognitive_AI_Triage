@@ -607,7 +607,7 @@ def run_app():
         st.sidebar.success("✅ Audio processing ready!")
 
         # Physiological markers controls
-    st.sidebar.header("🧬 Physiological Markers")
+    st.sidebar.header("Physiological Markers")
     breathing_min = st.sidebar.number_input("Breathing Min (bpm)", min_value=8, max_value=30, value=12, step=1)
     breathing_max = st.sidebar.number_input("Breathing Max (bpm)", min_value=8, max_value=30, value=20, step=1)
     tapping_min = st.sidebar.number_input("Tapping Min (taps/sec)", min_value=0.5, max_value=10.0, value=1.0, step=0.5)
@@ -697,7 +697,7 @@ def run_app():
 
     # Alzheimer Image Classification
     if check_alzheimer_model():
-        st.subheader("🧠 Alzheimer's Disease Image Classification")
+        st.subheader("Alzheimer's Disease Image Classification")
         
         # Show OpenCV status for image processing
         if not OPENCV_AVAILABLE:
@@ -770,7 +770,7 @@ def run_app():
         st.warning("Cannot run inference: Pretrained model not available.")
     
     # Physiological markers simulation
-    if st.button("🧬 Simulate Physiological Data"):
+    if st.button("Simulate Physiological Data"):
         n_samples = st.session_state.get("n_samples_ui", 10)
         # raw_data = simulate_physiological_markers(
         physio_data = simulate_physiological_markers(
