@@ -189,7 +189,7 @@ def extract_image_features(img: np.ndarray, target_features: int = 50436) -> np.
 
 def check_alzheimer_model() -> bool:
     """Check if Alzheimer model exists and is valid."""
-    model_path = os.path.join("artifacts", "alzheimer_classifier.pkl")
+    model_path = os.path.join("artifacts", "alzheimer_classifier.pkl.gz")
     if not os.path.exists(model_path):
         return False
     try:
@@ -210,7 +210,7 @@ def check_alzheimer_model() -> bool:
 
 #def load_alzheimer_model() -> Dict[str, Any]:
 #    """Load the trained Alzheimer classifier model."""
- #   model_path = os.path.join("artifacts", "alzheimer_classifier.pkl")
+ #   model_path = os.path.join("artifacts", "alzheimer_classifier.pkl.gz")
 #    with open(model_path, "rb") as f:
  #       model_artifact = pickle.load(f)
   #  return model_artifact
