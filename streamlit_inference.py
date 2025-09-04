@@ -611,7 +611,7 @@ def run_app():
         st.sidebar.success("✅ Audio processing ready!")
 
  #### 
-    st.sidebar.header("Model Evaluations")
+    st.sidebar.header("Model Evaluation")
     if st.sidebar.checkbox("Show Alzheimer's Model Performance"):
         try:
             alzheimer_model = load_alzheimer_model()
