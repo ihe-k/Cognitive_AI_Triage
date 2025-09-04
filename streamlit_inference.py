@@ -706,6 +706,34 @@ def run_app():
     # Alzheimer Image Classification
     if check_alzheimer_model():
         st.subheader("Alzheimer's Disease Image Classification")
+
+        #####
+
+        # 💡 Insert performance display button here
+        if st.sidebar.button("Show Alzheimer Model Performance"):
+            try:
+                alzheimer_model = load_alzheimer_model()
+                train_acc = alzheimer_model.get("train_accuracy")
+                test_acc = alzheimer_model.get("test_accuracy")
+                cm = alzheimer_model.get("confusion_matrix")
+
+                st.subheader("📊 Alzheimer Classifier Performance")
+                if train_acc is not None:
+                    st.write(f"✅ **Train Accuracy:** {train_acc:.2%}")
+                if test_acc is not None:
+                    st.write(f"✅ **Test Accuracy:** {test_acc:.2%}")
+                if cm is not None:
+                    st.write("🧾 **Confusion Matrix:**")
+                    st.dataframe(cm)
+                if all(v is None for v in [train_acc, test_acc, cm]):
+                    st.warning("No performance metrics found in model.")
+            except Exception as e:
+                st.error(f"Failed to load model: {e}")
+       
+
+#####
+
+
         
         # Show OpenCV status for image processing
         if not OPENCV_AVAILABLE:
@@ -1166,7 +1194,7 @@ if __name__ == "__main__":
                 except Exception as e:
                     print(f"❌ Alzheimer classification failed: {e}")
 
-
+        
         
         # Audio processing (CLI mode)
         if args.audio_files:
