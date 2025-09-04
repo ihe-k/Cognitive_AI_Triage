@@ -793,12 +793,12 @@ def run_app():
 ###
     # Check if physiological data exists and display it
     if "physio_data" in st.session_state and st.session_state["show_physio"]:
-        physio_df = st.session_state["physio_data"]
+        physio_df = st.session_state["physio_data"].round(2)
 
         ###  st.write("Generated Physiological Data:")
         # Display the simulated physiological data
-        st.subheader("🧬 Generated Physiological Data")
-        st.dataframe(physio_df, use_container_width=True)
+        #st.subheader("🧬 Generated Physiological Data")
+       # st.dataframe(physio_df, use_container_width=True)
 
         # Summary stats
         st.subheader("📊 Summary Statistics")
@@ -810,20 +810,22 @@ def run_app():
         
 
         fig, axes = plt.subplots(1, 3, figsize=(18, 4))
-        sns.histplot(physio_df["Breathing Rate (bpm)"], ax=axes[0], kde=True, color="#3776A1")
+        sns.histplot(physio_df["Breathing Rate (bpm)"], ax=axes[0], kde=True, color="#003A6B")
         axes[0].set_title("Breathing Rate Distribution")
 
-        sns.histplot(physio_df["Tapping Rate (taps/sec)"], ax=axes[1], kde=True, color="#6EB1D6")
+        sns.histplot(physio_df["Tapping Rate (taps/sec)"], ax=axes[1], kde=True, color="#3776A1")
         axes[1].set_title("Tapping Rate Distribution")
 
-        sns.histplot(physio_df["Heart Rate (bpm)"], ax=axes[2], kde=True, color="#003A6B")
+        sns.histplot(physio_df["Heart Rate (bpm)"], ax=axes[2], kde=True, color="#6EB1D6")
         axes[2].set_title("Heart Rate Distribution")
 
         st.pyplot(fig, use_container_width=True)
         plt.close(fig)
+
+        st.subheader("📋 Physiological Data (Rounded to 2 Decimals)")
         
-        st.dataframe(st.session_state["physio_data"], use_container_width=True)  # Display as a dataframe
-       # st.dataframe(physio_df, use_container_width=True)
+        #st.dataframe(st.session_state["physio_data"], use_container_width=True)  # Display as a dataframe
+        st.dataframe(physio_df, use_container_width=True)
    ### 
     if "arts" not in st.session_state:
         st.info("Click **Run Inference** to load the pretrained model and run inference.")
