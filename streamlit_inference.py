@@ -835,6 +835,27 @@ def run_app():
         st.write("**Audio Files Summary with Predicted Severity:**")
         st.dataframe(summary_df, use_container_width=True)
 
+        # Show reference table
+        st.markdown("### ℹ️ MFCC Reference Table")
+        mfcc_table = {
+            "MFCC Mean Range": ["> -10", "-10 to -18", "-18 to -24", "-24 to -30", "< -30"],
+            "Speech Profile": [
+                "Clear/expressive/energetic",
+                "Reduced variability/energy",
+                "Flat/monotonic tone",
+                "Dull/low-affect/low-volume",
+                "Flat/withdrawn"
+            ],
+            "Depression Severity": [
+                "None/Minimal",
+                "Mild",
+                "Moderate",
+                "Moderately Severe",
+                "Severe"
+            ]
+        }
+        st.table(pd.DataFrame(mfcc_table))
+
 ####
     
     # Run inference button
@@ -1294,78 +1315,6 @@ if __name__ == "__main__":
                 except Exception as e:
                     print(f"❌ Audio processing failed: {e}")
 
-
-####
-
-   ####
-        if uploaded_audio_files:
-            st.markdown("### 🔊 Audio Analysis (MFCC-based Depression Risk)")
-    
-            mfcc_features, file_names = extract_mfcc_features(uploaded_audio_files)
-
-            if mfcc_features is not None:
-                mfcc_mean = np.mean(mfcc_features)
-        
-                # Create summary DataFrame
-                summary_data = []
-                for idx, fname in enumerate(file_names):
-                    mean_val = np.mean(mfcc_features[idx])
-            
-                # Determine MFCC range label and severity
-                    if mean_val > -10:
-                        mfcc_range = "> -10"
-                        severity = "None/Minimal"
-                    elif -18 < mean_val <= -10:
-                        mfcc_range = "-10 to -18"
-                        severity = "Mild"
-                    elif -24 < mean_val <= -18:
-                        mfcc_range = "-18 to -24"
-                        severity = "Moderate"
-                    elif -30 < mean_val <= -24:
-                        mfcc_range = "-24 to -30"
-                        severity = "Moderately Severe"
-                    else:
-                        mfcc_range = "< -30"
-                        severity = "Severe"
-
-                    summary_data.append({
-                        "File": fname,
-                        "MFCC_Mean": f"{mean_val:.2f}",
-                        "MFCC_Range": mfcc_range,
-                        "Predicted Severity": severity
-                    })
-
-                summary_df = pd.DataFrame(summary_data)
-                st.dataframe(summary_df)
-
-                # Show reference table below
-                st.markdown("### ℹ️ MFCC Reference Table")
-                mfcc_table = {
-                    "MFCC Mean Range": ["> -10", "-10 to -18", "-18 to -24", "-24 to -30", "< -30"],
-                    "Speech Profile": [
-                        "Clear/expressive/energetic",
-                        "Reduced variability/energy",
-                        "Flat/monotonic tone",
-                        "Dull/low-affect/low-volume",
-                        "Flat/withdrawn"
-                    ],
-                    "Depression Severity": [
-                        "None/Minimal",
-                        "Mild",
-                        "Moderate",
-                        "Moderately Severe",
-                        "Severe"
-                    ]
-                }
-                st.table(pd.DataFrame(mfcc_table))
-
-            else:
-                st.error("❌ Failed to extract MFCC features.")
-
-
-    ####
-
-####
 
         
         # Save heatmap
