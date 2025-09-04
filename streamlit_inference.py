@@ -655,30 +655,29 @@ def run_app():
             st.error(f"❌ Failed to load or process model: {e}")
 #####
     
-if st.checkbox("Show Depression Severity Regressor Performance"):
-    try:
-        with open("artifacts/severity_model.pkl", "rb") as f:
-            severity_model = pickle.load(f)
+    if st.checkbox("Show Depression Severity Regressor Performance"):
+        try:
+            with open("artifacts/severity_model.pkl", "rb") as f:
+                severity_model = pickle.load(f)
 
-        metrics = severity_model.get("metrics", {})
-        r2 = metrics.get("r2")
-        mae = metrics.get("mae")
-        rmse = metrics.get("rmse")
+            metrics = severity_model.get("metrics", {})
+            r2 = metrics.get("r2")
+            mae = metrics.get("mae")
+            rmse = metrics.get("rmse")
 
-        st.subheader("📉 Depression Severity Regressor Performance")
+            st.subheader("📉 Depression Severity Regressor Performance")
 
-        if any(v is not None for v in [r2, mae, rmse]):
-            if r2 is not None:
-                st.write(f"**R² Score:** {r2:.3f}")
-            if mae is not None:
-                st.write(f"**Mean Absolute Error (MAE):** {mae:.2f}")
-            if rmse is not None:
-                st.write(f"**Root Mean Squared Error (RMSE):** {rmse:.2f}")
-        else:
-            st.warning("⚠️ No performance metrics found in severity model.")
-    except Exception as e:
-        st.error(f"❌ Failed to load severity model: {e}")
-
+            if any(v is not None for v in [r2, mae, rmse]):
+                if r2 is not None:
+                    st.write(f"**R² Score:** {r2:.3f}")
+                if mae is not None:
+                    st.write(f"**Mean Absolute Error (MAE):** {mae:.2f}")
+                if rmse is not None:
+                    st.write(f"**Root Mean Squared Error (RMSE):** {rmse:.2f}")
+            else:
+                st.warning("⚠️ No performance metrics found in severity model.")
+        except Exception as e:
+            st.error(f"❌ Failed to load severity model: {e}")
     
         # Physiological markers controls
     st.sidebar.header("Physiological Markers")
