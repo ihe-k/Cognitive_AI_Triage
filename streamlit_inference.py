@@ -811,7 +811,6 @@ def run_app():
   #      st.write("**Audio Files Summary:**")
   #      st.dataframe(audio_results["summary_df"], use_container_width=True)
 
-
         # Display summary table with predicted severity
         summary_df = audio_results["summary_df"].copy()
 
@@ -856,24 +855,30 @@ def run_app():
 
         
         # Define coloring function
-        def highlight_severity(val):
-            color = ""
-            if val.lower() in ["none / minimal"]:
-                color = "background-color: #d4edda; color: #155724;"  # green
-            elif val.lower() in ["mild", "moderate"]:
-                color = "background-color: #fff3cd; color: #856404;"  # amber
-            elif val.lower() in ["moderately severe", "severe"]:
-                color = "background-color: #f8d7da; color: #721c24;"  # red
-            return color
+        def apply_severity_color(row):
+            severity = row['Predicted Severity']
+            if severity == "None/Minimal":
+                color = "background-color: #28a745; color: white;"  # green
+            elif severity in ["Mild", "Moderate"]:
+                color = "background-color: #ffc107; color: black;"  # amber
+            else:  # "Moderately Severe" or "Severe"
+                color = "background-color: #dc3545; color: white;"  # red
+            return [color] * len(row)  # Apply color to entire row
+
 
         # Apply style
-        styled_ref_df = reference_df.style.applymap(highlight_severity, subset=["Depression Severity"])
+        styled_df = summary_df.style.apply(apply_severity_color, axis=1)
+
+        styled_df.format({'MFCC_Mean': '{:.2f}'}).hide_index()
+        st.dataframe(styled_df, use_container_width=True)
+
+        # styled_ref_df = reference_df.style.applymap(highlight_severity, subset=["Depression Severity"])
         
         
-        st.markdown("### ℹ️ MFCC Reference Table")
-        st.dataframe(reference_df, use_container_width=True)####
+        st.markdown("ℹ️ MFCC Reference Table")
+      #  st.dataframe(reference_df, use_container_width=True)####
 
-
+        st.table(pd.DataFrame(mfcc_table))
 
     # Run inference button
     if check_pretrained_model():
