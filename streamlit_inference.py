@@ -616,7 +616,7 @@ def run_app():
     heart_rate_max = st.sidebar.number_input("Heart Rate Max (bpm)", min_value=40, max_value=200, value=100, step=5)
     
     # Sidebar controls (misinfo + capacity)
-    st.sidebar.header("Simulation & Allocation Controls")
+    st.sidebar.header("Simulation & Allocation")
     trans_prob = st.sidebar.slider("Transmission Probability", 0.0, 1.0, 0.2, 0.01)
     rec_prob   = st.sidebar.slider("Recovery Probability", 0.0, 1.0, 0.1, 0.01)
     steps      = st.sidebar.slider("Steps", 5, 100, 20, 1)
