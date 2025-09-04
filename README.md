@@ -32,9 +32,9 @@ MFCC Mean Range | Interactive Speech Profile | Possible Depression Severity
 \< -30           | Flat/withdrawn             | Severe
 
 
-### Misinformation Risk Score: Mental Health Influence
+### Misinformation Risk Score( MRS) : Mental Health Influence
 
-MFCC Mean Range | Interpretation                        | Possible Impact on Mental State
+MRS Mean Range | Interpretation                        | Possible Impact on Mental State
 --------------- | ------------------------------------- | -------------------------------
 0.00 - 0.10     | Minimal exposure/resistance           | None/Minimal
 0.11 - 0.25     | Low exposure/weak influence           | Mild            
