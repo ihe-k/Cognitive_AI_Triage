@@ -826,7 +826,10 @@ def run_app():
 
         
         #st.dataframe(st.session_state["physio_data"], use_container_width=True)  # Display as a dataframe
-        st.dataframe(physio_df, use_container_width=True)
+        # st.dataframe(physio_df, use_container_width=True)
+        formatted_df = physio_df.applymap(lambda x: f"{x:.2f}")
+        st.dataframe(formatted_df, use_container_width=True)
+
    ### 
     if "arts" not in st.session_state:
         st.info("Click **Run Inference** to load the pretrained model and run inference.")
