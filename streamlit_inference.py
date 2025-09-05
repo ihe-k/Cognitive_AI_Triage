@@ -895,93 +895,60 @@ def run_app():
 
     ##
 
-# Simulate physiological data (Example: You need to replace with your actual simulation function)
-        def simulate_physiological_markers(n_samples, breathing_range, tapping_range, heart_rate_range):
-            import random
-            data = []
-            for _ in range(n_samples):
-                breathing_rate = random.uniform(breathing_range[0], breathing_range[1])
-                tapping_rate = random.uniform(tapping_range[0], tapping_range[1])
-                heart_rate = random.uniform(heart_rate_range[0], heart_rate_range[1])
-                data.append([breathing_rate, tapping_rate, heart_rate])
-            return data
+    st.subheader("Physiological Markers")
+    # Physiological markers simulation
+    if st.button("Simulate Physiological Data"):
+        n_samples = st.session_state.get("n_samples_ui", 10)
+        # raw_data = simulate_physiological_markers(
+        physio_data = simulate_physiological_markers(
+            n_samples=n_samples,
+            breathing_range=(breathing_min, breathing_max),
+            tapping_range=(tapping_min, tapping_max),
+            heart_rate_range=(heart_rate_min, heart_rate_max)
+        )
 
-# Add your ranges
-        breathing_min, breathing_max = 10, 20  # Example range
-        tapping_min, tapping_max = 0.5, 2  # Example range
-        heart_rate_min, heart_rate_max = 60, 100  # Example range
+        physio_df = pd.DataFrame(
+            physio_data,
+            columns=["Breathing Rate (bpm)", "Tapping Rate (taps/sec)", "Heart Rate (bpm)"]
+        )
 
-# Simulate and store data
-        if st.button("Simulate Physiological Data"):
-            n_samples = 10  # For example, 10 samples
-    # Simulate data
-            physio_data = simulate_physiological_markers(
-                n_samples=n_samples,
-                breathing_range=(breathing_min, breathing_max),
-                tapping_range=(tapping_min, tapping_max),
-                heart_rate_range=(heart_rate_min, heart_rate_max)
-            )
+        st.session_state["physio_data"] = physio_df
+        st.session_state["show_physio"] = True    
+        
+     #   st.session_state["physio_data"] = physio_data
+     #   st.session_state["show_physio"] = True
+        st.success(f"Generated {n_samples} physiological samples!")
+###
+    # Check if physiological data exists and display it
+    if "physio_data" in st.session_state and st.session_state["show_physio"]:
+        physio_df = st.session_state["physio_data"].round(2)
+        
+        ###  st.write("Generated Physiological Data:")
+        # Display the simulated physiological data
+        #st.subheader("🧬 Generated Physiological Data")
+       # st.dataframe(physio_df, use_container_width=True)
 
-    # Store the data in session state
-            physio_df = pd.DataFrame(
-                physio_data,
-                columns=["Breathing Rate (bpm)", "Tapping Rate (taps/sec)", "Heart Rate (bpm)"]
-            )
+        # Summary stats
+        st.subheader("📊 Summary Statistics")
+        st.write(physio_df.describe().T.style.format("{:.2f}"))
 
-    # Store this data in session state
-            st.session_state["physio_data"] = physio_df
-            st.session_state["show_physio"] = True
-            st.success(f"Generated {n_samples} physiological samples!")
+        # Plotting
+        st.subheader("📈 Feature Distributions")
+        
+        
 
-# Check if physiological data exists and display it
-        if "physio_data" in st.session_state and st.session_state["show_physio"]:
-            physio_df = st.session_state["physio_data"].round(2)  # Round to 2 decimal places
+        fig, axes = plt.subplots(1, 3, figsize=(18, 4))
+        sns.histplot(physio_df["Breathing Rate (bpm)"], ax=axes[0], kde=True, color="#003A6B")
+        axes[0].set_title("Breathing Rate Distribution")
 
-    # Display the formatted DataFrame
-            formatted_df = physio_df.applymap(lambda x: f"{x:.2f}")
-            st.dataframe(formatted_df, use_container_width=True)
+        sns.histplot(physio_df["Tapping Rate (taps/sec)"], ax=axes[1], kde=True, color="#3776A1")
+        axes[1].set_title("Tapping Rate Distribution")
 
-    # Summary stats
-            st.subheader("📊 Summary Statistics")
-            st.write(physio_df.describe().T.style.format("{:.2f}"))
+        sns.histplot(physio_df["Heart Rate (bpm)"], ax=axes[2], kde=True, color="#6EB1D6")
+        axes[2].set_title("Heart Rate Distribution")
 
-    # Plotting distributions
-            st.subheader("📈 Feature Distributions")
-
-            fig, axes = plt.subplots(1, 3, figsize=(18, 4))
-            sns.histplot(physio_df["Breathing Rate (bpm)"], ax=axes[0], kde=True, color="#003A6B")
-            axes[0].set_title("Breathing Rate Distribution")
-
-            sns.histplot(physio_df["Tapping Rate (taps/sec)"], ax=axes[1], kde=True, color="#3776A1")
-            axes[1].set_title("Tapping Rate Distribution")
-
-            sns.histplot(physio_df["Heart Rate (bpm)"], ax=axes[2], kde=True, color="#6EB1D6")
-            axes[2].set_title("Heart Rate Distribution")
-
-            st.pyplot(fig, use_container_width=True)
-            plt.close(fig)
-
-    # Risk prediction logic (you can modify this function to fit your actual prediction logic)
-            def predict_dementia_risk(heart_rate, tapping_rate, breathing_rate):
-        # Example simple logic based on your thresholds
-                if heart_rate > 100 or tapping_rate < 1 or breathing_rate > 20:
-                    return "High risk of dementia"
-                else:
-                    return "Minimal/No risk of dementia"
-
-    # Apply the prediction (you can apply this logic on averages or individual samples)
-            risk_prediction = predict_dementia_risk(
-                physio_df["Heart Rate (bpm)"].mean(),
-                physio_df["Tapping Rate (taps/sec)"].mean(),
-                physio_df["Breathing Rate (bpm)"].mean()
-            )
-
-    # Show the prediction below the data and plots
-            st.write(f"**Prediction:** {risk_prediction}")
-
-        else:
-            st.info("Please generate physiological data by clicking the 'Simulate Physiological Data' button.")
-
+        st.pyplot(fig, use_container_width=True)
+        plt.close(fig)
 ####
 
         st.subheader("📋 Physiological Data")
