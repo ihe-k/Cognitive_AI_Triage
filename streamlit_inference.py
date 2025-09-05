@@ -860,18 +860,6 @@ def run_app():
     else:
         st.info("Upload audio above to predict depressive risk")
 
- 
-        # Run inference button
-    if check_pretrained_model():
-        if st.button("▶️ Run Inference"):
-            with st.spinner("Loading pretrained model and running inference..."):
-                arts = run_simple_inference()
-                st.session_state["arts"] = arts
-    else:
-        st.button("▶️ Run Inference", disabled=True)
-        st.warning("Cannot run inference: Pretrained model not available.")
-
-    
     st.subheader("Physiological Markers")
     # Physiological markers simulation
     if st.button("Simulate Physiological Data"):
@@ -934,6 +922,16 @@ def run_app():
         # st.dataframe(physio_df, use_container_width=True)
         formatted_df = physio_df.applymap(lambda x: f"{x:.2f}")
         st.dataframe(formatted_df, use_container_width=True)
+
+            # Run inference button
+    if check_pretrained_model():
+        if st.button("▶️ Run Inference"):
+            with st.spinner("Loading pretrained model and running inference..."):
+                arts = run_simple_inference()
+                st.session_state["arts"] = arts
+    else:
+        st.button("▶️ Run Inference", disabled=True)
+        st.warning("Cannot run inference: Pretrained model not available.")
 
    ### 
     if "arts" not in st.session_state:
