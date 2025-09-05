@@ -854,26 +854,7 @@ def run_app():
         st.write("**Audio Files Summary with Predicted Severity:**")
         st.dataframe(styled_df, use_container_width=True, hide_index=True)
 
-        # Display MFCC reference table
-        st.markdown("ℹ️ MFCC Reference Table")
-        mfcc_table = {
-            "MFCC Mean Range": ["> -10", "-10 to -18", "-18 to -24", "-24 to -30", "< -30"],
-            "Speech Profile": [
-                "Clear/expressive/energetic",
-                "Reduced variability/energy",
-                "Flat/monotonic tone",
-                "Dull/low-affect/low-volume",
-                "Flat/withdrawn"
-            ],
-            "Depression Severity": [
-                "None/Minimal",
-                "Mild",
-                "Moderate",
-                "Moderately Severe",
-                "Severe"
-            ]
-        }
-        st.table(pd.DataFrame(mfcc_table))
+       
     else:
         st.error("❌ 'audio_results' or 'summary_df' not found in session state.")
 
