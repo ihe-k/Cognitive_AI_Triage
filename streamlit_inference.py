@@ -895,7 +895,7 @@ def run_app():
 
     ##
 
-# Define prediction function for dementia risk based on heart rate, breathing rate, and tapping speed
+        # Define prediction function for dementia risk based on heart rate, breathing rate, and tapping speed
         def predict_dementia_risk(breathing_rate, tapping_rate, heart_rate):
         # Define risk thresholds based on typical physiological ranges associated with dementia risk
             if heart_rate > 100 or breathing_rate > 20 or tapping_rate < 0.8:
@@ -944,7 +944,7 @@ def run_app():
             st.session_state["show_physio"] = True
             st.success(f"Generated {n_samples} physiological samples!")
 
-            # Check if physiological data exists and display it
+        # Check if physiological data exists and display it
         if "physio_data" in st.session_state and st.session_state["show_physio"]:
             physio_df = st.session_state["physio_data"].round(2)
 
@@ -971,16 +971,15 @@ def run_app():
             # Prediction for dementia risk
             st.subheader("🧠 Dementia Risk Prediction")
 
-            # Apply the prediction function
+            # Apply the prediction function using mean values of the physiological markers
             risk_prediction = predict_dementia_risk(
                 physio_df["Breathing Rate (bpm)"].mean(),
                 physio_df["Tapping Rate (taps/sec)"].mean(),
                 physio_df["Heart Rate (bpm)"].mean()
             )
 
-            # Display the prediction
+            # Display the prediction result
             st.write(f"**Prediction:** {risk_prediction}")
-
 
             ####
         def predict_alzheimers_risk(heart_rate, hrv):
