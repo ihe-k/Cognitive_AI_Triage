@@ -911,7 +911,8 @@ def run_app():
             physio_data,
             columns=["Breathing Rate (bpm)", "Tapping Rate (taps/sec)", "Heart Rate (bpm)"]
         )
-
+        physio_df.index = physio_df.index + 1
+        
         st.session_state["physio_data"] = physio_df
         st.session_state["show_physio"] = True    
         
