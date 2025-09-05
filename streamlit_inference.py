@@ -941,11 +941,11 @@ def run_app():
     st.info("Click **Regenerate Physiological Data** to load the pretrained model and generate predictions")
     ####
     # 
-    expected_samples = 10  
+    expected_samples = 100  
 
     if "physio_data" not in st.session_state:
         st.session_state["physio_data"] = simulate_physiological_markers(
-            st.session_state.get("n_samples_ui", 10),
+            st.session_state.get("n_samples_ui", expected_samples),
             breathing_range=(breathing_min, breathing_max),
             tapping_range=(tapping_min, tapping_max),
             heart_rate_range=(heart_rate_min, heart_rate_max)
@@ -961,15 +961,16 @@ def run_app():
     physio_df = pd.DataFrame(
         st.session_state["physio_data"],
         columns=["Breathing Rate", "Tapping Rate", "Heart Rate"],
-        index=range(1, st.session_state["physio_data"].shape[0] + 1)
+        index=range(1, expected_samples + 1)
     )
 
-    
-    formatted_df = physio_df.applymap(lambda x: f"{x:.2f}")
+    formatted_df = physio_df.applymap(lambda x: f"{x:.2f}" if x is not None else "N/A")
+
+    #formatted_df = physio_df.applymap(lambda x: f"{x:.2f}")
     
     #st.dataframe(formatted_df, use_container_width=True)
 
-    html_physio_table = formatted_df.to_html(index=True, header=True, classes="custom-table")
+    html_physio_table = formatted_df.to_html(index=True, header=True, classes="custom-table", escape=False)
 
     # Custom CSS to align Patient ID to the left
     custom_css = """
