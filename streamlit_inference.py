@@ -956,10 +956,32 @@ def run_app():
         index=range(1, st.session_state["physio_data"].shape[0] + 1)
     )
 
-    # Format nicely
+    
     formatted_df = physio_df.applymap(lambda x: f"{x:.2f}")
-    st.dataframe(formatted_df, use_container_width=True)
+    
+    #st.dataframe(formatted_df, use_container_width=True)
 
+    html_physio_table = formatted_df.to_html(index=True, header=True, classes="custom-table")
+
+    # Custom CSS to align Patient ID to the left
+    custom_css = """
+    <style>
+    .custom-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .custom-table th, .custom-table td {
+        text-align: left !important;
+        padding: 6px 12px;
+        border: 1px solid #ddd;
+    }
+    </style>
+    """
+
+    # Render the table and CSS
+    st.markdown(custom_css, unsafe_allow_html=True)
+    st.markdown(html_physio_table, unsafe_allow_html=True)
+    
     ####
     
     #st.dataframe(st.session_state["physio_data"], use_container_width=True)  # Display as a dataframe
