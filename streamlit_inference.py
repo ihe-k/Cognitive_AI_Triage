@@ -17,7 +17,7 @@ import re
 import matplotlib.ticker as mtick
 import shap
 import seaborn as sns
-####
+
 
 # Conditional OpenCV import for cloud compatibility
 try:
@@ -1080,12 +1080,12 @@ def run_app():
         st.pyplot(fig_net, use_container_width=True)
         plt.close(fig_net)
 #####
-        def main():
-            if "streamlit" in sys.argv[0].lower() or os.environ.get("STREAMLIT_SERVER_PORT"):
-                run_app()
-            else:
-                main_cli()  # Ensure main_cli() exists
+def main():
+    if "streamlit" in sys.argv[0].lower() or os.environ.get("STREAMLIT_SERVER_PORT"):
+        run_app()
+    else:
+        main_cli()  # Ensure main_cli() exists
 
-        if __name__ == "__main__":
-            main()
+if __name__ == "__main__":
+    main()
 
