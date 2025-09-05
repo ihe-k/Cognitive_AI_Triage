@@ -1028,13 +1028,15 @@ def run_app():
         "Raw Severity": [f"{x:.2f}" for x in arts["pred_sample"]],
         #"Adjusted Severity": np.round(adjusted_all_, 2),
         "Adjusted Severity": [f"{x:.2f}" for x in adjusted_all_],
-        "Priority": ["✅ Yes" if i in treated_1_based else "❌ No" for i in range(1, len(adjusted_all_) + 1)]
+        
     })
 
     df_all["Priority"] = df_all["Patient ID"].apply(
     lambda pid: "✅ Yes" if pid in treated_1_based else "❌ No"
     )
 
+    df_all = df_all.reset_index(drop=True)
+    
     st.dataframe(df_all.head(100), use_container_width=True)
 
     # Patient Details & Explanations
