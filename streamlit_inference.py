@@ -786,7 +786,7 @@ def run_app():
                                     # Display results - only prediction
                                     st.success(f"**Prediction:** {prediction}")
         else:
-            st.info("Upload images above to classify them for Alzheimer's disease.")
+            st.info("Upload images above to determine Alzheimer's disease")
     else:
         st.warning("Alzheimer model not available. Cannot perform image classification.")
     
@@ -858,11 +858,11 @@ def run_app():
 
        
     else:
-        st.info("Upload audio above to classify them for depression.")
+        st.info("Upload audio above to determine depressive risk")
 
  
 
-    
+    st.subheader("Physiological Markers")
     # Physiological markers simulation
     if st.button("Simulate Physiological Data"):
         n_samples = st.session_state.get("n_samples_ui", 10)
