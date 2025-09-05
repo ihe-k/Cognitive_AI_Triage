@@ -1037,7 +1037,7 @@ def run_app():
 
     #df_all = df_all.reset_index(drop=True)
 
-   html_table = df_all.head(50).to_html(index=False, classes="custom-table")
+    html_table = df_all.head(50).to_html(index=False, classes="custom-table")
     
 
     custom_css = """
