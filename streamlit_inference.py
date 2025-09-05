@@ -919,18 +919,17 @@ def run_app():
     
     if "arts" not in st.session_state:
         st.info("Click **Run Inference** to load the pretrained model and run inference.")
-    else:
+        return
 
-        arts = st.session_state["arts"]
+    arts = st.session_state["arts"]
 
-        # Dataset Summary
-        st.write(
-            f"**Samples**: {arts['TOTAL_N']}  |  **Features**: {len(arts['feat_names'])}"
-        )
+    # Dataset Summary
+    st.write(
+        f"**Samples**: {arts['TOTAL_N']}  |  **Features**: {len(arts['feat_names'])}")
 
         # Misinformation Simulation for TOTAL_N
         S_list_, I_list_, R_list_, G_net_ = simulate_misinformation(
-        num_nodes=arts["TOTAL_N"], trans_prob=trans_prob, rec_prob=rec_prob, steps=steps
+            num_nodes=arts["TOTAL_N"], trans_prob=trans_prob, rec_prob=rec_prob, steps=steps
         )
         misinfo_risk_ = I_list_[-1] / arts["TOTAL_N"]
 
@@ -950,7 +949,7 @@ def run_app():
 
         st.dataframe(df_all.drop(columns=["Patient ID"]).head(100), use_container_width=True)
 
-    # Patient Details & Explanations
+        # Patient Details & Explanations
         st.subheader("📊 Patient Details and Explanations")
         patient_idx = st.selectbox("Select Patient ID:", options=list(range(1,len(adjusted_all_)+1)), index=0)
         internal_idx = patient_idx - 1
@@ -988,11 +987,13 @@ def run_app():
             bars = ax.patches
 
             for bar, (feature, weight) in zip(bars, feature_weights):
-                if weight >= 0:
-                    bar.set_color(color_increase)
-                else:
-                    bar.set_color(color_decrease)
+                bar.set_color(color_increase if weight >= 0 else color_decrease)
                 bar.set_alpha(0.8)
+                #                if weight >= 0:
+ #                   bar.set_color(color_increase)
+ #               else:
+ #                   bar.set_color(color_decrease)
+ #               bar.set_alpha(0.8)
 
 
             #    bar.set_color(custom_colors[color_idx])
@@ -1079,13 +1080,12 @@ def run_app():
             st.pyplot(fig_net, use_container_width=True)
             plt.close(fig_net)
 #####
-        def main():
-            import sys, os
-            if "streamlit" in sys.argv[0].lower() or os.environ.get("STREAMLIT_SERVER_PORT"):
-                run_app()
-            else:
-                main_cli()  # Ensure main_cli() exists
+    def main():
+        if "streamlit" in sys.argv[0].lower() or os.environ.get("STREAMLIT_SERVER_PORT"):
+            run_app()
+        else:
+            main_cli()  # Ensure main_cli() exists
 
-        if __name__ == "__main__":
-            main()
+    if __name__ == "__main__":
+        main()
 
