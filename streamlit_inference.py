@@ -683,7 +683,17 @@ def run_app():
     rec_prob   = st.sidebar.slider("Recovery Probability", 0.0, 1.0, 0.1, 0.01)
     steps      = st.sidebar.slider("Steps", 5, 100, 20, 1)
     capacity   = st.sidebar.number_input("Treatment Capacity", min_value=1, max_value=500, value=10)
-    # alpha = st.sidebar.slider("Influence of Physiological Risk", 0.0, 1.0, 0.1, step=0.05)
+
+            # Run inference button
+    if check_pretrained_model():
+        if st.button("▶️ Run Inference"):
+            with st.spinner("Loading pretrained model and running inference..."):
+                arts = run_simple_inference()
+                st.session_state["arts"] = arts
+    else:
+        st.button("▶️ Run Inference", disabled=True)
+        st.warning("Cannot run inference: Pretrained model not available.")
+        
     method     = st.sidebar.radio("Explanation Method", ["LIME", "SHAP"], index=0, horizontal=True)
    
 
@@ -709,7 +719,7 @@ def run_app():
                 st.markdown('<div class="upload-box">', unsafe_allow_html=True)
                 audio_files = st.file_uploader(
                     "Upload Audio Files",
-                    type=["wav", "mp4", "mp3", "flac"],
+                    type=["wav", "mp3", "flac"],
                     accept_multiple_files=True,
                     key="audio_uploads",
                     label_visibility="collapsed",
@@ -958,16 +968,7 @@ def run_app():
 
     st.subheader("Depression Severity: Inference Results")
     
-            # Run inference button
-    if check_pretrained_model():
-        if st.button("▶️ Run Inference"):
-            with st.spinner("Loading pretrained model and running inference..."):
-                arts = run_simple_inference()
-                st.session_state["arts"] = arts
-    else:
-        st.button("▶️ Run Inference", disabled=True)
-        st.warning("Cannot run inference: Pretrained model not available.")
-
+    
    ###
     
     if "arts" not in st.session_state:
