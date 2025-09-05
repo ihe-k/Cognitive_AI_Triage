@@ -924,8 +924,7 @@ def run_app():
     ##
 
     st.subheader("📋 Physiological Data")
-
-
+    st.info("Click **Regenerate Physiological Data** to load the pretrained model and generate predictions")
     ####
     # 
     if "physio_data" not in st.session_state:
@@ -968,7 +967,7 @@ def run_app():
    ###
     
     if "arts" not in st.session_state:
-        st.info("Click **Run Inference** to load the pretrained model and run inference.")
+        st.info("Click **Run Inference** to load the pretrained model and generate predictions")
         return
 
     arts = st.session_state["arts"]
