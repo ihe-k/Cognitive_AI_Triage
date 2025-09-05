@@ -659,6 +659,15 @@ def run_app():
     tapping_max = st.sidebar.number_input("Tapping Max (taps/sec)", min_value=0.5, max_value=10.0, value=5.0, step=0.5)
     heart_rate_min = st.sidebar.number_input("Heart Rate Min (bpm)", min_value=40, max_value=200, value=60, step=5)
     heart_rate_max = st.sidebar.number_input("Heart Rate Max (bpm)", min_value=40, max_value=200, value=100, step=5)
+    alpha = st.sidebar.slider("Influence of Physiological Risk", 0.0, 1.0, 0.1, step=0.05)
+    st.sidebar.number_input(
+        "Number of Physiological Samples",
+        min_value=1,
+        value=10,
+        step=1,
+        key="n_samples_ui"
+    )
+
     
     if st.sidebar.button("🔁 Regenerate Physiological Data"):
         st.session_state["physio_data"] = simulate_physiological_markers(
@@ -674,8 +683,9 @@ def run_app():
     rec_prob   = st.sidebar.slider("Recovery Probability", 0.0, 1.0, 0.1, 0.01)
     steps      = st.sidebar.slider("Steps", 5, 100, 20, 1)
     capacity   = st.sidebar.number_input("Treatment Capacity", min_value=1, max_value=500, value=10)
+    # alpha = st.sidebar.slider("Influence of Physiological Risk", 0.0, 1.0, 0.1, step=0.05)
     method     = st.sidebar.radio("Explanation Method", ["LIME", "SHAP"], index=0, horizontal=True)
-    alpha = st.sidebar.slider("🔬 Influence of Physiological Risk", 0.0, 1.0, 0.1, step=0.05)
+   
 
 
   
@@ -750,14 +760,14 @@ def run_app():
               #  )
 
         #st.sidebar.header("Sample Settings")
-        st.sidebar.number_input(
-            "Number of Physiological Samples",
-            min_value=1,
-            value=st.session_state.get("n_samples_ui", 10),
-            step=1,
-            key="n_samples_ui",
-            label_visibility="visible",
-        )
+        #st.sidebar.number_input(
+        #    "Number of Physiological Samples",
+        #    min_value=1,
+        #    value=st.session_state.get("n_samples_ui", 10),
+         #   step=1,
+         #   key="n_samples_ui",
+         #   label_visibility="visible",
+        #)
 
     # Alzheimer Image Classification
     if check_alzheimer_model():
