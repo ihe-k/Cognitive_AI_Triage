@@ -982,7 +982,9 @@ def run_app():
             index=range(1, expected_samples + 1)
         )
 
-        formatted_df = physio_df.applymap(lambda x: f"{x:.2f}" if x is not None else "N/A")
+        formatted_df = physio_df.applymap(lambda x: f"{float(x):.2f}" if isinstance(x, (int, float)) else x)
+
+        #formatted_df = physio_df.applymap(lambda x: f"{x:.2f}" if x is not None else "N/A")
 
         #formatted_df = physio_df.applymap(lambda x: f"{x:.2f}")
     
