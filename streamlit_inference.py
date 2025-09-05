@@ -808,81 +808,74 @@ def run_app():
             st.metric("Avg MFCC Value", f"{avg_mfcc:.2f}")
  #### 
 
-        # Add Predicted Severity column based on MFCC_Mean
-        def map_severity(mean_val):
-            if mean_val > -10:
-                return "None/Minimal"
-            elif -18 < mean_val <= -10:
-                return "Mild"
-            elif -24 < mean_val <= -18:
-                return "Moderate"
-            elif -30 < mean_val <= -24:
-                return "Moderately Severe"
-            else:
-                return "Severe"
-
-        
-        # Display summary table
-
-        # Display summary table with predicted severity
-        summary_df["MFCC_Mean"] = summary_df["MFCC_Mean"].astype(float)
-        summary_df["Predicted Severity"] = summary_df["MFCC_Mean"].apply(map_severity)
-
-        st.write("**Audio Files Summary with Predicted Severity:**")
- #       st.dataframe(summary_df, use_container_width=True)
-
-        # Define coloring function
-        def apply_severity_color(row):
-            severity = row['Predicted Severity']
-            if severity == "None/Minimal":
-                color = "background-color: #28a745; color: white;"  # green
-            elif severity in ["Mild", "Moderate"]:
-                color = "background-color: #ffc107; color: black;"  # amber
-            else:  # "Moderately Severe" or "Severe"
-                color = "background-color: #dc3545; color: white;"  # red
-            return [color] * len(row)  # Apply color to entire row
-
-        summary_df_reset = summary_df.reset_index(drop=True)
-        styled_df = summary_df_reset.style.apply(apply_severity_color, axis=1)
-        styled_df = styled_df.format({'MFCC_Mean': '{:.2f}'})
-        st.write("**Audio Files Summary with Predicted Severity:**")
-
-        st.dataframe(styled_df, use_container_width=True, hide_index=True)
-
-        st.markdown("ℹ️ MFCC Reference Table")
-        # Display the MFCC reference table
-
-       # st.table(pd.DataFrame(mfcc_table))
-
-        # Show reference table
-        mfcc_table = {
-            "MFCC Mean Range": ["> -10", "-10 to -18", "-18 to -24", "-24 to -30", "< -30"],
-            "Speech Profile": [
-                "Clear/expressive/energetic",
-                "Reduced variability/energy",
-                "Flat/monotonic tone",
-                "Dull/low-affect/low-volume",
-                "Flat/withdrawn"
-            ],
-            "Depression Severity": [
-                "None/Minimal",
-                "Mild",
-                "Moderate",
-                "Moderately Severe",
-                "Severe"
-            ]
-        }
-        st.table(pd.DataFrame(mfcc_table))
-
-    # Run inference button
-    if check_pretrained_model():
-        if st.button("▶️ Run Inference"):
-            with st.spinner("Loading pretrained model and running inference..."):
-                arts = run_simple_inference()
-                st.session_state["arts"] = arts
+# Function to map MFCC mean to depression severity
+def map_severity(mean_val):
+    if mean_val > -10:
+        return "None/Minimal"
+    elif -18 < mean_val <= -10:
+        return "Mild"
+    elif -24 < mean_val <= -18:
+        return "Moderate"
+    elif -30 < mean_val <= -24:
+        return "Moderately Severe"
     else:
-        st.button("▶️ Run Inference", disabled=True)
-        st.warning("Cannot run inference: Pretrained model not available.")
+        return "Severe"
+
+# Ensure summary_df exists and contains 'MFCC_Mean'
+if "audio_results" in st.session_state and "summary_df" in st.session_state["audio_results"]:
+    summary_df = st.session_state["audio_results"]["summary_df"].copy()
+
+    # Ensure 'MFCC_Mean' is numeric
+    summary_df["MFCC_Mean"] = pd.to_numeric(summary_df["MFCC_Mean"], errors='coerce')  # Coerce non-numeric values to NaN
+    summary_df["MFCC_Mean"].fillna(0, inplace=True)  # Replace NaNs with 0 (or another suitable value)
+
+    # Add Predicted Severity column
+    summary_df["Predicted Severity"] = summary_df["MFCC_Mean"].apply(map_severity)
+
+    # Define color styling function based on Predicted Severity
+    def apply_severity_color(row):
+        severity = row['Predicted Severity']
+        if severity == "None/Minimal":
+            color = "background-color: #28a745; color: white;"  # Green
+        elif severity in ["Mild", "Moderate"]:
+            color = "background-color: #ffc107; color: black;"  # Amber
+        else:  # "Moderately Severe" or "Severe"
+            color = "background-color: #dc3545; color: white;"  # Red
+        return [color] * len(row)  # Apply color to entire row
+
+    # Reset index for styling
+    summary_df_reset = summary_df.reset_index(drop=True)
+
+    # Apply styling
+    styled_df = summary_df_reset.style.apply(apply_severity_color, axis=1)
+    styled_df = styled_df.format({'MFCC_Mean': '{:.2f}'})
+
+    # Display summary table with predicted severity
+    st.write("**Audio Files Summary with Predicted Severity:**")
+    st.dataframe(styled_df, use_container_width=True, hide_index=True)
+
+    # Display MFCC reference table
+    st.markdown("ℹ️ MFCC Reference Table")
+    mfcc_table = {
+        "MFCC Mean Range": ["> -10", "-10 to -18", "-18 to -24", "-24 to -30", "< -30"],
+        "Speech Profile": [
+            "Clear/expressive/energetic",
+            "Reduced variability/energy",
+            "Flat/monotonic tone",
+            "Dull/low-affect/low-volume",
+            "Flat/withdrawn"
+        ],
+        "Depression Severity": [
+            "None/Minimal",
+            "Mild",
+            "Moderate",
+            "Moderately Severe",
+            "Severe"
+        ]
+    }
+    st.table(pd.DataFrame(mfcc_table))
+else:
+    st.error("❌ 'audio_results' or 'summary_df' not found in session state.")
 
  
 
