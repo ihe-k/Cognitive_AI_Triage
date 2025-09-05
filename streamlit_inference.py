@@ -1030,9 +1030,17 @@ def run_app():
     # treated, untreated = allocate_resources(adjusted_all_, capacity=capacity)
 
     # Get physiological data
+    import numpy as np
+
+    # Get physiological data
     physio_data = st.session_state.get("physio_data")
+
+    # Convert list to numpy array if necessary
+    if isinstance(physio_data, list):
+        physio_data = np.array(physio_data)
+
     if physio_data is not None and physio_data.shape[0] == arts["TOTAL_N"]:
-        # Normalize physiological data (min-max)
+        # Normalise physiological data (min-max)
         physio_min = physio_data.min(axis=0)
         physio_max = physio_data.max(axis=0)
         physio_norm = (physio_data - physio_min) / (physio_max - physio_min + 1e-6)
@@ -1048,14 +1056,38 @@ def run_app():
         # Fallback if physio data missing or mismatch e.g., 10 samples to inference 100
         adjusted_all_ = arts["pred_sample"] * (1 - misinfo_risk_)
         st.warning("⚠️ Physiological data mismatch. Falling back to severity adjusted by misinformation only.")
+
     treated, untreated = allocate_resources(adjusted_all_, capacity=capacity)
+
+
+    
+    # Get physiological data2
+   # physio_data = st.session_state.get("physio_data")
+   # if physio_data is not None and physio_data.shape[0] == arts["TOTAL_N"]:
+        # Normalise physiological data (min-max)
+   #     physio_min = physio_data.min(axis=0)
+   #     physio_max = physio_data.max(axis=0)
+   #     physio_norm = (physio_data - physio_min) / (physio_max - physio_min + 1e-6)
+
+        # Weighted sum to create a physiological risk score
+  #      weights = np.array([0.3, 0.3, 0.4])  # Adjust weights as desired
+  #      physio_risk_score = np.clip(physio_norm @ weights, 0, 1)
+
+  #      alpha = 0.1  # Control influence of physio data on severity
+  #      adjusted_all_ = arts["pred_sample"] * (1 - misinfo_risk_) * (1 + alpha * physio_risk_score)
+  #      st.caption("Adjusted severity = Raw severity × (1 - misinformation risk) × (1 + α × physiological risk score)")
+  #  else:
+        # Fallback if physio data missing or mismatch e.g., 10 samples to inference 100
+  #      adjusted_all_ = arts["pred_sample"] * (1 - misinfo_risk_)
+  #      st.warning("⚠️ Physiological data mismatch. Falling back to severity adjusted by misinformation only.")
+  #  treated, untreated = allocate_resources(adjusted_all_, capacity=capacity)
     ####
 
 
     
 ####
     
-    # Patient table (first 50 for speed)
+    # Patient table
     treated_1_based = [i + 1 for i in treated]
 
     df_all = pd.DataFrame({
