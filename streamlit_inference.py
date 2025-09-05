@@ -660,7 +660,7 @@ def run_app():
     heart_rate_min = st.sidebar.number_input("Heart Rate Min (bpm)", min_value=40, max_value=200, value=60, step=5)
     heart_rate_max = st.sidebar.number_input("Heart Rate Max (bpm)", min_value=40, max_value=200, value=100, step=5)
     
-    if st.button("🔁 Regenerate Physiological Data"):
+    if st.sidebar.button("🔁 Regenerate Physiological Data"):
         st.session_state["physio_data"] = simulate_physiological_markers(
             st.session_state.get("n_samples_ui", 10),
             breathing_range=(breathing_min, breathing_max),
