@@ -958,18 +958,20 @@ def run_app():
         st.session_state["physio_data"] = st.session_state["physio_data"].tolist()
 
     num_physio_samples = len(st.session_state["physio_data"])
+    
     if isinstance(physio_data, list):
         physio_data = np.array(physio_data)
+    
     num_physio_samples = physio_data.shape[0] if isinstance(physio_data, np.ndarray) else len(physio_data)
 
-   if num_physio_samples < expected_samples:
+    if num_physio_samples < expected_samples:
         padding = np.full((expected_samples - num_physio_samples, physio_data.shape[1]), None)
         physio_data = np.vstack([physio_data, padding])
 
 
     # Convert to DataFrame
     physio_df = pd.DataFrame(
-        st.session_state["physio_data"],
+        "physio_data",
         columns=["Breathing Rate", "Tapping Rate", "Heart Rate"],
         index=range(1, expected_samples + 1)
     )
