@@ -826,9 +826,9 @@ def run_app():
             return "None/Minimal"
         elif -18 < mean_val <= -10:
             return "Mild"
-        elif -24 < mean_val <= -19:
+        elif -28 < mean_val <= -18:
             return "Moderate"
-        elif -30 < mean_val <= -25:
+        elif -30 < mean_val <= -28:
             return "Moderately Severe"
         else:
             return "Severe"
