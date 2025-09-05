@@ -667,7 +667,8 @@ def run_app():
     steps      = st.sidebar.slider("Steps", 5, 100, 20, 1)
     capacity   = st.sidebar.number_input("Treatment Capacity", min_value=1, max_value=500, value=10)
     method     = st.sidebar.radio("Explanation Method", ["LIME", "SHAP"], index=0, horizontal=True)
-    
+    alpha = st.sidebar.slider("🔬 Influence of Physiological Risk", 0.0, 1.0, 0.1, step=0.05)
+
 
   
 
@@ -954,6 +955,8 @@ def run_app():
     )
     misinfo_risk_ = I_list_[-1] / arts["TOTAL_N"]
 
+    st.info(f"📉 Misinformation risk applied: **{misinfo_risk_:.2f}**")
+    
     # Adjusted severities + allocation
     # adjusted_all_ = arts["pred_sample"] * (1 - misinfo_risk_)
     # treated, untreated = allocate_resources(adjusted_all_, capacity=capacity)
@@ -968,16 +971,17 @@ def run_app():
 
         # Weighted sum to create a physiological risk score
         weights = np.array([0.3, 0.3, 0.4])  # Adjust weights as desired
-        physio_risk_score = physio_norm @ weights
+        physio_risk_score = np.clip(physio_norm @ weights, 0, 1)
 
         alpha = 0.1  # Control influence of physio data on severity
         adjusted_all_ = arts["pred_sample"] * (1 - misinfo_risk_) * (1 + alpha * physio_risk_score)
+        st.caption("🧠 Adjusted severity = Raw severity × (1 - misinformation risk) × (1 + α × physiological risk score)")
     else:
         # Fallback if physio data missing or mismatch
         adjusted_all_ = arts["pred_sample"] * (1 - misinfo_risk_)
-
+        st.warning("⚠️ Physiological data mismatch. Falling back to severity adjusted by misinformation only.")
     treated, untreated = allocate_resources(adjusted_all_, capacity=capacity)
-####
+    ####
 
 
     
