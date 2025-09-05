@@ -702,16 +702,18 @@ def run_app():
         unsafe_allow_html=True,
     )
     with st.container(border=True):
-        up_col1, up_col2 = st.columns([1,1])
+        up_col1, up_col2 = st.columns(2)
         with up_col1:
             with st.container(border=True):
                 st.markdown('<div class="cell-header">Upload Audio Files</div>', unsafe_allow_html=True)
+                st.markdown('<div class="upload-box">', unsafe_allow_html=True)
                 audio_files = st.file_uploader(
                     "Upload Audio Files",
                     type=["wav", "mp3", "flac"],
                     accept_multiple_files=True,
                     key="audio_uploads",
                     label_visibility="collapsed",
+                    st.markdown('</div>', unsafe_allow_html=True
                 )
                 # Add audio processing button
                 if audio_files and len(audio_files) > 0:
@@ -740,12 +742,14 @@ def run_app():
         with up_col2:
             with st.container(border=True):
                 st.markdown('<div class="cell-header">Upload Image Files</div>', unsafe_allow_html=True)
+                st.markdown('<div class="upload-box">', unsafe_allow_html=True)
                 st.file_uploader(
                     "Upload Image Files",
                     type=["jpg", "jpeg", "png", "bmp", "tif", "tiff"],
                     accept_multiple_files=True,
                     key="image_uploads",
                     label_visibility="collapsed",
+                    st.markdown('</div>', unsafe_allow_html=True
                 )
        # with up_col3:
           #  with st.container(border=True):
