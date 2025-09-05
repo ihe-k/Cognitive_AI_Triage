@@ -989,7 +989,7 @@ def run_app():
     S_list_, I_list_, R_list_, G_net_ = simulate_misinformation(
         num_nodes=arts["TOTAL_N"], trans_prob=trans_prob, rec_prob=rec_prob, steps=steps
     )
-    misinfo_risk_ = I_list_[-1] / arts["TOTAL_N"]
+    misinfo_risk_ = I_list_[-1] / arts["TOTAL_N"] if len(I_list_) > 0 else 0
 
     # Adjusted severities + allocation
     adjusted_all_ = arts["pred_sample"] * (1 - misinfo_risk_)
@@ -1004,9 +1004,9 @@ def run_app():
         "Adjusted Severity": [f"{x:.2f}" for x in adjusted_all_],
         "Priority": ["✅ Yes" if i in treated else "❌ No" for i in range(len(adjusted_all_))]
     })
-    st.dataframe(df_all.drop(columns=["Patient ID"]).head(100), use_container_width=True)
+    #st.dataframe(df_all.drop(columns=["Patient ID"]).head(100), use_container_width=True)
 
-   # st.dataframe(df_all.drop(columns=["Patient ID"]).head(100), use_container_width=True)
+   st.dataframe(df_all.drop(columns=["Patient ID"]).head(100), use_container_width=True)
 
     # Patient Details & Explanations
     st.subheader("📊 Patient Details and Explanations")
@@ -1014,11 +1014,11 @@ def run_app():
     internal_idx = patient_idx - 1
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        st.metric("Raw Severity", f"{arts['pred_sample'][patient_idx]:.2f}")
+        st.metric("Raw Severity", f"{arts['pred_sample'][internal_idx]:.2f}")
     with col2:
-        st.metric("Adjusted Severity", f"{adjusted_all_[patient_idx]:.2f}")
+        st.metric("Adjusted Severity", f"{adjusted_all_[internal_idx]:.2f}")
     with col3:
-        st.metric("Prioritised for Treatment", "Yes" if patient_idx in treated else "No")
+        st.metric("Prioritised for Treatment", "Yes" if internal_idx in treated else "No")
     with col4:
         st.metric("Misinformation Risk", f"{misinfo_risk_:.2f}")
 
