@@ -937,17 +937,17 @@ def run_app():
 
     ##
 
-st.subheader("📋 Physiological Data")
-st.info("Click **Regenerate Physiological Data** to load the pretrained model and generate predictions")
+    st.subheader("📋 Physiological Data")
+    st.info("Click **Regenerate Physiological Data** to load the pretrained model and generate predictions")
     ####
     # 
     
-if "arts" not in st.session_state:
-    st.info("Please run inference first to load the 'arts' data.")
-else:
-    arts = st.session_state["arts"]
-    
-    expected_samples = len(arts["pred_sample"])
+    if "arts" not in st.session_state:
+        st.info("Click **Run Inference** to load the pretrained model and generate predictions")
+    else:
+        arts = st.session_state["arts"]
+        
+        expected_samples = len(arts["pred_sample"])
 
     if "physio_data" not in st.session_state:
         st.session_state["physio_data"] = simulate_physiological_markers(
