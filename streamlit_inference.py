@@ -845,9 +845,9 @@ def run_app():
 
         summary_df_reset = summary_df.reset_index(drop=True)
         styled_df = summary_df_reset.style.apply(apply_severity_color, axis=1)
-        styled_df.format({'MFCC_Mean': '{:.2f}'}).hide_columns()
+        styled_df = styled_df.format({'MFCC_Mean': '{:.2f}'})
 
-        st.dataframe(styled_df, use_container_width=True)
+        st.dataframe(styled_df, use_container_width=True, hide_index=True)
 
         st.markdown("ℹ️ MFCC Reference Table")
         # Display the MFCC reference table
