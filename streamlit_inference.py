@@ -941,7 +941,7 @@ def run_app():
     st.info("Click **Regenerate Physiological Data** to load the pretrained model and generate predictions")
     ####
     # 
-    expected_samples = 10  
+    expected_samples = len(arts["pred_sample"])
 
     if "physio_data" not in st.session_state:
         st.session_state["physio_data"] = simulate_physiological_markers(
@@ -951,16 +951,21 @@ def run_app():
             heart_rate_range=(heart_rate_min, heart_rate_max)
         )
 
-    num_physio_samples = len(st.session_state["physio_data"])
-
+    #num_physio_samples = len(st.session_state["physio_data"])
+    physio_data = st.session_state["physio_data"]
+    
     if not isinstance(st.session_state["physio_data"], list):
         st.session_state["physio_data"] = st.session_state["physio_data"].tolist()
 
     num_physio_samples = len(st.session_state["physio_data"])
+    if isinstance(physio_data, list):
+        physio_data = np.array(physio_data)
+    num_physio_samples = physio_data.shape[0] if isinstance(physio_data, np.ndarray) else len(physio_data)
 
-    if num_physio_samples < expected_samples:
-        padding = [[None, None, None]] * (expected_samples - num_physio_samples)
-        st.session_state["physio_data"] += padding  # Use += to extend the list
+   if num_physio_samples < expected_samples:
+        padding = np.full((expected_samples - num_physio_samples, physio_data.shape[1]), None)
+        physio_data = np.vstack([physio_data, padding])
+
 
     # Convert to DataFrame
     physio_df = pd.DataFrame(
@@ -992,7 +997,6 @@ def run_app():
     </style>
     """
 
-    # Render the table and CSS
     st.markdown(custom_css, unsafe_allow_html=True)
     st.markdown(html_physio_table, unsafe_allow_html=True)
     
@@ -1010,9 +1014,10 @@ def run_app():
     
     if "arts" not in st.session_state:
         st.info("Click **Run Inference** to load the pretrained model and generate predictions")
-        return
+    else:
+        arts = st.session_state["arts"]
 
-    arts = st.session_state["arts"]
+    # arts = st.session_state["arts"]
 
     # Dataset Summary
     st.write(f"**Samples**: {arts['TOTAL_N']}  |  **Features**: {len(arts['feat_names'])}")
@@ -1029,10 +1034,10 @@ def run_app():
     # adjusted_all_ = arts["pred_sample"] * (1 - misinfo_risk_)
     # treated, untreated = allocate_resources(adjusted_all_, capacity=capacity)
 
-    # Get physiological data
-    import numpy as np
-
-    # Get physiological data
+    # Prepare adjusted severity
+    expected_samples = len(arts["pred_sample"])
+    
+    #  Ensure physiological data matches expected size
     physio_data = st.session_state.get("physio_data")
 
     # Convert list to numpy array if necessary
@@ -1049,7 +1054,8 @@ def run_app():
         weights = np.array([0.3, 0.3, 0.4])  # Adjust weights as desired
         physio_risk_score = np.clip(physio_norm @ weights, 0, 1)
 
-        alpha = 0.1  # Control influence of physio data on severity
+        # Adjust severity based on physiological risk
+        alpha = 0.1  # Control influence of physio impact on severity
         adjusted_all_ = arts["pred_sample"] * (1 - misinfo_risk_) * (1 + alpha * physio_risk_score)
         st.caption("Adjusted severity = Raw severity × (1 - misinformation risk) × (1 + α × physiological risk score)")
     else:
