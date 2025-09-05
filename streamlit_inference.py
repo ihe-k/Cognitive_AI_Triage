@@ -983,10 +983,10 @@ def run_app():
 
             ####
        
-                    # Display prediction note below the graph
-                    st.write(f"**Prediction:** {risk_prediction}")
-                    formatted_df = physio_df.applymap(lambda x: f"{x:.2f}")
-                    st.dataframe(formatted_df, use_container_width=True)
+            # Display prediction note below the graph
+            st.write(f"**Prediction:** {risk_prediction}")
+            formatted_df = physio_df.applymap(lambda x: f"{x:.2f}")
+            st.dataframe(formatted_df, use_container_width=True)
                # else:
                #     st.error("Heart rate or HRV data is empty. Please ensure data is available.")
             #else:
