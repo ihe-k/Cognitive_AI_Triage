@@ -989,7 +989,7 @@ def run_app():
     S_list_, I_list_, R_list_, G_net_ = simulate_misinformation(
         num_nodes=arts["TOTAL_N"], trans_prob=trans_prob, rec_prob=rec_prob, steps=steps
     )
-    misinfo_risk_ = I_list_[-1] / arts["TOTAL_N"] if len(I_list_) > 0 else 0
+    misinfo_risk_ = I_list_[-1] / arts["TOTAL_N"]
 
     # Adjusted severities + allocation
     adjusted_all_ = arts["pred_sample"] * (1 - misinfo_risk_)
@@ -1004,7 +1004,6 @@ def run_app():
         "Adjusted Severity": [f"{x:.2f}" for x in adjusted_all_],
         "Priority": ["✅ Yes" if i in treated else "❌ No" for i in range(len(adjusted_all_))]
     })
-    #st.dataframe(df_all.drop(columns=["Patient ID"]).head(100), use_container_width=True)
 
    st.dataframe(df_all.drop(columns=["Patient ID"]).head(100), use_container_width=True)
 
