@@ -823,7 +823,26 @@ def run_app():
         else:
             return "Severe"
 
-    # Ensure summary_df exists and contains 'MFCC_Mean'
+    # Ensure audio file is uploaded and MFCC features are extracted
+    if "audio_results" in st.session_state and "audio_files" in st.session_state["audio_results"]:
+        audio_files = st.session_state["audio_results"]["audio_files"]
+
+        if audio_files:
+            # Extract MFCC features for each file
+            mfcc_features_list = []
+            for file in audio_files:
+                mfcc = extract_mfcc(file)
+                if mfcc is not None:
+                    mfcc_features_list.append(mfcc)
+
+        # Store the MFCC features in session state
+            if mfcc_features_list:
+                st.session_state["mfcc_features"] = np.array(mfcc_features_list)  # Store as a numpy array
+                st.success("MFCC features extracted successfully!")
+            else:
+                st.warning("No MFCC features extracted from the audio files.")
+
+    # Display Summary Table with Predicted Severity
     if "audio_results" in st.session_state and "summary_df" in st.session_state["audio_results"]:
         summary_df = st.session_state["audio_results"]["summary_df"].copy()
 
@@ -863,7 +882,7 @@ def run_app():
     ##
 
     if "mfcc_features" in st.session_state:
-        mfcc_features = st.session_state["mfcc_features"]  # Get MFCC features from session state
+        mfcc_features = st.session_state["mfcc_features"]
 
         # Create a heatmap to visualize the MFCC features over time
         plt.figure(figsize=(10, 6))
