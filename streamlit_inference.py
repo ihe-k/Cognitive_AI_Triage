@@ -786,7 +786,7 @@ def run_app():
                                     # Display results - only prediction
                                     st.success(f"**Prediction:** {prediction}")
         else:
-            st.info("Upload images above to predict Alzheimer's risk")
+            st.info("Upload MRI images to predict Alzheimer's risk")
     else:
         st.warning("Alzheimer model not available. Cannot perform image classification.")
     
@@ -858,8 +858,20 @@ def run_app():
 
        
     else:
-        st.info("Upload audio above to predict depressive risk")
+        st.info("Upload audio files to predict depressive risk")
 
+    ##
+
+    # Assuming `mfcc_features` is an array of MFCC features (time x coeffs)
+    # Create a heatmap to visualize the MFCC features over time
+    plt.figure(figsize=(10, 6))
+    sns.heatmap(mfcc_features.T, cmap='viridis', cbar=True, xticklabels=False, yticklabels=False)
+    plt.title("MFCC Heatmap (Spectrogram)")
+    plt.xlabel("Time (Frames)")
+    plt.ylabel("MFCC Coefficients")
+    plt.show()
+##
+    
     st.subheader("Physiological Markers")
     # Physiological markers simulation
     if st.button("Simulate Physiological Data"):
