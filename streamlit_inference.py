@@ -836,7 +836,7 @@ def run_app():
 
         # Define color styling function based on Predicted Severity
         def apply_severity_color(row):
-            severity = row['Predicted Severity Risk']
+            severity = row['Predicted Severity']
             if severity == "None/Minimal":
                 color = "background-color: #28a745; color: white;"  # Green
             elif severity in ["Mild", "Moderate"]:
