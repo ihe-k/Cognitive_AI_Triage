@@ -686,7 +686,7 @@ def run_app():
 
             # Run inference button
     if check_pretrained_model():
-        if st.button("▶️ Run Inference"):
+        if st.sidebar.button("▶️ Run Inference"):
             with st.spinner("Loading pretrained model and running inference..."):
                 arts = run_simple_inference()
                 st.session_state["arts"] = arts
