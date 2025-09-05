@@ -941,7 +941,7 @@ def run_app():
     st.info("Click **Regenerate Physiological Data** to load the pretrained model and generate predictions")
     ####
     # 
-    expected_samples = 100  # Adjust this as per your inference table size
+    expected_samples = 10  
 
     if "physio_data" not in st.session_state:
         st.session_state["physio_data"] = simulate_physiological_markers(
