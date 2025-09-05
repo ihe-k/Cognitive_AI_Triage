@@ -737,18 +737,27 @@ def run_app():
                     key="image_uploads",
                     label_visibility="collapsed",
                 )
-        with up_col3:
-            with st.container(border=True):
-                st.markdown('<div class="cell-header">n Samples ▼</div>', unsafe_allow_html=True)
-                st.number_input(
-                    "n Samples",
-                    min_value=1,
-                    value=10,
-                    step=1,
-                    key="n_samples_ui",
-                    label_visibility="collapsed",
-                )
+       # with up_col3:
+          #  with st.container(border=True):
+          #      st.markdown('<div class="cell-header">n Samples ▼</div>', unsafe_allow_html=True)
+          #      st.number_input(
+           #         "n Samples",
+           #         min_value=1,
+            #        value=10,
+            #        step=1,
+             #       key="n_samples_ui",
+             #       label_visibility="collapsed",
+              #  )
 
+        #st.sidebar.header("Sample Settings")
+        st.sidebar.number_input(
+            "Number of Physiological Samples",
+            min_value=1,
+            value=st.session_state.get("n_samples_ui", 10),
+            step=1,
+            key="n_samples_ui",
+            label_visibility="visible",
+        )
 
     # Alzheimer Image Classification
     if check_alzheimer_model():
