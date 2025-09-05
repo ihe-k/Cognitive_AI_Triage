@@ -976,50 +976,50 @@ def run_app():
     
     if "arts" not in st.session_state:
         st.info("Click **Run Inference** to load the pretrained model and run inference.")
-        return
+    else:
 
-    arts = st.session_state["arts"]
+        arts = st.session_state["arts"]
 
     # Dataset Summary
-    st.write(
-        f"**Samples**: {arts['TOTAL_N']}  |  **Features**: {len(arts['feat_names'])}"
-    )
+        st.write(
+            f"**Samples**: {arts['TOTAL_N']}  |  **Features**: {len(arts['feat_names'])}"
+        )
 
     # Misinformation Simulation for TOTAL_N
-    S_list_, I_list_, R_list_, G_net_ = simulate_misinformation(
+        S_list_, I_list_, R_list_, G_net_ = simulate_misinformation(
         num_nodes=arts["TOTAL_N"], trans_prob=trans_prob, rec_prob=rec_prob, steps=steps
-    )
-    misinfo_risk_ = I_list_[-1] / arts["TOTAL_N"]
+        )
+        misinfo_risk_ = I_list_[-1] / arts["TOTAL_N"]
 
     # Adjusted severities + allocation
-    adjusted_all_ = arts["pred_sample"] * (1 - misinfo_risk_)
-    treated, untreated = allocate_resources(adjusted_all_, capacity=capacity)
+        adjusted_all_ = arts["pred_sample"] * (1 - misinfo_risk_)
+        treated, untreated = allocate_resources(adjusted_all_, capacity=capacity)
 
     # Patient table (first 100 for speed)
-    df_all = pd.DataFrame({
-        "Patient ID": list(range(1, len(adjusted_all_)+1)),
+        df_all = pd.DataFrame({
+            "Patient ID": list(range(1, len(adjusted_all_)+1)),
         #"Raw Severity": np.round(arts["pred_sample"], 2),
-        "Raw Severity": [f"{x:.2f}" for x in arts["pred_sample"]],
+            "Raw Severity": [f"{x:.2f}" for x in arts["pred_sample"]],
         #"Adjusted Severity": np.round(adjusted_all_, 2),
-        "Adjusted Severity": [f"{x:.2f}" for x in adjusted_all_],
-        "Priority": ["✅ Yes" if i in treated else "❌ No" for i in range(len(adjusted_all_))]
-    })
+            "Adjusted Severity": [f"{x:.2f}" for x in adjusted_all_],
+            "Priority": ["✅ Yes" if i in treated else "❌ No" for i in range(len(adjusted_all_))]
+        })
 
-   st.dataframe(df_all.drop(columns=["Patient ID"]).head(100), use_container_width=True)
+        st.dataframe(df_all.drop(columns=["Patient ID"]).head(100), use_container_width=True)
 
     # Patient Details & Explanations
-    st.subheader("📊 Patient Details and Explanations")
-    patient_idx = st.selectbox("Select Patient ID:", options=list(range(1,len(adjusted_all_)+1)), index=0)
-    internal_idx = patient_idx - 1
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        st.metric("Raw Severity", f"{arts['pred_sample'][internal_idx]:.2f}")
-    with col2:
-        st.metric("Adjusted Severity", f"{adjusted_all_[internal_idx]:.2f}")
-    with col3:
-        st.metric("Prioritised for Treatment", "Yes" if internal_idx in treated else "No")
-    with col4:
-        st.metric("Misinformation Risk", f"{misinfo_risk_:.2f}")
+        st.subheader("📊 Patient Details and Explanations")
+        patient_idx = st.selectbox("Select Patient ID:", options=list(range(1,len(adjusted_all_)+1)), index=0)
+        internal_idx = patient_idx - 1
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric("Raw Severity", f"{arts['pred_sample'][internal_idx]:.2f}")
+        with col2:
+            st.metric("Adjusted Severity", f"{adjusted_all_[internal_idx]:.2f}")
+        with col3:
+            st.metric("Prioritised for Treatment", "Yes" if internal_idx in treated else "No")
+        with col4:
+            st.metric("Misinformation Risk", f"{misinfo_risk_:.2f}")
 
     # Explanation block (LIME default like your sketch; SHAP optional)
     if method == "LIME":
