@@ -954,7 +954,8 @@ def run_app():
     num_physio_samples = len(st.session_state["physio_data"])
 
     if num_physio_samples < expected_samples:
-        st.session_state["physio_data"].extend([[None, None, None]] * (expected_samples - num_physio_samples))
+        padding = [[None, None, None]] * (expected_samples - num_physio_samples)
+        st.session_state["physio_data"] += padding  # Use += to extend the list
 
     
     # Convert to DataFrame
