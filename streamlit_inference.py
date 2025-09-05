@@ -809,6 +809,16 @@ def run_app():
             avg_mfcc = np.mean(audio_results["mfcc_features"])
             st.metric("Avg MFCC Value", f"{avg_mfcc:.2f}")
  #### 
+    def extract_mfcc(audio_file_path):
+        try:
+            # Load the audio file
+            y, sr = librosa.load(audio_file_path, sr=None)
+            # Extract MFCCs (Mel-frequency cepstral coefficients)
+            mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13)
+            return mfcc
+        except Exception as e:
+            st.error(f"Error extracting MFCC: {e}")
+            return None
 
 # Function to map MFCC mean to depression severity
     def map_severity(mean_val):
