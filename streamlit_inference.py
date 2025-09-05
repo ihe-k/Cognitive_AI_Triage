@@ -1036,22 +1036,19 @@ def run_app():
     )
 
     df_all = df_all.reset_index(drop=True)
+
+    styled_df = df_all.head(100).style.set_properties(
+        subset=["Patient ID"],
+        **{"text-align": "left"}
+    )
+
+    st.write(styled_df.to_html(), unsafe_allow_html=True)
     
     #st.dataframe(df_all.drop(columns=["Patient ID"]).head(100), use_container_width=True, hide_index=True)
     
     #st.dataframe(df_all.head(100), use_container_width=True, hide_index=True)
 
-    df_to_display = df_all.head(100)
-
-    html = df_to_display.to_html(classes='patient-table', index=False)
-
-    custom_css = """
-    <style>
-    .patient-table th, .patient-table td {
-        text-align: left !important;
-    }
-    </style>
-    """
+   
 
     # Render the styled table
     st.markdown(custom_css + html, unsafe_allow_html=True)
