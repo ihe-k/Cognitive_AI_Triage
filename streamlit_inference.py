@@ -982,33 +982,15 @@ def run_app():
             st.write(f"**Prediction:** {risk_prediction}")
 
             ####
-        def predict_alzheimers_risk(heart_rate, hrv):
-            if heart_rate <= 75 and hrv > 50:
-                return "Minimal Risk of Alzheimer's"
-            elif 75 < heart_rate <= 85 and 30 <= hrv <= 50:
-                return "Mild Risk of Alzheimer's"
-            elif 85 < heart_rate <= 95 and 20 <= hrv < 30:
-                return "Moderate Risk of Alzheimer's"
-            elif heart_rate > 95 and hrv < 20:
-                return "Severe Risk of Alzheimer's"
-            else:
-                return "Unable to determine risk"
-
-            if 'heart_rate' in st.session_state and 'hrv' in st.session_state:
-                heart_rate = st.session_state['heart_rate']  # Example: session state or input data
-                hrv = st.session_state['hrv']  # Example: session state or input data
-
-                # Ensure that both heart_rate and hrv lists are not empty
-                if len(heart_rate) > 0 and len(hrv) > 0:
-                    # Get risk level prediction using the latest data
-                    risk_prediction = predict_alzheimers_risk(heart_rate[-1], hrv[-1])
-
+       
                     # Display prediction note below the graph
                     st.write(f"**Prediction:** {risk_prediction}")
-                else:
-                    st.error("Heart rate or HRV data is empty. Please ensure data is available.")
-            else:
-                st.error("Heart rate or HRV data not found in session state. Please upload data first.")
+                    formatted_df = physio_df.applymap(lambda x: f"{x:.2f}")
+                    st.dataframe(formatted_df, use_container_width=True)
+               # else:
+               #     st.error("Heart rate or HRV data is empty. Please ensure data is available.")
+            #else:
+              #  st.error("Heart rate or HRV data not found in session state. Please upload data first.")
 ####
 
         st.subheader("📋 Physiological Data")
