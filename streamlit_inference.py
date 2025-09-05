@@ -1019,7 +1019,7 @@ def run_app():
     
 ####
     
-    # Patient table (first 100 for speed)
+    # Patient table (first 50 for speed)
     treated_1_based = [i + 1 for i in treated]
 
     df_all = pd.DataFrame({
@@ -1037,8 +1037,8 @@ def run_app():
 
     df_all = df_all.reset_index(drop=True)
     
-    st.dataframe(df_all.head(100), use_container_width=True)
-
+    st.dataframe(df_all.drop(columns=["Patient ID"]).head(100), use_container_width=True, hide_index=True)
+    
     # Patient Details & Explanations
     st.subheader("📊 Patient Details and Explanations")
     patient_idx = st.selectbox("Select Patient ID:", options=list(range(1,len(adjusted_all_)+1)), index=0)
