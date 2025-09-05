@@ -786,7 +786,7 @@ def run_app():
                                     # Display results - only prediction
                                     st.success(f"**Prediction:** {prediction}")
         else:
-            st.info("Upload images above to determine Alzheimer's disease")
+            st.info("Upload images above to predict Alzheimer's risk")
     else:
         st.warning("Alzheimer model not available. Cannot perform image classification.")
     
@@ -836,7 +836,7 @@ def run_app():
 
         # Define color styling function based on Predicted Severity
         def apply_severity_color(row):
-            severity = row['Predicted Severity']
+            severity = row['Predicted Severity Risk']
             if severity == "None/Minimal":
                 color = "background-color: #28a745; color: white;"  # Green
             elif severity in ["Mild", "Moderate"]:
@@ -853,12 +853,12 @@ def run_app():
         styled_df = styled_df.format({'MFCC_Mean': '{:.2f}'})
 
         # Display summary table with predicted severity
-        st.write("**Audio Files Summary with Predicted Severity:**")
+        #st.write("**Audio Files Summary with Predicted Severity:**")
         st.dataframe(styled_df, use_container_width=True, hide_index=True)
 
        
     else:
-        st.info("Upload audio above to determine depressive risk")
+        st.info("Upload audio above to predict depressive risk")
 
  
 
