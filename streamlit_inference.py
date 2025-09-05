@@ -1020,6 +1020,8 @@ def run_app():
 ####
     
     # Patient table (first 100 for speed)
+    treated_1_based = [i + 1 for i in treated]
+
     df_all = pd.DataFrame({
         "Patient ID": list(range(1, len(adjusted_all_)+1)),
         #"Raw Severity": np.round(arts["pred_sample"], 2),
