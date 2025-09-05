@@ -832,7 +832,29 @@ def run_app():
         summary_df["Predicted Severity"] = summary_df["MFCC_Mean"].apply(map_severity)
 
         st.write("**Audio Files Summary with Predicted Severity:**")
-        st.dataframe(summary_df, use_container_width=True)
+ #       st.dataframe(summary_df, use_container_width=True)
+
+        # Define coloring function
+        def apply_severity_color(row):
+            severity = row['Predicted Severity']
+            if severity == "None/Minimal":
+                color = "background-color: #28a745; color: white;"  # green
+            elif severity in ["Mild", "Moderate"]:
+                color = "background-color: #ffc107; color: black;"  # amber
+            else:  # "Moderately Severe" or "Severe"
+                color = "background-color: #dc3545; color: white;"  # red
+            return [color] * len(row)  # Apply color to entire row
+
+        styled_df = summary_df.style.apply(apply_severity_color, axis=1)
+
+        styled_df.format({'MFCC_Mean': '{:.2f}'}).hide_index()
+
+        st.dataframe(styled_df, use_container_width=True)
+
+        st.markdown("ℹ️ MFCC Reference Table")
+        # Display the MFCC reference table
+
+        st.table(pd.DataFrame(mfcc_table))
 
         # Show reference table
         reference_df = pd.DataFrame({
@@ -852,33 +874,8 @@ def run_app():
                 "Severe"
             ]
         })
-
-        
-        # Define coloring function
-        def apply_severity_color(row):
-            severity = row['Predicted Severity']
-            if severity == "None/Minimal":
-                color = "background-color: #28a745; color: white;"  # green
-            elif severity in ["Mild", "Moderate"]:
-                color = "background-color: #ffc107; color: black;"  # amber
-            else:  # "Moderately Severe" or "Severe"
-                color = "background-color: #dc3545; color: white;"  # red
-            return [color] * len(row)  # Apply color to entire row
-
-
-        # Apply style
-        styled_df = summary_df.style.apply(apply_severity_color, axis=1)
-
-        styled_df.format({'MFCC_Mean': '{:.2f}'}).hide_index()
-        st.dataframe(styled_df, use_container_width=True)
-
-        # styled_ref_df = reference_df.style.applymap(highlight_severity, subset=["Depression Severity"])
-        
-        
         st.markdown("ℹ️ MFCC Reference Table")
       #  st.dataframe(reference_df, use_container_width=True)####
-
-        st.table(pd.DataFrame(mfcc_table))
 
     # Run inference button
     if check_pretrained_model():
