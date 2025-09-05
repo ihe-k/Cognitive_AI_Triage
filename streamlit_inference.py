@@ -1006,7 +1006,7 @@ def run_app():
     })
     #st.dataframe(df_all.drop(columns=["Patient ID"]).head(100), use_container_width=True)
 
-    st.dataframe(df_all.head(100), use_container_width=True)
+    st.dataframe(df_all.drop(columns=["Patient ID"]).head(100), use_container_width=True)
 
     # Patient Details & Explanations
     st.subheader("📊 Patient Details and Explanations")
