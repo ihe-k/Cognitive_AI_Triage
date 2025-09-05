@@ -1050,40 +1050,41 @@ def run_app():
             st.pyplot(fig_local, use_container_width=True)
             plt.close(fig_local)
 
-        # Misinformation Spread Over Time
-        st.subheader("📉 Misinformation Spread Over Time")
-        fig_misinfo, ax_misinfo = plt.subplots()
-        ax_misinfo.plot(S_list_, label="Susceptible", color='#003A6B', linewidth=2)
-        ax_misinfo.plot(I_list_, label="Infected", color='#3776A1', linewidth=2)
-        ax_misinfo.plot(R_list_, label="Recovered", color='#89CFF1', linewidth=2)
-        ax_misinfo.legend()
-        ax_misinfo.set_xlabel("Step")
-        ax_misinfo.set_ylabel("Nodes")
-        st.pyplot(fig_misinfo, use_container_width=True)
-        plt.close(fig_misinfo)
+            # Misinformation Spread Over Time
+            st.subheader("📉 Misinformation Spread Over Time")
+            fig_misinfo, ax_misinfo = plt.subplots()
+            ax_misinfo.plot(S_list_, label="Susceptible", color='#003A6B', linewidth=2)
+            ax_misinfo.plot(I_list_, label="Infected", color='#3776A1', linewidth=2)
+            ax_misinfo.plot(R_list_, label="Recovered", color='#89CFF1', linewidth=2)
+            ax_misinfo.legend()
+            ax_misinfo.set_xlabel("Step")
+            ax_misinfo.set_ylabel("Nodes")
+            st.pyplot(fig_misinfo, use_container_width=True)
+            plt.close(fig_misinfo)
 
-        # Network Snapshot
-        st.subheader("🌐 Social Network Visualisation: Final Network State")
-        fig_net, ax_net = plt.subplots(figsize=(7, 5))
-        pos = nx.spring_layout(G_net_, seed=42)
-        c_map = {'S': '#003A6B', 'I': '#3776A1', 'R': '#89CFF1'}
-        label_map = {'S': 'Susceptible', 'I': 'Infected', 'R': 'Recovered'}
+            # Network Snapshot
+            st.subheader("🌐 Social Network Visualisation: Final Network State")
+            fig_net, ax_net = plt.subplots(figsize=(7, 5))
+            pos = nx.spring_layout(G_net_, seed=42)
+            c_map = {'S': '#003A6B', 'I': '#3776A1', 'R': '#89CFF1'}
+            label_map = {'S': 'Susceptible', 'I': 'Infected', 'R': 'Recovered'}
     
-        node_colors = [c_map[G_net_.nodes[n]['state']] for n in G_net_.nodes()]
-        nx.draw(G_net_, pos, node_color=node_colors, node_size=20, with_labels=False, ax=ax_net, edge_color='#414141')
+            node_colors = [c_map[G_net_.nodes[n]['state']] for n in G_net_.nodes()]
+            nx.draw(G_net_, pos, node_color=node_colors, node_size=20, with_labels=False, ax=ax_net, edge_color='#414141')
     
-        # Create legend patches
-        legend_patches = [mpatches.Patch(color=color, label=label_map[state]) for state, color in c_map.items()]
-        ax_net.legend(handles=legend_patches, title="Node State", loc='best')
+            # Create legend patches
+            legend_patches = [mpatches.Patch(color=color, label=label_map[state]) for state, color in c_map.items()]
+            ax_net.legend(handles=legend_patches, title="Node State", loc='best')
     
-        st.pyplot(fig_net, use_container_width=True)
-        plt.close(fig_net)
+            st.pyplot(fig_net, use_container_width=True)
+            plt.close(fig_net)
 #####
         def main():
+            import sys, os
             if "streamlit" in sys.argv[0].lower() or os.environ.get("STREAMLIT_SERVER_PORT"):
                 run_app()
             else:
-                main_cli()
+                main_cli()  # Ensure main_cli() exists
 
         if __name__ == "__main__":
             main()
