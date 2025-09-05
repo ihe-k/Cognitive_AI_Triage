@@ -880,7 +880,9 @@ def run_app():
         # Apply styling
         styled_df = summary_df_reset.style.apply(apply_severity_color, axis=1)
         styled_df = styled_df.format({'MFCC_Mean': '{:.2f}'})
-
+        styled_df = styled_df.format({'MFCC_Std': '{:.2f}'})
+        styled_df = styled_df.format({'MFCC_Range': '{:.2f}'})
+        
         # Display summary table with predicted severity
         st.write("**Audio Files Summary: Predicted Depression Severity Risk:**")
         st.dataframe(styled_df, use_container_width=True, hide_index=True)
