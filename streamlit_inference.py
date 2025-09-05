@@ -952,7 +952,8 @@ def run_app():
     # Convert to DataFrame
     physio_df = pd.DataFrame(
         st.session_state["physio_data"],
-        columns=["Breathing Rate", "Tapping Rate", "Heart Rate"]
+        columns=["Breathing Rate", "Tapping Rate", "Heart Rate"],
+        index=range(1, st.session_state["physio_data"].shape[0] + 1)
     )
 
     # Format nicely
@@ -986,7 +987,7 @@ def run_app():
     )
     misinfo_risk_ = I_list_[-1] / arts["TOTAL_N"]
 
-    st.info(f"📉 Misinformation risk applied: **{misinfo_risk_:.2f}**")
+    st.info(f"Misinformation risk applied: **{misinfo_risk_:.2f}**")
     
     # Adjusted severities + allocation
     # adjusted_all_ = arts["pred_sample"] * (1 - misinfo_risk_)
@@ -1006,9 +1007,9 @@ def run_app():
 
         alpha = 0.1  # Control influence of physio data on severity
         adjusted_all_ = arts["pred_sample"] * (1 - misinfo_risk_) * (1 + alpha * physio_risk_score)
-        st.caption("🧠 Adjusted severity = Raw severity × (1 - misinformation risk) × (1 + α × physiological risk score)")
+        st.caption("Adjusted severity = Raw severity × (1 - misinformation risk) × (1 + α × physiological risk score)")
     else:
-        # Fallback if physio data missing or mismatch
+        # Fallback if physio data missing or mismatch e.g., 10 samples to inference 100
         adjusted_all_ = arts["pred_sample"] * (1 - misinfo_risk_)
         st.warning("⚠️ Physiological data mismatch. Falling back to severity adjusted by misinformation only.")
     treated, untreated = allocate_resources(adjusted_all_, capacity=capacity)
