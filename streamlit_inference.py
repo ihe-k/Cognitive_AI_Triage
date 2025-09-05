@@ -862,14 +862,24 @@ def run_app():
 
     ##
 
-    # Assuming `mfcc_features` is an array of MFCC features (time x coeffs)
+    if "mfcc_features" in st.session_state:
+    mfcc_features = st.session_state["mfcc_features"]  # Get MFCC features from session state
+
     # Create a heatmap to visualize the MFCC features over time
     plt.figure(figsize=(10, 6))
     sns.heatmap(mfcc_features.T, cmap='viridis', cbar=True, xticklabels=False, yticklabels=False)
     plt.title("MFCC Heatmap (Spectrogram)")
     plt.xlabel("Time (Frames)")
     plt.ylabel("MFCC Coefficients")
-    plt.show()
+
+    # Display the heatmap in Streamlit
+    st.pyplot(plt)  # Use Streamlit's method to display matplotlib figures
+
+    # Clear the figure after plotting to avoid overlap on the next render
+    plt.clf()
+
+else:
+    st.info("MFCC features not found. Please ensure audio analysis has been done first.")
 ##
     
     st.subheader("Physiological Markers")
