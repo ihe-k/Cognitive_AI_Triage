@@ -1031,7 +1031,11 @@ def run_app():
         "Priority": ["✅ Yes" if i in treated_1_based else "❌ No" for i in range(1, len(adjusted_all_) + 1)]
     })
 
-    st.dataframe(df_all.drop(columns=["Patient ID"]).head(100), use_container_width=True)
+    df_all["Priority"] = df_all["Patient ID"].apply(
+    lambda pid: "✅ Yes" if pid in treated_1_based else "❌ No"
+    )
+
+    st.dataframe(df_all.head(100), use_container_width=True)
 
     # Patient Details & Explanations
     st.subheader("📊 Patient Details and Explanations")
