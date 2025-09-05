@@ -806,13 +806,7 @@ def run_app():
         with col4:
             avg_mfcc = np.mean(audio_results["mfcc_features"])
             st.metric("Avg MFCC Value", f"{avg_mfcc:.2f}")
- ####       
-        # Display summary table
-  #      st.write("**Audio Files Summary:**")
-  #      st.dataframe(audio_results["summary_df"].copy()
-
-        # Display summary table with predicted severity
-        summary_df = audio_results["summary_df"].copy()
+ #### 
 
         # Add Predicted Severity column based on MFCC_Mean
         def map_severity(mean_val):
@@ -826,6 +820,11 @@ def run_app():
                 return "Moderately Severe"
             else:
                 return "Severe"
+
+        
+        # Display summary table
+
+        # Display summary table with predicted severity
         summary_df["MFCC_Mean"] = summary_df["MFCC_Mean"].astype(float)
         summary_df["Predicted Severity"] = summary_df["MFCC_Mean"].apply(map_severity)
 
@@ -846,6 +845,7 @@ def run_app():
         summary_df_reset = summary_df.reset_index(drop=True)
         styled_df = summary_df_reset.style.apply(apply_severity_color, axis=1)
         styled_df = styled_df.format({'MFCC_Mean': '{:.2f}'})
+        st.write("**Audio Files Summary with Predicted Severity:**")
 
         st.dataframe(styled_df, use_container_width=True, hide_index=True)
 
