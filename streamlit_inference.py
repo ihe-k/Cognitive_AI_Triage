@@ -897,11 +897,33 @@ def run_app():
 
     st.subheader("📋 Physiological Data")
 
-        
-    #st.dataframe(st.session_state["physio_data"], use_container_width=True)  # Display as a dataframe
-    # st.dataframe(physio_df, use_container_width=True)
+
+    ####
+    # 
+    if "physio_data" not in st.session_state:
+        st.session_state["physio_data"] = simulate_physiological_markers(
+            st.session_state.get("n_samples_ui", 10),
+            breathing_range=(breathing_min, breathing_max),
+            tapping_range=(tapping_min, tapping_max),
+            heart_rate_range=(heart_rate_min, heart_rate_max)
+        )
+
+    # Convert to DataFrame
+    physio_df = pd.DataFrame(
+        st.session_state["physio_data"],
+        columns=["Breathing Rate", "Tapping Rate", "Heart Rate"]
+    )
+
+    # Format nicely
     formatted_df = physio_df.applymap(lambda x: f"{x:.2f}")
     st.dataframe(formatted_df, use_container_width=True)
+
+    ####
+    
+    #st.dataframe(st.session_state["physio_data"], use_container_width=True)  # Display as a dataframe
+    # st.dataframe(physio_df, use_container_width=True)
+    # formatted_df = physio_df.applymap(lambda x: f"{x:.2f}")
+    # st.dataframe(formatted_df, use_container_width=True)
 
     st.subheader("Depression Severity: Inference Results")
     
@@ -924,8 +946,7 @@ def run_app():
     arts = st.session_state["arts"]
 
     # Dataset Summary
-    st.write(
-        f"**Samples**: {arts['TOTAL_N']}  |  **Features**: {len(arts['feat_names'])}")
+    st.write(f"**Samples**: {arts['TOTAL_N']}  |  **Features**: {len(arts['feat_names'])}")
 
     # Misinformation Simulation for TOTAL_N
     S_list_, I_list_, R_list_, G_net_ = simulate_misinformation(
