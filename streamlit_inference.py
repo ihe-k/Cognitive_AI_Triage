@@ -856,7 +856,7 @@ def run_app():
 
        
     else:
-        st.error("❌ 'audio_results' or 'summary_df' not found in session state.")
+        st.info("Upload audio above to classify them for depression.")
 
  
 
