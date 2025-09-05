@@ -942,12 +942,12 @@ def run_app():
     ####
     # 
     
-    if "arts" not in st.session_state:
-        st.info("Click **Run Inference** to load the pretrained model and generate predictions")
-    else:
-        arts = st.session_state["arts"]
+    #if "arts" not in st.session_state:
+    #    st.info("Click **Run Inference** to load the pretrained model and generate predictions")
+    #else:
+    #    arts = st.session_state["arts"]
         
-        expected_samples = len(arts["pred_sample"])
+    expected_samples = len(arts["pred_sample"])
 
     if "physio_data" not in st.session_state:
         st.session_state["physio_data"] = simulate_physiological_markers(
