@@ -933,7 +933,8 @@ def run_app():
         st.button("▶️ Run Inference", disabled=True)
         st.warning("Cannot run inference: Pretrained model not available.")
 
-   ### 
+   ###
+    st.subheader("📊 Predicted Depression Severity: Inference Results")
     if "arts" not in st.session_state:
         st.info("Click **Run Inference** to load the pretrained model and run inference.")
         return
@@ -941,7 +942,6 @@ def run_app():
     arts = st.session_state["arts"]
 
     # Dataset Summary
-    st.subheader("📊 Predicted Depression Severity: Inference Results")
     st.write(
         f"**Samples**: {arts['TOTAL_N']}  |  **Features**: {len(arts['feat_names'])}"
     )
