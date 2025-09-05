@@ -941,6 +941,8 @@ def run_app():
     st.info("Click **Regenerate Physiological Data** to load the pretrained model and generate predictions")
     ####
     # 
+    expected_samples = 100  # Adjust this as per your inference table size
+
     if "physio_data" not in st.session_state:
         st.session_state["physio_data"] = simulate_physiological_markers(
             st.session_state.get("n_samples_ui", 10),
@@ -949,6 +951,12 @@ def run_app():
             heart_rate_range=(heart_rate_min, heart_rate_max)
         )
 
+    num_physio_samples = len(st.session_state["physio_data"])
+
+    if num_physio_samples < expected_samples:
+        st.session_state["physio_data"].extend([[None, None, None]] * (expected_samples - num_physio_samples))
+
+    
     # Convert to DataFrame
     physio_df = pd.DataFrame(
         st.session_state["physio_data"],
