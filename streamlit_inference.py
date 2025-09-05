@@ -1035,26 +1035,21 @@ def run_app():
     lambda pid: "✅ Yes" if pid in treated_1_based else "❌ No"
     )
 
-    df_all = df_all.reset_index(drop=True)
+    #df_all = df_all.reset_index(drop=True)
 
-    styled_df = df_all.head(50).style.set_properties(
-        subset=["Patient ID"],
-        **{"text-align": "left"}
-    )
+    html = df_all.head(50).to_html(index=False, classes="inference-table")
+
     
-    html = styled_df.to_html(index=False)
 
     custom_css = """
     <style>
-    table {
+    .inference-table {
         width: 100%;
         border-collapse: collapse;
     }
-    thead th {
+    .inference-table th, .inference-table td {
         text-align: left !important;
-    }
-    tbody td {
-        text-align: left !important;
+        padding: 8px;
     }
     </style>
     """
