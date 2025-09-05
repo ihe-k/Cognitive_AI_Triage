@@ -791,8 +791,10 @@ def run_app():
         st.warning("Alzheimer model not available. Cannot perform image classification.")
     
     # Audio Analysis Results
+    st.subheader("🎵 Audio Analysis Results")
+    
     if "audio_results" in st.session_state:
-        st.subheader("🎵 Audio Analysis Results")
+        
         audio_results = st.session_state["audio_results"]
         
         # Display basic info
