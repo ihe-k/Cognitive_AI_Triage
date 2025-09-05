@@ -923,6 +923,8 @@ def run_app():
         formatted_df = physio_df.applymap(lambda x: f"{x:.2f}")
         st.dataframe(formatted_df, use_container_width=True)
 
+    st.subheader("Depression Severity: Inference Results")
+    
             # Run inference button
     if check_pretrained_model():
         if st.button("▶️ Run Inference"):
@@ -934,7 +936,7 @@ def run_app():
         st.warning("Cannot run inference: Pretrained model not available.")
 
    ###
-    st.subheader("📊 Predicted Depression Severity: Inference Results")
+    
     if "arts" not in st.session_state:
         st.info("Click **Run Inference** to load the pretrained model and run inference.")
         return
