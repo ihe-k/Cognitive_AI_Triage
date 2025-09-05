@@ -861,7 +861,17 @@ def run_app():
         st.info("Upload audio above to predict depressive risk")
 
  
+        # Run inference button
+    if check_pretrained_model():
+        if st.button("▶️ Run Inference"):
+            with st.spinner("Loading pretrained model and running inference..."):
+                arts = run_simple_inference()
+                st.session_state["arts"] = arts
+    else:
+        st.button("▶️ Run Inference", disabled=True)
+        st.warning("Cannot run inference: Pretrained model not available.")
 
+    
     st.subheader("Physiological Markers")
     # Physiological markers simulation
     if st.button("Simulate Physiological Data"):
