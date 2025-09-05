@@ -1037,24 +1037,25 @@ def run_app():
 
     #df_all = df_all.reset_index(drop=True)
 
-    html = df_all.head(50).to_html(index=False, classes="inference-table")
+    html = df_all.head(50).to_html(index=False, classes="custom-table")
 
     
 
     custom_css = """
     <style>
-    .inference-table {
+    .custom-table {
         width: 100%;
         border-collapse: collapse;
     }
-    .inference-table th, .inference-table td {
+    .custom-table th, .custom-table td {
         text-align: left !important;
-        padding: 8px;
+        padding: 6px 12px;
+        border: 1px solid #ddd;
     }
     </style>
     """
 
-    st.markdown(custom_css + html, unsafe_allow_html=True)
+    st.markdown(custom_css + html_table, unsafe_allow_html=True)
     
     #st.write(styled_df.to_html(), unsafe_allow_html=True)
     
