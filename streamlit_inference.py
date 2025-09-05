@@ -941,7 +941,7 @@ def run_app():
     st.info("Click **Regenerate Physiological Data** to load the pretrained model and generate predictions")
     ####
     # 
-    expected_samples = 100  
+    expected_samples = 10  
 
     if "physio_data" not in st.session_state:
         st.session_state["physio_data"] = simulate_physiological_markers(
@@ -953,11 +953,15 @@ def run_app():
 
     num_physio_samples = len(st.session_state["physio_data"])
 
+    if not isinstance(st.session_state["physio_data"], list):
+        st.session_state["physio_data"] = st.session_state["physio_data"].tolist()
+
+    num_physio_samples = len(st.session_state["physio_data"])
+
     if num_physio_samples < expected_samples:
         padding = [[None, None, None]] * (expected_samples - num_physio_samples)
         st.session_state["physio_data"] += padding  # Use += to extend the list
 
-    
     # Convert to DataFrame
     physio_df = pd.DataFrame(
         st.session_state["physio_data"],
