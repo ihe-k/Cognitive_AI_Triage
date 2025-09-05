@@ -964,12 +964,21 @@ def run_app():
             else:
                 return "Unable to determine risk"
 
-        # Get risk level prediction
-        risk_prediction = predict_alzheimers_risk(heart_rate[-1], hrv[-1])
+            if 'heart_rate' in st.session_state and 'hrv' in st.session_state:
+                heart_rate = st.session_state['heart_rate']  # Example: session state or input data
+                hrv = st.session_state['hrv']  # Example: session state or input data
 
-        # Display prediction note below the graph
-        st.write(f"**Prediction:** {risk_prediction}")
+                # Ensure that both heart_rate and hrv lists are not empty
+                if len(heart_rate) > 0 and len(hrv) > 0:
+                # Get risk level prediction using the latest data
+                risk_prediction = predict_alzheimers_risk(heart_rate[-1], hrv[-1])
 
+                # Display prediction note below the graph
+                st.write(f"**Prediction:** {risk_prediction}")
+            else:
+                st.error("Heart rate or HRV data is empty. Please ensure data is available.")
+        else:
+            st.error("Heart rate or HRV data not found in session state. Please upload data first.")
 ####
 
         st.subheader("📋 Physiological Data")
