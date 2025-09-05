@@ -942,136 +942,136 @@ def run_app():
     ####
     # 
     
-    #if "arts" not in st.session_state:
-    #    st.info("Click **Run Inference** to load the pretrained model and generate predictions")
-    #else:
-    #    arts = st.session_state["arts"]
-        
-    expected_samples = len(arts["pred_sample"])
-
-    if "physio_data" not in st.session_state:
-        st.session_state["physio_data"] = simulate_physiological_markers(
-            st.session_state.get("n_samples_ui", expected_samples),
-            breathing_range=(breathing_min, breathing_max),
-            tapping_range=(tapping_min, tapping_max),
-            heart_rate_range=(heart_rate_min, heart_rate_max)
-        )
-
-    #num_physio_samples = len(st.session_state["physio_data"])
-    physio_data = st.session_state["physio_data"]
-    
-    if not isinstance(st.session_state["physio_data"], list):
-        st.session_state["physio_data"] = st.session_state["physio_data"].tolist()
-
-    num_physio_samples = len(st.session_state["physio_data"])
-    
-    if isinstance(physio_data, list):
-        physio_data = np.array(physio_data)
-    
-    num_physio_samples = physio_data.shape[0] if isinstance(physio_data, np.ndarray) else len(physio_data)
-
-    if num_physio_samples < expected_samples:
-        padding = np.full((expected_samples - num_physio_samples, physio_data.shape[1]), None)
-        physio_data = np.vstack([physio_data, padding])
-
-
-    # Convert to DataFrame
-    physio_df = pd.DataFrame(
-        "physio_data",
-        columns=["Breathing Rate", "Tapping Rate", "Heart Rate"],
-        index=range(1, expected_samples + 1)
-    )
-
-    formatted_df = physio_df.applymap(lambda x: f"{x:.2f}" if x is not None else "N/A")
-
-    #formatted_df = physio_df.applymap(lambda x: f"{x:.2f}")
-    
-    #st.dataframe(formatted_df, use_container_width=True)
-
-    html_physio_table = formatted_df.to_html(index=True, header=True, classes="custom-table", escape=False)
-
-    # Custom CSS to align Patient ID to the left
-    custom_css = """
-    <style>
-    .custom-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    .custom-table th, .custom-table td {
-        text-align: left !important;
-        padding: 6px 12px;
-        border: 1px solid #ddd;
-    }
-    </style>
-    """
-
-    st.markdown(custom_css, unsafe_allow_html=True)
-    st.markdown(html_physio_table, unsafe_allow_html=True)
-    
-    ####
-    
-    #st.dataframe(st.session_state["physio_data"], use_container_width=True)  # Display as a dataframe
-    # st.dataframe(physio_df, use_container_width=True)
-    # formatted_df = physio_df.applymap(lambda x: f"{x:.2f}")
-    # st.dataframe(formatted_df, use_container_width=True)
-
-    st.subheader("Depression Severity: Inference Results")
-    
-    
-   ###
-    
     if "arts" not in st.session_state:
         st.info("Click **Run Inference** to load the pretrained model and generate predictions")
     else:
         arts = st.session_state["arts"]
+        
+        expected_samples = len(arts["pred_sample"])
 
-    # arts = st.session_state["arts"]
+        if "physio_data" not in st.session_state:
+            st.session_state["physio_data"] = simulate_physiological_markers(
+                st.session_state.get("n_samples_ui", expected_samples),
+                breathing_range=(breathing_min, breathing_max),
+                tapping_range=(tapping_min, tapping_max),
+                heart_rate_range=(heart_rate_min, heart_rate_max)
+            )
+
+        #num_physio_samples = len(st.session_state["physio_data"])
+        physio_data = st.session_state["physio_data"]
     
-    # Dataset Summary
-    st.write(f"**Samples**: {arts['TOTAL_N']}  |  **Features**: {len(arts['feat_names'])}")
+        if not isinstance(st.session_state["physio_data"], list):
+            st.session_state["physio_data"] = st.session_state["physio_data"].tolist()
 
-    # Misinformation Simulation for TOTAL_N
-    S_list_, I_list_, R_list_, G_net_ = simulate_misinformation(
-        num_nodes=arts["TOTAL_N"], trans_prob=trans_prob, rec_prob=rec_prob, steps=steps
-    )
-    misinfo_risk_ = I_list_[-1] / arts["TOTAL_N"]
-
-    st.info(f"Misinformation risk applied: **{misinfo_risk_:.2f}**")
+        num_physio_samples = len(st.session_state["physio_data"])
     
-    # Adjusted severities + allocation
-    # adjusted_all_ = arts["pred_sample"] * (1 - misinfo_risk_)
-    # treated, untreated = allocate_resources(adjusted_all_, capacity=capacity)
-
-    # Prepare adjusted severity
-    expected_samples = len(arts["pred_sample"])
+        if isinstance(physio_data, list):
+            physio_data = np.array(physio_data)
     
-    #  Ensure physiological data matches expected size
-    physio_data = st.session_state.get("physio_data")
+        num_physio_samples = physio_data.shape[0] if isinstance(physio_data, np.ndarray) else len(physio_data)
 
-    # Convert list to numpy array if necessary
-    if isinstance(physio_data, list):
-        physio_data = np.array(physio_data)
+        if num_physio_samples < expected_samples:
+            padding = np.full((expected_samples - num_physio_samples, physio_data.shape[1]), None)
+            physio_data = np.vstack([physio_data, padding])
 
-    if physio_data is not None and physio_data.shape[0] == arts["TOTAL_N"]:
-        # Normalise physiological data (min-max)
-        physio_min = physio_data.min(axis=0)
-        physio_max = physio_data.max(axis=0)
-        physio_norm = (physio_data - physio_min) / (physio_max - physio_min + 1e-6)
 
-        # Weighted sum to create a physiological risk score
-        weights = np.array([0.3, 0.3, 0.4])  # Adjust weights as desired
-        physio_risk_score = np.clip(physio_norm @ weights, 0, 1)
+        # Convert to DataFrame
+        physio_df = pd.DataFrame(
+            "physio_data",
+            columns=["Breathing Rate", "Tapping Rate", "Heart Rate"],
+            index=range(1, expected_samples + 1)
+        )
 
-        # Adjust severity based on physiological risk
-        alpha = 0.1  # Control influence of physio impact on severity
-        adjusted_all_ = arts["pred_sample"] * (1 - misinfo_risk_) * (1 + alpha * physio_risk_score)
-        st.caption("Adjusted severity = Raw severity × (1 - misinformation risk) × (1 + α × physiological risk score)")
-    else:
-        # Fallback if physio data missing or mismatch e.g., 10 samples to inference 100
-        adjusted_all_ = arts["pred_sample"] * (1 - misinfo_risk_)
-        st.warning("⚠️ Physiological data mismatch. Falling back to severity adjusted by misinformation only.")
+        formatted_df = physio_df.applymap(lambda x: f"{x:.2f}" if x is not None else "N/A")
 
-    treated, untreated = allocate_resources(adjusted_all_, capacity=capacity)
+        #formatted_df = physio_df.applymap(lambda x: f"{x:.2f}")
+    
+        #st.dataframe(formatted_df, use_container_width=True)
+
+        html_physio_table = formatted_df.to_html(index=True, header=True, classes="custom-table", escape=False)
+
+        # Custom CSS to align Patient ID to the left
+        custom_css = """
+        <style>
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .custom-table th, .custom-table td {
+            text-align: left !important;
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+        }
+        </style>
+        """
+
+        st.markdown(custom_css, unsafe_allow_html=True)
+        st.markdown(html_physio_table, unsafe_allow_html=True)
+    
+        ####
+    
+        #st.dataframe(st.session_state["physio_data"], use_container_width=True)  # Display as a dataframe
+        # st.dataframe(physio_df, use_container_width=True)
+        # formatted_df = physio_df.applymap(lambda x: f"{x:.2f}")
+        # st.dataframe(formatted_df, use_container_width=True)
+
+        st.subheader("Depression Severity: Inference Results")
+    
+    
+       ###
+    
+        if "arts" not in st.session_state:
+            st.info("Click **Run Inference** to load the pretrained model and generate predictions")
+        else:
+            arts = st.session_state["arts"]
+
+        # arts = st.session_state["arts"]
+    
+        # Dataset Summary
+        st.write(f"**Samples**: {arts['TOTAL_N']}  |  **Features**: {len(arts['feat_names'])}")
+
+        # Misinformation Simulation for TOTAL_N
+        S_list_, I_list_, R_list_, G_net_ = simulate_misinformation(
+            num_nodes=arts["TOTAL_N"], trans_prob=trans_prob, rec_prob=rec_prob, steps=steps
+        )
+        misinfo_risk_ = I_list_[-1] / arts["TOTAL_N"]
+
+        st.info(f"Misinformation risk applied: **{misinfo_risk_:.2f}**")
+    
+        # Adjusted severities + allocation
+        # adjusted_all_ = arts["pred_sample"] * (1 - misinfo_risk_)
+        # treated, untreated = allocate_resources(adjusted_all_, capacity=capacity)
+
+        # Prepare adjusted severity
+        expected_samples = len(arts["pred_sample"])
+    
+        #  Ensure physiological data matches expected size
+        physio_data = st.session_state.get("physio_data")
+
+        # Convert list to numpy array if necessary
+        if isinstance(physio_data, list):
+            physio_data = np.array(physio_data)
+
+        if physio_data is not None and physio_data.shape[0] == arts["TOTAL_N"]:
+            # Normalise physiological data (min-max)
+            physio_min = physio_data.min(axis=0)
+            physio_max = physio_data.max(axis=0)
+            physio_norm = (physio_data - physio_min) / (physio_max - physio_min + 1e-6)
+
+            # Weighted sum to create a physiological risk score
+            weights = np.array([0.3, 0.3, 0.4])  # Adjust weights as desired
+            physio_risk_score = np.clip(physio_norm @ weights, 0, 1)
+
+            # Adjust severity based on physiological risk
+            alpha = 0.1  # Control influence of physio impact on severity
+            adjusted_all_ = arts["pred_sample"] * (1 - misinfo_risk_) * (1 + alpha * physio_risk_score)
+            st.caption("Adjusted severity = Raw severity × (1 - misinformation risk) × (1 + α × physiological risk score)")
+        else:
+            # Fallback if physio data missing or mismatch e.g., 10 samples to inference 100
+            adjusted_all_ = arts["pred_sample"] * (1 - misinfo_risk_)
+            st.warning("⚠️ Physiological data mismatch. Falling back to severity adjusted by misinformation only.")
+
+        treated, untreated = allocate_resources(adjusted_all_, capacity=capacity)
 
 
     
@@ -1101,99 +1101,99 @@ def run_app():
     
 ####
     
-    # Patient table
-    treated_1_based = [i + 1 for i in treated]
+        # Patient table
+        treated_1_based = [i + 1 for i in treated]
 
-    df_all = pd.DataFrame({
-        "Patient ID": list(range(1, len(adjusted_all_)+1)),
-        #"Raw Severity": np.round(arts["pred_sample"], 2),
-        "Raw Severity": [f"{x:.2f}" for x in arts["pred_sample"]],
-        #"Adjusted Severity": np.round(adjusted_all_, 2),
-        "Adjusted Severity": [f"{x:.2f}" for x in adjusted_all_],
+        df_all = pd.DataFrame({
+            "Patient ID": list(range(1, len(adjusted_all_)+1)),
+            #"Raw Severity": np.round(arts["pred_sample"], 2),
+            "Raw Severity": [f"{x:.2f}" for x in arts["pred_sample"]],
+            #"Adjusted Severity": np.round(adjusted_all_, 2),
+            "Adjusted Severity": [f"{x:.2f}" for x in adjusted_all_],
         
-    })
+        })
 
-    df_all["Priority"] = df_all["Patient ID"].apply(
-    lambda pid: "✅ Yes" if pid in treated_1_based else "❌ No"
-    )
+        df_all["Priority"] = df_all["Patient ID"].apply(
+        lambda pid: "✅ Yes" if pid in treated_1_based else "❌ No"
+        )
 
-    #df_all = df_all.reset_index(drop=True)
+        #df_all = df_all.reset_index(drop=True)
 
-    html_table = df_all.head(50).to_html(index=False, classes="custom-table")
+        html_table = df_all.head(50).to_html(index=False, classes="custom-table")
     
 
-    custom_css = """
-    <style>
-    .custom-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    .custom-table th, .custom-table td {
-        text-align: left !important;
-        padding: 6px 12px;
-        border: 1px solid #ddd;
-    }
-    </style>
-    """
-    html_table = df_all.head(50).to_html(index=False, classes="custom-table")
+        custom_css = """
+        <style>
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .custom-table th, .custom-table td {
+            text-align: left !important;
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+        }
+        </style>
+        """
+        html_table = df_all.head(50).to_html(index=False, classes="custom-table")
 
-    st.markdown(custom_css, unsafe_allow_html=True)
-    st.markdown(html_table, unsafe_allow_html=True)
+        st.markdown(custom_css, unsafe_allow_html=True)
+        st.markdown(html_table, unsafe_allow_html=True)
     
-    #st.markdown(custom_css + html_table, unsafe_allow_html=True)
+        #st.markdown(custom_css + html_table, unsafe_allow_html=True)
     
-    #st.write(styled_df.to_html(), unsafe_allow_html=True)
+        #st.write(styled_df.to_html(), unsafe_allow_html=True)
     
-    #st.dataframe(df_all.drop(columns=["Patient ID"]).head(100), use_container_width=True, hide_index=True)
+        #st.dataframe(df_all.drop(columns=["Patient ID"]).head(100), use_container_width=True, hide_index=True)
     
-    #st.dataframe(df_all.head(100), use_container_width=True, hide_index=true)
+        #st.dataframe(df_all.head(100), use_container_width=True, hide_index=true)
 
    
 
-    # Render the styled table
-    #st.markdown(custom_css + html, unsafe_allow_html=True)
+        # Render the styled table
+        #st.markdown(custom_css + html, unsafe_allow_html=True)
 
     
-    # Patient Details & Explanations
-    st.subheader("📊 Patient Details and Explanations")
-    patient_idx = st.selectbox("Select Patient ID:", options=list(range(1,len(adjusted_all_)+1)), index=0)
-    internal_idx = patient_idx - 1
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        st.metric("Raw Severity", f"{arts['pred_sample'][internal_idx]:.2f}")
-    with col2:
-        st.metric("Adjusted Severity", f"{adjusted_all_[internal_idx]:.2f}")
-    with col3:
-        st.metric("Prioritised for Treatment", "Yes" if internal_idx in treated else "No")
-    with col4:
-        st.metric("Misinformation Risk", f"{misinfo_risk_:.2f}")
+        # Patient Details & Explanations
+        st.subheader("📊 Patient Details and Explanations")
+        patient_idx = st.selectbox("Select Patient ID:", options=list(range(1,len(adjusted_all_)+1)), index=0)
+        internal_idx = patient_idx - 1
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric("Raw Severity", f"{arts['pred_sample'][internal_idx]:.2f}")
+        with col2:
+            st.metric("Adjusted Severity", f"{adjusted_all_[internal_idx]:.2f}")
+        with col3:
+            st.metric("Prioritised for Treatment", "Yes" if internal_idx in treated else "No")
+        with col4:
+            st.metric("Misinformation Risk", f"{misinfo_risk_:.2f}")
 
-    # Explanation block (LIME default like your sketch; SHAP optional)
-    if method == "LIME":
-        st.subheader("LIME Explanation")
-        lime_exp = arts["explainer_lime"].explain_instance(
-            arts["X_sample_s"][patient_idx],
-            arts["model"].predict,
-            num_features=min(10, len(arts["feat_names"]))
-        )
+        # Explanation block (LIME default like your sketch; SHAP optional)
+        if method == "LIME":
+            st.subheader("LIME Explanation")
+            lime_exp = arts["explainer_lime"].explain_instance(
+                arts["X_sample_s"][patient_idx],
+                arts["model"].predict,
+                num_features=min(10, len(arts["feat_names"]))
+            )
         
-        fig = lime_exp.as_pyplot_figure()
-        ax = fig.gca()
-        feature_weights = lime_exp.as_list()
+            fig = lime_exp.as_pyplot_figure()
+            ax = fig.gca()
+            feature_weights = lime_exp.as_list()
         
-        # Apply custom color scheme to LIME chart
-        # custom_colors = ['#003A6B', '#1B5886', '#3776A1', '#5293BB', '#6EB1D6', '#89CFF1']
+            # Apply custom color scheme to LIME chart
+            # custom_colors = ['#003A6B', '#1B5886', '#3776A1', '#5293BB', '#6EB1D6', '#89CFF1']
 
-        color_increase = '#3776A1'
-        color_decrease = '#6EB1D6'
+            color_increase = '#3776A1'
+            color_decrease = '#6EB1D6'
 
-        # Get feature weights directly from the LIME explanation
+            # Get feature weights directly from the LIME explanation
        
-        bars = ax.patches
+            bars = ax.patches
 
-        for bar, (feature, weight) in zip(bars, feature_weights):
-            bar.set_color(color_increase if weight >= 0 else color_decrease)
-            bar.set_alpha(0.8)
+            for bar, (feature, weight) in zip(bars, feature_weights):
+                bar.set_color(color_increase if weight >= 0 else color_decrease)
+                bar.set_alpha(0.8)
  #                if weight >= 0:
  #                   bar.set_color(color_increase)
  #               else:
@@ -1204,86 +1204,86 @@ def run_app():
             #    bar.set_color(custom_colors[color_idx])
             #    bar.set_alpha(0.8)  # Add some transparency for better aesthetics
 
-        increase_patch = mpatches.Patch(color=color_increase, label='↑ Increases PHQ-8 Score')
-        decrease_patch = mpatches.Patch(color=color_decrease, label='↓ Decreases PHQ-8 Score')
-        ax.legend(handles=[increase_patch, decrease_patch], loc='lower left', bbox_to_anchor=(0, 0), title="Feature Effect")
+            increase_patch = mpatches.Patch(color=color_increase, label='↑ Increases PHQ-8 Score')
+            decrease_patch = mpatches.Patch(color=color_decrease, label='↓ Decreases PHQ-8 Score')
+            ax.legend(handles=[increase_patch, decrease_patch], loc='lower left', bbox_to_anchor=(0, 0), title="Feature Effect")
         
-        # Update the figure style
-        fig.patch.set_facecolor('white')
-        ax.set_facecolor('#f8f9fa')  # Light background
+            # Update the figure style
+            fig.patch.set_facecolor('white')
+            ax.set_facecolor('#f8f9fa')  # Light background
         
-        st.pyplot(fig, use_container_width=True)
-        plt.close(fig)
-    else:
-        st.subheader("SHAP Explanation")
-        shap_values = arts["explainer_shap"].shap_values(arts["X_sample_s"][patient_idx:patient_idx+1])
-        if isinstance(shap_values, list):
-            # Assuming binary classification, use the SHAP values for the positive class (index 1)
-            shap_values_local = shap_values[1]
+            st.pyplot(fig, use_container_width=True)
+            plt.close(fig)
         else:
-            shap_values_local = shap_values
+            st.subheader("SHAP Explanation")
+            shap_values = arts["explainer_shap"].shap_values(arts["X_sample_s"][patient_idx:patient_idx+1])
+            if isinstance(shap_values, list):
+                # Assuming binary classification, use the SHAP values for the positive class (index 1)
+                shap_values_local = shap_values[1]
+            else:
+                shap_values_local = shap_values
 
-        # Round SHAP values and feature values to 2 decimals
-        shap_values_rounded = np.round(shap_values_local, 2)
-        features_rounded = np.round(arts["X_sample_s"][patient_idx:patient_idx+1], 2)
+            # Round SHAP values and feature values to 2 decimals
+            shap_values_rounded = np.round(shap_values_local, 2)
+            features_rounded = np.round(arts["X_sample_s"][patient_idx:patient_idx+1], 2)
 
-        shap_value_display = {
-            f"Feature {i}": f"{shap_values_rounded[0][i]:.2f}"  # Accessing the individual value within the inner array
-            for i in range(len(shap_values_rounded[0]))
-        }
+            shap_value_display = {
+                f"Feature {i}": f"{shap_values_rounded[0][i]:.2f}"  # Accessing the individual value within the inner array
+                for i in range(len(shap_values_rounded[0]))
+            }
 
-        shap.force_plot(
-            arts["explainer_shap"].expected_value,  # Expected value
-            shap_values_rounded[0],  # Rounded SHAP values for the selected instance (access the first instance)
-            features=features_rounded[0],  # Feature values for the selected instance
-            matplotlib=True,  # Using Matplotlib for plotting
-            show=False  # Don't show the plot immediately, we'll customize it
-        )
+            shap.force_plot(
+                arts["explainer_shap"].expected_value,  # Expected value
+                shap_values_rounded[0],  # Rounded SHAP values for the selected instance (access the first instance)
+                features=features_rounded[0],  # Feature values for the selected instance
+                matplotlib=True,  # Using Matplotlib for plotting
+                show=False  # Don't show the plot immediately, we'll customize it
+            )
         
-        fig_local = plt.gcf()
-        ax = plt.gca()
+            fig_local = plt.gcf()
+            ax = plt.gca()
 
-        ax.xaxis.set_major_formatter(mtick.FuncFormatter(lambda x, pos: f"{x:.2f}"))
-        ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda y, pos: f"{y:.2f}"))
+            ax.xaxis.set_major_formatter(mtick.FuncFormatter(lambda x, pos: f"{x:.2f}"))
+            ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda y, pos: f"{y:.2f}"))
 
-        for tick in ax.get_xticklabels():
-            tick.set_rotation(0)
-            tick.set_fontsize(10)
-        for tick in ax.get_yticklabels():
-            tick.set_rotation(0)
-            tick.set_fontsize(10)
+            for tick in ax.get_xticklabels():
+                tick.set_rotation(0)
+                tick.set_fontsize(10)
+            for tick in ax.get_yticklabels():
+                tick.set_rotation(0)
+                tick.set_fontsize(10)
         
-        st.pyplot(fig_local, use_container_width=True)
-        plt.close(fig_local)
+            st.pyplot(fig_local, use_container_width=True)
+            plt.close(fig_local)
 
-        # Misinformation Spread Over Time
-        st.subheader("📉 Misinformation Spread Over Time")
-        fig_misinfo, ax_misinfo = plt.subplots()
-        ax_misinfo.plot(S_list_, label="Susceptible", color='#003A6B', linewidth=2)
-        ax_misinfo.plot(I_list_, label="Infected", color='#3776A1', linewidth=2)
-        ax_misinfo.plot(R_list_, label="Recovered", color='#89CFF1', linewidth=2)
-        ax_misinfo.legend()
-        ax_misinfo.set_xlabel("Step")
-        ax_misinfo.set_ylabel("Nodes")
-        st.pyplot(fig_misinfo, use_container_width=True)
-        plt.close(fig_misinfo)
+            # Misinformation Spread Over Time
+            st.subheader("📉 Misinformation Spread Over Time")
+            fig_misinfo, ax_misinfo = plt.subplots()
+            ax_misinfo.plot(S_list_, label="Susceptible", color='#003A6B', linewidth=2)
+            ax_misinfo.plot(I_list_, label="Infected", color='#3776A1', linewidth=2)
+            ax_misinfo.plot(R_list_, label="Recovered", color='#89CFF1', linewidth=2)
+            ax_misinfo.legend()
+            ax_misinfo.set_xlabel("Step")
+            ax_misinfo.set_ylabel("Nodes")
+            st.pyplot(fig_misinfo, use_container_width=True)
+            plt.close(fig_misinfo)
 
-        # Network Snapshot
-        st.subheader("🌐 Social Network Visualisation: Final Network State")
-        fig_net, ax_net = plt.subplots(figsize=(7, 5))
-        pos = nx.spring_layout(G_net_, seed=42)
-        c_map = {'S': '#003A6B', 'I': '#3776A1', 'R': '#89CFF1'}
-        label_map = {'S': 'Susceptible', 'I': 'Infected', 'R': 'Recovered'}
+            # Network Snapshot
+            st.subheader("🌐 Social Network Visualisation: Final Network State")
+            fig_net, ax_net = plt.subplots(figsize=(7, 5))
+            pos = nx.spring_layout(G_net_, seed=42)
+            c_map = {'S': '#003A6B', 'I': '#3776A1', 'R': '#89CFF1'}
+            label_map = {'S': 'Susceptible', 'I': 'Infected', 'R': 'Recovered'}
     
-        node_colors = [c_map[G_net_.nodes[n]['state']] for n in G_net_.nodes()]
-        nx.draw(G_net_, pos, node_color=node_colors, node_size=20, with_labels=False, ax=ax_net, edge_color='#414141')
+            node_colors = [c_map[G_net_.nodes[n]['state']] for n in G_net_.nodes()]
+            nx.draw(G_net_, pos, node_color=node_colors, node_size=20, with_labels=False, ax=ax_net, edge_color='#414141')
     
-        # Create legend patches
-        legend_patches = [mpatches.Patch(color=color, label=label_map[state]) for state, color in c_map.items()]
-        ax_net.legend(handles=legend_patches, title="Node State", loc='best')
+            # Create legend patches
+            legend_patches = [mpatches.Patch(color=color, label=label_map[state]) for state, color in c_map.items()]
+            ax_net.legend(handles=legend_patches, title="Node State", loc='best')
     
-        st.pyplot(fig_net, use_container_width=True)
-        plt.close(fig_net)
+            st.pyplot(fig_net, use_container_width=True)
+            plt.close(fig_net)
 #####
 def main():
     if "streamlit" in sys.argv[0].lower() or os.environ.get("STREAMLIT_SERVER_PORT"):
