@@ -941,6 +941,12 @@ def run_app():
     st.info("Click **Regenerate Physiological Data** to load the pretrained model and generate predictions")
     ####
     # 
+    
+if "arts" not in st.session_state:
+    st.info("Please run inference first to load the 'arts' data.")
+else:
+    arts = st.session_state["arts"]
+    
     expected_samples = len(arts["pred_sample"])
 
     if "physio_data" not in st.session_state:
@@ -1020,7 +1026,7 @@ def run_app():
         arts = st.session_state["arts"]
 
     # arts = st.session_state["arts"]
-
+    
     # Dataset Summary
     st.write(f"**Samples**: {arts['TOTAL_N']}  |  **Features**: {len(arts['feat_names'])}")
 
