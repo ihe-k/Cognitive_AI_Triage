@@ -997,18 +997,21 @@ def run_app():
 
     # Patient table (first 100 for speed)
     df_all = pd.DataFrame({
-        "Patient ID": list(range(len(adjusted_all_))),
+        "Patient ID": list(range(1, len(adjusted_all_)+1)),
         #"Raw Severity": np.round(arts["pred_sample"], 2),
         "Raw Severity": [f"{x:.2f}" for x in arts["pred_sample"]],
         #"Adjusted Severity": np.round(adjusted_all_, 2),
         "Adjusted Severity": [f"{x:.2f}" for x in adjusted_all_],
         "Priority": ["✅ Yes" if i in treated else "❌ No" for i in range(len(adjusted_all_))]
     })
+    st.dataframe(df_all.drop(columns=["Patient ID"]).head(100), use_container_width=True)
+
     st.dataframe(df_all.head(100), use_container_width=True)
 
     # Patient Details & Explanations
     st.subheader("📊 Patient Details and Explanations")
-    patient_idx = st.selectbox("Select Patient ID:", options=list(range(len(adjusted_all_))), index=0)
+    patient_idx = st.selectbox("Select Patient ID:", options=list(range(1,len(adjusted_all_)+1)), index=0)
+    internal_idx = patient_idx - 1
     col1, col2, col3, col4 = st.columns(4)
     with col1:
         st.metric("Raw Severity", f"{arts['pred_sample'][patient_idx]:.2f}")
