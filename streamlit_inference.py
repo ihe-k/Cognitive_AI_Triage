@@ -702,7 +702,7 @@ def run_app():
         unsafe_allow_html=True,
     )
     with st.container(border=True):
-        up_col1, up_col2, up_col3 = st.columns([1,1,1])
+        up_col1, up_col2 = st.columns([1,1])
         with up_col1:
             with st.container(border=True):
                 st.markdown('<div class="cell-header">Upload Audio Files</div>', unsafe_allow_html=True)
