@@ -713,7 +713,7 @@ def run_app():
                     accept_multiple_files=True,
                     key="audio_uploads",
                     label_visibility="collapsed",
-                    st.markdown('</div>', unsafe_allow_html=True
+                    
                 )
                 # Add audio processing button
                 if audio_files and len(audio_files) > 0:
@@ -749,7 +749,7 @@ def run_app():
                     accept_multiple_files=True,
                     key="image_uploads",
                     label_visibility="collapsed",
-                    st.markdown('</div>', unsafe_allow_html=True
+                    
                 )
        # with up_col3:
           #  with st.container(border=True):
