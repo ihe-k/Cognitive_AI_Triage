@@ -895,70 +895,13 @@ def run_app():
 
     ##
 
-    st.subheader("Physiological Markers")
-    # Physiological markers simulation
-    if st.button("Simulate Physiological Data"):
-        n_samples = st.session_state.get("n_samples_ui", 10)
-        # raw_data = simulate_physiological_markers(
-        physio_data = simulate_physiological_markers(
-            n_samples=n_samples,
-            breathing_range=(breathing_min, breathing_max),
-            tapping_range=(tapping_min, tapping_max),
-            heart_rate_range=(heart_rate_min, heart_rate_max)
-        )
-
-        physio_df = pd.DataFrame(
-            physio_data,
-            columns=["Breathing Rate (bpm)", "Tapping Rate (taps/sec)", "Heart Rate (bpm)"]
-        )
-        physio_df.index = physio_df.index + 1
-        
-        st.session_state["physio_data"] = physio_df
-        st.session_state["show_physio"] = True    
-        
-     #   st.session_state["physio_data"] = physio_data
-     #   st.session_state["show_physio"] = True
-        st.success(f"Generated {n_samples} physiological samples!")
-###
-    # Check if physiological data exists and display it
-    if "physio_data" in st.session_state and st.session_state["show_physio"]:
-        physio_df = st.session_state["physio_data"].round(2)
-        
-        ###  st.write("Generated Physiological Data:")
-        # Display the simulated physiological data
-        #st.subheader("🧬 Generated Physiological Data")
-       # st.dataframe(physio_df, use_container_width=True)
-
-        # Summary stats
-        st.subheader("📊 Summary Statistics")
-        st.write(physio_df.describe().T.style.format("{:.2f}"))
-
-        # Plotting
-        st.subheader("📈 Feature Distributions")
-        
-        
-
-        fig, axes = plt.subplots(1, 3, figsize=(18, 4))
-        sns.histplot(physio_df["Breathing Rate (bpm)"], ax=axes[0], kde=True, color="#003A6B")
-        axes[0].set_title("Breathing Rate Distribution")
-
-        sns.histplot(physio_df["Tapping Rate (taps/sec)"], ax=axes[1], kde=True, color="#3776A1")
-        axes[1].set_title("Tapping Rate Distribution")
-
-        sns.histplot(physio_df["Heart Rate (bpm)"], ax=axes[2], kde=True, color="#6EB1D6")
-        axes[2].set_title("Heart Rate Distribution")
-
-        st.pyplot(fig, use_container_width=True)
-        plt.close(fig)
-####
-
-        st.subheader("📋 Physiological Data")
+    st.subheader("📋 Physiological Data")
 
         
-        #st.dataframe(st.session_state["physio_data"], use_container_width=True)  # Display as a dataframe
-        # st.dataframe(physio_df, use_container_width=True)
-        formatted_df = physio_df.applymap(lambda x: f"{x:.2f}")
-        st.dataframe(formatted_df, use_container_width=True)
+    #st.dataframe(st.session_state["physio_data"], use_container_width=True)  # Display as a dataframe
+    # st.dataframe(physio_df, use_container_width=True)
+    formatted_df = physio_df.applymap(lambda x: f"{x:.2f}")
+    st.dataframe(formatted_df, use_container_width=True)
 
     st.subheader("Depression Severity: Inference Results")
     
@@ -980,27 +923,27 @@ def run_app():
 
         arts = st.session_state["arts"]
 
-    # Dataset Summary
+        # Dataset Summary
         st.write(
             f"**Samples**: {arts['TOTAL_N']}  |  **Features**: {len(arts['feat_names'])}"
         )
 
-    # Misinformation Simulation for TOTAL_N
+        # Misinformation Simulation for TOTAL_N
         S_list_, I_list_, R_list_, G_net_ = simulate_misinformation(
         num_nodes=arts["TOTAL_N"], trans_prob=trans_prob, rec_prob=rec_prob, steps=steps
         )
         misinfo_risk_ = I_list_[-1] / arts["TOTAL_N"]
 
-    # Adjusted severities + allocation
+        # Adjusted severities + allocation
         adjusted_all_ = arts["pred_sample"] * (1 - misinfo_risk_)
         treated, untreated = allocate_resources(adjusted_all_, capacity=capacity)
 
-    # Patient table (first 100 for speed)
+        # Patient table (first 100 for speed)
         df_all = pd.DataFrame({
             "Patient ID": list(range(1, len(adjusted_all_)+1)),
-        #"Raw Severity": np.round(arts["pred_sample"], 2),
+            #"Raw Severity": np.round(arts["pred_sample"], 2),
             "Raw Severity": [f"{x:.2f}" for x in arts["pred_sample"]],
-        #"Adjusted Severity": np.round(adjusted_all_, 2),
+            #"Adjusted Severity": np.round(adjusted_all_, 2),
             "Adjusted Severity": [f"{x:.2f}" for x in adjusted_all_],
             "Priority": ["✅ Yes" if i in treated else "❌ No" for i in range(len(adjusted_all_))]
         })
@@ -1034,13 +977,13 @@ def run_app():
             ax = fig.gca()
             feature_weights = lime_exp.as_list()
         
-        # Apply custom color scheme to LIME chart
-        # custom_colors = ['#003A6B', '#1B5886', '#3776A1', '#5293BB', '#6EB1D6', '#89CFF1']
+            # Apply custom color scheme to LIME chart
+            # custom_colors = ['#003A6B', '#1B5886', '#3776A1', '#5293BB', '#6EB1D6', '#89CFF1']
 
             color_increase = '#3776A1'
             color_decrease = '#6EB1D6'
 
-         # Get feature weights directly from the LIME explanation
+            # Get feature weights directly from the LIME explanation
        
             bars = ax.patches
 
@@ -1052,14 +995,14 @@ def run_app():
                 bar.set_alpha(0.8)
 
 
-        #    bar.set_color(custom_colors[color_idx])
-        #    bar.set_alpha(0.8)  # Add some transparency for better aesthetics
+            #    bar.set_color(custom_colors[color_idx])
+            #    bar.set_alpha(0.8)  # Add some transparency for better aesthetics
 
             increase_patch = mpatches.Patch(color=color_increase, label='↑ Increases PHQ-8 Score')
             decrease_patch = mpatches.Patch(color=color_decrease, label='↓ Decreases PHQ-8 Score')
             ax.legend(handles=[increase_patch, decrease_patch], loc='lower left', bbox_to_anchor=(0, 0), title="Feature Effect")
         
-        # Update the figure style
+            # Update the figure style
             fig.patch.set_facecolor('white')
             ax.set_facecolor('#f8f9fa')  # Light background
         
@@ -1069,12 +1012,12 @@ def run_app():
             st.subheader("SHAP Explanation")
             shap_values = arts["explainer_shap"].shap_values(arts["X_sample_s"][patient_idx:patient_idx+1])
             if isinstance(shap_values, list):
-        # Assuming binary classification, use the SHAP values for the positive class (index 1)
+                # Assuming binary classification, use the SHAP values for the positive class (index 1)
                 shap_values_local = shap_values[1]
             else:
                 shap_values_local = shap_values
 
-        # Round SHAP values and feature values to 2 decimals
+            # Round SHAP values and feature values to 2 decimals
             shap_values_rounded = np.round(shap_values_local, 2)
             features_rounded = np.round(arts["X_sample_s"][patient_idx:patient_idx+1], 2)
 
@@ -1107,7 +1050,7 @@ def run_app():
             st.pyplot(fig_local, use_container_width=True)
             plt.close(fig_local)
 
-    # Misinformation Spread Over Time
+        # Misinformation Spread Over Time
         st.subheader("📉 Misinformation Spread Over Time")
         fig_misinfo, ax_misinfo = plt.subplots()
         ax_misinfo.plot(S_list_, label="Susceptible", color='#003A6B', linewidth=2)
@@ -1119,7 +1062,7 @@ def run_app():
         st.pyplot(fig_misinfo, use_container_width=True)
         plt.close(fig_misinfo)
 
-    # Network Snapshot
+        # Network Snapshot
         st.subheader("🌐 Social Network Visualisation: Final Network State")
         fig_net, ax_net = plt.subplots(figsize=(7, 5))
         pos = nx.spring_layout(G_net_, seed=42)
@@ -1129,245 +1072,245 @@ def run_app():
         node_colors = [c_map[G_net_.nodes[n]['state']] for n in G_net_.nodes()]
         nx.draw(G_net_, pos, node_color=node_colors, node_size=20, with_labels=False, ax=ax_net, edge_color='#414141')
     
-    # Create legend patches
+        # Create legend patches
         legend_patches = [mpatches.Patch(color=color, label=label_map[state]) for state, color in c_map.items()]
         ax_net.legend(handles=legend_patches, title="Node State", loc='best')
     
         st.pyplot(fig_net, use_container_width=True)
         plt.close(fig_net)
 
-    if __name__ == "__main__":
-    # If running under Streamlit
-        if st is not None and (os.environ.get("STREAMLIT_SERVER_PORT") or "streamlit" in os.path.basename(sys.argv[0]).lower()):
-            run_app()
-        else:
-            parser = argparse.ArgumentParser(description="PHQ8 inference using pretrained model (CLI or Streamlit)")
-            parser.add_argument("--mode", choices=["cli", "app"], default="app")
-            parser.add_argument("--trans-prob", type=float, default=0.2)
-            parser.add_argument("--rec-prob", type=float, default=0.1)
-            parser.add_argument("--steps", type=int, default=20)
-            parser.add_argument("--capacity", type=int, default=10)
-            parser.add_argument("--breathing-min", type=float, default=12.0, help="Minimum breathing rate (bpm)")
-            parser.add_argument("--breathing-max", type=float, default=20.0, help="Maximum breathing rate (bpm)")
-            parser.add_argument("--tapping-min", type=float, default=1.0, help="Minimum tapping rate (taps/sec)")
-            parser.add_argument("--tapping-max", type=float, default=5.0, help="Maximum tapping rate (taps/sec)")
-            parser.add_argument("--heart-rate-min", type=float, default=60.0, help="Minimum heart rate (bpm)")
-            parser.add_argument("--heart-rate-max", type=float, default=100.0, help="Maximum heart rate (bpm)")
-            parser.add_argument("--physio-samples", type=int, default=10, help="Number of physiological samples to generate")
-            parser.add_argument("--alzheimer-image", type=str, help="Path to image file for Alzheimer classification")
-            parser.add_argument("--audio-files", nargs="+", help="Paths to audio files for MFCC analysis")
-
-            args = parser.parse_args()
-
-            if args.mode == "app":
-                if st is None:
-                    print("Streamlit not available. Install it or run with --mode cli.")
-                    sys.exit(1)
+        if __name__ == "__main__":
+            # If running under Streamlit
+            if st is not None and (os.environ.get("STREAMLIT_SERVER_PORT") or "streamlit" in os.path.basename(sys.argv[0]).lower()):
                 run_app()
-                sys.exit(0)
+            else:
+                parser = argparse.ArgumentParser(description="PHQ8 inference using pretrained model (CLI or Streamlit)")
+                parser.add_argument("--mode", choices=["cli", "app"], default="app")
+                parser.add_argument("--trans-prob", type=float, default=0.2)
+                parser.add_argument("--rec-prob", type=float, default=0.1)
+                parser.add_argument("--steps", type=int, default=20)
+                parser.add_argument("--capacity", type=int, default=10)
+                parser.add_argument("--breathing-min", type=float, default=12.0, help="Minimum breathing rate (bpm)")
+                parser.add_argument("--breathing-max", type=float, default=20.0, help="Maximum breathing rate (bpm)")
+                parser.add_argument("--tapping-min", type=float, default=1.0, help="Minimum tapping rate (taps/sec)")
+                parser.add_argument("--tapping-max", type=float, default=5.0, help="Maximum tapping rate (taps/sec)")
+                parser.add_argument("--heart-rate-min", type=float, default=60.0, help="Minimum heart rate (bpm)")
+                parser.add_argument("--heart-rate-max", type=float, default=100.0, help="Maximum heart rate (bpm)")
+                parser.add_argument("--physio-samples", type=int, default=10, help="Number of physiological samples to generate")
+                parser.add_argument("--alzheimer-image", type=str, help="Path to image file for Alzheimer classification")
+                parser.add_argument("--audio-files", nargs="+", help="Paths to audio files for MFCC analysis")
+
+                args = parser.parse_args()
+
+                if args.mode == "app":
+                    if st is None:
+                        print("Streamlit not available. Install it or run with --mode cli.")
+                        sys.exit(1)
+                    run_app()
+                    sys.exit(0)
 
 
 
-        # Simple inference example (same as demo_inference.py)
-            print("\n=== SIMPLE INFERENCE EXAMPLE ===")
-            print("Usage examples:")
-            print("  - Basic inference: python streamlit_inference.py --mode cli")
-            print("  - With audio files: python streamlit_inference.py --mode cli --audio-files file1.wav file2.mp3")
-            print("  - With Alzheimer image: python streamlit_inference.py --mode cli --alzheimer-image image.png")
-            print("  - With custom parameters: python streamlit_inference.py --mode cli --capacity 20 --steps 30")
-            print()
+                # Simple inference example (same as demo_inference.py)
+                print("\n=== SIMPLE INFERENCE EXAMPLE ===")
+                print("Usage examples:")
+                print("  - Basic inference: python streamlit_inference.py --mode cli")
+                print("  - With audio files: python streamlit_inference.py --mode cli --audio-files file1.wav file2.mp3")
+                print("  - With Alzheimer image: python streamlit_inference.py --mode cli --alzheimer-image image.png")
+                print("  - With custom parameters: python streamlit_inference.py --mode cli --capacity 20 --steps 30")
+                print()
         
-            try:
-            # Example: predict for participants 300 and 301 in the "test" split
-                participant_ids = [300, 301]
-            # Load model first for inference
-                model_path = os.path.join("artifacts", "severity_model.pkl")
-                with open(model_path, "rb") as f:
-                    model_artifact = pickle.load(f)
-                model = model_artifact["model"]
-                scaler = model_artifact["scaler"]
+                try:
+                    # Example: predict for participants 300 and 301 in the "test" split
+                    participant_ids = [300, 301]
+                    # Load model first for inference
+                    model_path = os.path.join("artifacts", "severity_model.pkl")
+                    with open(model_path, "rb") as f:
+                        model_artifact = pickle.load(f)
+                    model = model_artifact["model"]
+                    scaler = model_artifact["scaler"]
             
-                results = predict_for_ids("test", participant_ids, model, scaler)
-                print("Inference results:")
-                print(results)
-                results.to_csv("artifacts/inference_results.csv", index=False)
-                print("Saved predictions → artifacts/inference_results.csv")
-            except Exception as e:
-                print(f"Inference example failed: {e}")
+                    results = predict_for_ids("test", participant_ids, model, scaler)
+                    print("Inference results:")
+                    print(results)
+                    results.to_csv("artifacts/inference_results.csv", index=False)
+                    print("Saved predictions → artifacts/inference_results.csv")
+                except Exception as e:
+                    print(f"Inference example failed: {e}")
         
-            print("\nRunning simple inference in CLI mode...\n")
+                print("\nRunning simple inference in CLI mode...\n")
         
-        # Check if pretrained model exists
-            if not check_pretrained_model():
-                print("❌ Error: Pretrained model not found or invalid!")
-                print("Please ensure 'artifacts/severity_model.pkl' exists and contains a valid model.")
-                sys.exit(1)
+                # Check if pretrained model exists
+                if not check_pretrained_model():
+                    print("❌ Error: Pretrained model not found or invalid!")
+                    print("Please ensure 'artifacts/severity_model.pkl' exists and contains a valid model.")
+                    sys.exit(1)
         
-        # Run simple inference
-            arts = run_simple_inference()
-            TOTAL_N = arts["TOTAL_N"]
+                # Run simple inference
+                arts = run_simple_inference()
+                TOTAL_N = arts["TOTAL_N"]
 
-            S_list_, I_list_, R_list_, G_net_ = simulate_misinformation(
-                num_nodes=TOTAL_N, trans_prob=args.trans_prob, rec_prob=args.rec_prob, steps=args.steps,
-            )
-            misinfo_risk_ = I_list_[-1] / TOTAL_N
-            adjusted_all_ = arts["pred_sample"] * (1 - misinfo_risk_)
-            treated, untreated = allocate_resources(adjusted_all_, capacity=args.capacity)
+                S_list_, I_list_, R_list_, G_net_ = simulate_misinformation(
+                    num_nodes=TOTAL_N, trans_prob=args.trans_prob, rec_prob=args.rec_prob, steps=args.steps,
+                )
+                misinfo_risk_ = I_list_[-1] / TOTAL_N
+                adjusted_all_ = arts["pred_sample"] * (1 - misinfo_risk_)
+                treated, untreated = allocate_resources(adjusted_all_, capacity=args.capacity)
 
-            print(f"Misinformation risk: {misinfo_risk_:.3f}")
-            print(f"Treatment capacity: {args.capacity}")
-            print(f"Top {min(len(treated), args.capacity)} prioritized indices (global): {treated.tolist()}")
+                print(f"Misinformation risk: {misinfo_risk_:.3f}")
+                print(f"Treatment capacity: {args.capacity}")
+                print(f"Top {min(len(treated), args.capacity)} prioritized indices (global): {treated.tolist()}")
         
-        # Generate and display physiological markers
-            print(f"\n=== PHYSIOLOGICAL MARKERS SIMULATION ===")
-            physio_data = simulate_physiological_markers(
-                n_samples=args.physio_samples,
-                breathing_range=(args.breathing_min, args.breathing_max),
-                tapping_range=(args.tapping_min, args.tapping_max),
-                heart_rate_range=(args.heart_rate_min, args.heart_rate_max)
-            )
-            print(f"Generated {args.physio_samples} physiological samples:")
-            print(f"Breathing range: {args.breathing_min}-{args.breathing_max} bpm")
-            print(f"Tapping range: {args.tapping_min}-{args.tapping_max} taps/sec")
-            print(f"Heart rate range: {args.heart_rate_min}-{args.heart_rate_max} bpm")
-            print(f"Sample means - Breathing: {np.mean(physio_data[:, 0]):.2f}, Tapping: {np.mean(physio_data[:, 1]):.2f}, HR: {np.mean(physio_data[:, 2]):.2f}")
+                # Generate and display physiological markers
+                print(f"\n=== PHYSIOLOGICAL MARKERS SIMULATION ===")
+                physio_data = simulate_physiological_markers(
+                    n_samples=args.physio_samples,
+                    breathing_range=(args.breathing_min, args.breathing_max),
+                    tapping_range=(args.tapping_min, args.tapping_max),
+                    heart_rate_range=(args.heart_rate_min, args.heart_rate_max)
+                )
+                print(f"Generated {args.physio_samples} physiological samples:")
+                print(f"Breathing range: {args.breathing_min}-{args.breathing_max} bpm")
+                print(f"Tapping range: {args.tapping_min}-{args.tapping_max} taps/sec")
+                print(f"Heart rate range: {args.heart_rate_min}-{args.heart_rate_max} bpm")
+                print(f"Sample means - Breathing: {np.mean(physio_data[:, 0]):.2f}, Tapping: {np.mean(physio_data[:, 1]):.2f}, HR: {np.mean(physio_data[:, 2]):.2f}")
 
-        # Alzheimer's disease classification (CLI mode)
-            if args.alzheimer_image:
-                print(f"\n=== ALZHEIMER'S DISEASE CLASSIFICATION ===")
-                if not check_alzheimer_model():
-                    print("❌ Error: Alzheimer model not found or invalid!")
-                    print("Please ensure 'artifacts/alzheimer_classifier.pkl.gz' exists and contains a valid model.")
-                else:
-                    try:
-                        alzheimer_model = load_alzheimer_model()
-                        print(f"✅ Loaded Alzheimer model with classes: {alzheimer_model['classes']}")
+                # Alzheimer's disease classification (CLI mode)
+                if args.alzheimer_image:
+                    print(f"\n=== ALZHEIMER'S DISEASE CLASSIFICATION ===")
+                    if not check_alzheimer_model():
+                        #print("❌ Error: Alzheimer model not found or invalid!")
+                        print("❌ Error: Please ensure 'artifacts/alzheimer_classifier.pkl.gz' exists and contains a valid model.")
+                    else:
+                        try:
+                            alzheimer_model = load_alzheimer_model()
+                            print(f"✅ Loaded Alzheimer model with classes: {alzheimer_model['classes']}")
 
                     
-                    # Direct access to existing keys
-                        train_acc = alzheimer_model.get("train_accuracy")
-                        test_acc = alzheimer_model.get("test_accuracy")
-                        conf_matrix = alzheimer_model.get("confusion_matrix")
+                            # Direct access to existing keys
+                            train_acc = alzheimer_model.get("train_accuracy")
+                            test_acc = alzheimer_model.get("test_accuracy")
+                            conf_matrix = alzheimer_model.get("confusion_matrix")
 
-                        if train_acc is not None or test_acc is not None:
-                            print("🧪 Model Performance:")
-                            if train_acc is not None:
-                                print(f"  ✅ Train Accuracy: {train_acc:.2%}")
-                            if test_acc is not None:
-                                print(f"  ✅ Test Accuracy: {test_acc:.2%}")
-                            if conf_matrix is not None:
-                                print(f"  🧾 Confusion Matrix:\n{conf_matrix}")
-                        else:
-                            print("No performance metrics found in model artifact")
-
-
-                    
-                    # Check if image file exists
-                        if not os.path.exists(args.alzheimer_image):
-                            print(f"❌ Error: Image file '{args.alzheimer_image}' not found!")
-                        else:
-                        # Load and classify image
-                            img = load_and_preprocess_image(args.alzheimer_image)
-                            if img is None:
-                                print(f"❌ Error: Could not load image '{args.alzheimer_image}'")
+                            if train_acc is not None or test_acc is not None:
+                                print("🧪 Model Performance:")
+                                if train_acc is not None:
+                                    print(f"  ✅ Train Accuracy: {train_acc:.2%}")
+                                if test_acc is not None:
+                                    print(f"  ✅ Test Accuracy: {test_acc:.2%}")
+                                if conf_matrix is not None:
+                                    print(f"  🧾 Confusion Matrix:\n{conf_matrix}")
                             else:
-                            # Get target feature count from model
-                                target_features = alzheimer_model["scaler"].n_features_in_
-                                features = extract_image_features(img, target_features=target_features)
-                                if features.size == 0:
-                                    print(f"❌ Error: Could not extract features from image")
+                                print("No performance metrics found in model artifact")
+
+
+                    
+                            # Check if image file exists
+                            if not os.path.exists(args.alzheimer_image):
+                                print(f"❌ Error: Image file '{args.alzheimer_image}' not found!")
+                            else:
+                            # Load and classify image
+                                img = load_and_preprocess_image(args.alzheimer_image)
+                                if img is None:
+                                    print(f"❌ Error: Could not load image '{args.alzheimer_image}'")
                                 else:
-                                # Scale features and predict
-                                    scaler = alzheimer_model["scaler"]
-                                    features_scaled = scaler.transform(features.reshape(1, -1))
+                                    # Get target feature count from model
+                                    target_features = alzheimer_model["scaler"].n_features_in_
+                                    features = extract_image_features(img, target_features=target_features)
+                                    if features.size == 0:
+                                        print(f"❌ Error: Could not extract features from image")
+                                    else:
+                                        # Scale features and predict
+                                        scaler = alzheimer_model["scaler"]
+                                        features_scaled = scaler.transform(features.reshape(1, -1))
                                 
-                                    classifier = alzheimer_model["classifier"]
-                                    prediction = classifier.predict(features_scaled)[0]
-                                    probabilities = classifier.predict_proba(features_scaled)[0]
+                                        classifier = alzheimer_model["classifier"]
+                                        prediction = classifier.predict(features_scaled)[0]
+                                        probabilities = classifier.predict_proba(features_scaled)[0]
                                 
-                                # Get class name and confidence
-                                    label_encoder = alzheimer_model["label_encoder"]
-                                    class_name = label_encoder.inverse_transform([prediction])[0]
-                                    confidence = np.max(probabilities)
+                                        # Get class name and confidence
+                                        label_encoder = alzheimer_model["label_encoder"]
+                                        class_name = label_encoder.inverse_transform([prediction])[0]
+                                        confidence = np.max(probabilities)
                                 
-                                    print(f"📸 Image: {args.alzheimer_image}")
-                                    print(f"🔍 Prediction: {class_name}")
-                                    print(f"📊 Confidence: {confidence:.2%}")
-                                    print(f"📈 All probabilities:")
-                                    for i, (cls, prob) in enumerate(zip(alzheimer_model["classes"], probabilities)):
-                                        marker = "✅" if cls == class_name else "  "
-                                        print(f"   {marker} {cls}: {prob:.2%}")
+                                        print(f"📸 Image: {args.alzheimer_image}")
+                                        print(f"🔍 Prediction: {class_name}")
+                                        print(f"📊 Confidence: {confidence:.2%}")
+                                        print(f"📈 All probabilities:")
+                                        for i, (cls, prob) in enumerate(zip(alzheimer_model["classes"], probabilities)):
+                                            marker = "✅" if cls == class_name else "  "
+                                            print(f"   {marker} {cls}: {prob:.2%}")
                                 
-                    except Exception as e:
-                        print(f"❌ Alzheimer classification failed: {e}")
+                        except Exception as e:
+                            print(f"❌ Alzheimer classification failed: {e}")
 
         
         
         # Audio processing (CLI mode)
-            if args.audio_files:
-                print(f"\n=== AUDIO MFCC ANALYSIS ===")
-                if librosa is None:
-                    print("❌ Error: librosa not available for audio processing!")
-                    print("Please install librosa: pip install librosa")
-                else:
-                    try:
-                    # Create mock file objects for CLI processing
-                        class MockAudioFile:
-                            def __init__(self, path):
-                                self.path = path
-                                self.name = os.path.basename(path)
+                if args.audio_files:
+                    print(f"\n=== AUDIO MFCC ANALYSIS ===")
+                    if librosa is None:
+                        print("❌ Error: librosa not available for audio processing!")
+                        print("Please install librosa: pip install librosa")
+                    else:
+                        try:
+                            # Create mock file objects for CLI processing
+                            class MockAudioFile:
+                                def __init__(self, path):
+                                    self.path = path
+                                    self.name = os.path.basename(path)
                         
-                            def getbuffer(self):
-                                with open(self.path, 'rb') as f:
-                                    return f.read()
+                                def getbuffer(self):
+                                    with open(self.path, 'rb') as f:
+                                        return f.read()
                     
-                        mock_audio_files = [MockAudioFile(path) for path in args.audio_files]
+                            mock_audio_files = [MockAudioFile(path) for path in args.audio_files]
                     
-                    # Extract MFCC features
-                        mfcc_features, file_names = extract_mfcc_features(mock_audio_files)
+                            # Extract MFCC features
+                            mfcc_features, file_names = extract_mfcc_features(mock_audio_files)
                     
-                        if mfcc_features is not None:
-                        # Analyze features
-                            audio_results = analyze_audio_features(mfcc_features, file_names)
-                            if audio_results:
-                                print(f"✅ Successfully processed {len(args.audio_files)} audio files!")
-                                print(f"📊 MFCC dimensions: {audio_results['mfcc_dimensions']}")
-                                print(f"📈 Features per file: {len(audio_results['feature_names'])}")
+                            if mfcc_features is not None:
+                                # Analyze features
+                                audio_results = analyze_audio_features(mfcc_features, file_names)
+                                if audio_results:
+                                    print(f"✅ Successfully processed {len(args.audio_files)} audio files!")
+                                    print(f"📊 MFCC dimensions: {audio_results['mfcc_dimensions']}")
+                                    print(f"📈 Features per file: {len(audio_results['feature_names'])}")
                             
-                            # Display summary
-                                print(f"\n📋 Audio Files Summary:")
-                                print(audio_results['summary_df'].to_string(index=False))
+                                    # Display summary
+                                    print(f"\n📋 Audio Files Summary:")
+                                    print(audio_results['summary_df'].to_string(index=False))
                             
-                            # Save results
-                                os.makedirs("artifacts", exist_ok=True)
-                                audio_results_path = os.path.join("artifacts", "audio_analysis_results.csv")
-                                audio_results['summary_df'].to_csv(audio_results_path, index=False)
-                                print(f"💾 Saved audio analysis results to: {audio_results_path}")
+                                    # Save results
+                                    os.makedirs("artifacts", exist_ok=True)
+                                    audio_results_path = os.path.join("artifacts", "audio_analysis_results.csv")
+                                    audio_results['summary_df'].to_csv(audio_results_path, index=False)
+                                    print(f"💾 Saved audio analysis results to: {audio_results_path}")
                             
-                            # Save MFCC features
-                                mfcc_path = os.path.join("artifacts", "audio_mfcc_features.npy")
-                                np.save(mfcc_path, audio_results['mfcc_features'])
-                                print(f"💾 Saved MFCC features to: {mfcc_path}")
+                                    # Save MFCC features
+                                    mfcc_path = os.path.join("artifacts", "audio_mfcc_features.npy")
+                                    np.save(mfcc_path, audio_results['mfcc_features'])
+                                    print(f"💾 Saved MFCC features to: {mfcc_path}")
+                                else:
+                                    print("❌ Failed to analyze audio features")
                             else:
-                                print("❌ Failed to analyze audio features")
-                        else:
-                            print(f"❌ Audio processing failed: {file_names}")
+                                print(f"❌ Audio processing failed: {file_names}")
                         
-                    except Exception as e:
-                        print(f"❌ Audio processing failed: {e}")
+                        except Exception as e:
+                            print(f"❌ Audio processing failed: {e}")
 
 
         
-        # Save heatmap
-            os.makedirs("artifacts", exist_ok=True)
-            fig, ax = plt.subplots()
-            scatter = ax.scatter(range(len(adjusted_all_)), np.zeros(len(adjusted_all_)), c=adjusted_all_, cmap="Reds", s=40)
-            plt.colorbar(scatter, label="Adjusted PHQ8")
-            ax.set_yticks([])
-            ax.set_xlabel("Global Index")
-            ax.set_title("Adjusted Risk Heatmap (CLI)")
-            plt.tight_layout()
-            heatmap_path = os.path.join("artifacts", "risk_heatmap_cli.png")
-            plt.savefig(heatmap_path)
-            plt.close()
-            print(f"Saved heatmap: {heatmap_path}")
+                # Save heatmap
+                os.makedirs("artifacts", exist_ok=True)
+                fig, ax = plt.subplots()
+                scatter = ax.scatter(range(len(adjusted_all_)), np.zeros(len(adjusted_all_)), c=adjusted_all_, cmap="Reds", s=40)
+                plt.colorbar(scatter, label="Adjusted PHQ8")
+                ax.set_yticks([])
+                ax.set_xlabel("Global Index")
+                ax.set_title("Adjusted Risk Heatmap (CLI)")
+                plt.tight_layout()
+                heatmap_path = os.path.join("artifacts", "risk_heatmap_cli.png")
+                plt.savefig(heatmap_path)
+                plt.close()
+                print(f"Saved heatmap: {heatmap_path}")
