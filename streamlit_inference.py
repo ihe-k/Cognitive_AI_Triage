@@ -937,8 +937,8 @@ def run_app():
 
     ##
 
-    st.subheader("📋 Physiological Data")
-    st.info("Click **Regenerate Physiological Data** to load the pretrained model and generate predictions")
+st.subheader("📋 Physiological Data")
+st.info("Click **Regenerate Physiological Data** to load the pretrained model and generate predictions")
     ####
     # 
     
