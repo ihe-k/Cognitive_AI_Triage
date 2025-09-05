@@ -955,9 +955,34 @@ def run_app():
     misinfo_risk_ = I_list_[-1] / arts["TOTAL_N"]
 
     # Adjusted severities + allocation
-    adjusted_all_ = arts["pred_sample"] * (1 - misinfo_risk_)
-    treated, untreated = allocate_resources(adjusted_all_, capacity=capacity)
+    # adjusted_all_ = arts["pred_sample"] * (1 - misinfo_risk_)
+    # treated, untreated = allocate_resources(adjusted_all_, capacity=capacity)
 
+    # Get physiological data
+    physio_data = st.session_state.get("physio_data")
+    if physio_data is not None and physio_data.shape[0] == arts["TOTAL_N"]:
+        # Normalize physiological data (min-max)
+        physio_min = physio_data.min(axis=0)
+        physio_max = physio_data.max(axis=0)
+        physio_norm = (physio_data - physio_min) / (physio_max - physio_min + 1e-6)
+
+        # Weighted sum to create a physiological risk score
+        weights = np.array([0.3, 0.3, 0.4])  # Adjust weights as desired
+        physio_risk_score = physio_norm @ weights
+
+        alpha = 0.1  # Control influence of physio data on severity
+        adjusted_all_ = arts["pred_sample"] * (1 - misinfo_risk_) * (1 + alpha * physio_risk_score)
+    else:
+        # Fallback if physio data missing or mismatch
+        adjusted_all_ = arts["pred_sample"] * (1 - misinfo_risk_)
+
+    treated, untreated = allocate_resources(adjusted_all_, capacity=capacity)
+####
+
+
+    
+####
+    
     # Patient table (first 100 for speed)
     df_all = pd.DataFrame({
         "Patient ID": list(range(1, len(adjusted_all_)+1)),
