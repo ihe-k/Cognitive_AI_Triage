@@ -809,7 +809,7 @@ def run_app():
  ####       
         # Display summary table
   #      st.write("**Audio Files Summary:**")
-  #      st.dataframe(audio_results["summary_df"], use_container_width=True)
+  #      st.dataframe(audio_results["summary_df"].copy()
 
         # Display summary table with predicted severity
         summary_df = audio_results["summary_df"].copy()
@@ -826,8 +826,6 @@ def run_app():
                 return "Moderately Severe"
             else:
                 return "Severe"
-
-        # Ensure MFCC_Mean is float (in case it's string formatted)
         summary_df["MFCC_Mean"] = summary_df["MFCC_Mean"].astype(float)
         summary_df["Predicted Severity"] = summary_df["MFCC_Mean"].apply(map_severity)
 
@@ -845,19 +843,19 @@ def run_app():
                 color = "background-color: #dc3545; color: white;"  # red
             return [color] * len(row)  # Apply color to entire row
 
-        styled_df = summary_df.style.apply(apply_severity_color, axis=1)
-
-        styled_df.format({'MFCC_Mean': '{:.2f}'}).hide_index()
+        summary_df_reset = summary_df.reset_index(drop=True)
+        styled_df = summary_df_reset.style.apply(apply_severity_color, axis=1)
+        styled_df.format({'MFCC_Mean': '{:.2f}'}).hide_columns()
 
         st.dataframe(styled_df, use_container_width=True)
 
         st.markdown("ℹ️ MFCC Reference Table")
         # Display the MFCC reference table
 
-        st.table(pd.DataFrame(mfcc_table))
+       # st.table(pd.DataFrame(mfcc_table))
 
         # Show reference table
-        reference_df = pd.DataFrame({
+        mfcc_table = {
             "MFCC Mean Range": ["> -10", "-10 to -18", "-18 to -24", "-24 to -30", "< -30"],
             "Speech Profile": [
                 "Clear/expressive/energetic",
@@ -873,9 +871,8 @@ def run_app():
                 "Moderately Severe",
                 "Severe"
             ]
-        })
-        st.markdown("ℹ️ MFCC Reference Table")
-      #  st.dataframe(reference_df, use_container_width=True)####
+        }
+        st.table(pd.DataFrame(mfcc_table))
 
     # Run inference button
     if check_pretrained_model():
