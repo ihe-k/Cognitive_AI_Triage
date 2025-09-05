@@ -1004,9 +1004,9 @@ def run_app():
         "Adjusted Severity": [f"{x:.2f}" for x in adjusted_all_],
         "Priority": ["✅ Yes" if i in treated else "❌ No" for i in range(len(adjusted_all_))]
     })
-    #st.dataframe(df_all.drop(columns=["Patient ID"]).head(100), use_container_width=True)
-
     st.dataframe(df_all.drop(columns=["Patient ID"]).head(100), use_container_width=True)
+
+   # st.dataframe(df_all.drop(columns=["Patient ID"]).head(100), use_container_width=True)
 
     # Patient Details & Explanations
     st.subheader("📊 Patient Details and Explanations")
