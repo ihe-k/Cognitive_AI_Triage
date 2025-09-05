@@ -894,6 +894,8 @@ def run_app():
     if "mfcc_features" in st.session_state:
         mfcc_features = st.session_state["mfcc_features"]
 
+        st.write(f"MFCC Features Shape: {mfcc_features.shape}")
+        
         # Create a heatmap to visualize the MFCC features over time
         plt.figure(figsize=(10, 6))
         sns.heatmap(mfcc_features.T, cmap='viridis', cbar=True, xticklabels=False, yticklabels=False)
