@@ -1037,16 +1037,35 @@ def run_app():
 
     df_all = df_all.reset_index(drop=True)
 
-    styled_df = df_all.head(100).style.set_properties(
+    styled_df = df_all.head(50).style.set_properties(
         subset=["Patient ID"],
         **{"text-align": "left"}
     )
+    
+    html = styled_df.to_html(index=False)
 
-    st.write(styled_df.to_html(), unsafe_allow_html=True)
+    custom_css = """
+    <style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    thead th {
+        text-align: left !important;
+    }
+    tbody td {
+        text-align: left !important;
+    }
+    </style>
+    """
+
+    st.markdown(custom_css + html, unsafe_allow_html=True)
+    
+    #st.write(styled_df.to_html(), unsafe_allow_html=True)
     
     #st.dataframe(df_all.drop(columns=["Patient ID"]).head(100), use_container_width=True, hide_index=True)
     
-    #st.dataframe(df_all.head(100), use_container_width=True, hide_index=True)
+    #st.dataframe(df_all.head(100), use_container_width=True, hide_index=true)
 
    
 
