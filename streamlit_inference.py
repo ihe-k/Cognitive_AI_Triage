@@ -970,15 +970,15 @@ def run_app():
 
                 # Ensure that both heart_rate and hrv lists are not empty
                 if len(heart_rate) > 0 and len(hrv) > 0:
-                # Get risk level prediction using the latest data
-                risk_prediction = predict_alzheimers_risk(heart_rate[-1], hrv[-1])
+                    # Get risk level prediction using the latest data
+                    risk_prediction = predict_alzheimers_risk(heart_rate[-1], hrv[-1])
 
-                # Display prediction note below the graph
-                st.write(f"**Prediction:** {risk_prediction}")
+                    # Display prediction note below the graph
+                    st.write(f"**Prediction:** {risk_prediction}")
+                else:
+                    st.error("Heart rate or HRV data is empty. Please ensure data is available.")
             else:
-                st.error("Heart rate or HRV data is empty. Please ensure data is available.")
-        else:
-            st.error("Heart rate or HRV data not found in session state. Please upload data first.")
+                st.error("Heart rate or HRV data not found in session state. Please upload data first.")
 ####
 
         st.subheader("📋 Physiological Data")
