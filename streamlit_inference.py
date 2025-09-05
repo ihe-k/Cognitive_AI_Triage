@@ -1065,7 +1065,7 @@ def run_app():
    
 
     # Render the styled table
-    st.markdown(custom_css + html, unsafe_allow_html=True)
+    #st.markdown(custom_css + html, unsafe_allow_html=True)
 
     
     # Patient Details & Explanations
