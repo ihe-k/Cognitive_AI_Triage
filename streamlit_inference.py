@@ -950,6 +950,28 @@ def run_app():
         st.pyplot(fig, use_container_width=True)
         plt.close(fig)
 
+
+            ####
+        def predict_alzheimers_risk(heart_rate, hrv):
+            if heart_rate <= 75 and hrv > 50:
+                return "Minimal Risk of Alzheimer's"
+            elif 75 < heart_rate <= 85 and 30 <= hrv <= 50:
+                return "Mild Risk of Alzheimer's"
+            elif 85 < heart_rate <= 95 and 20 <= hrv < 30:
+                return "Moderate Risk of Alzheimer's"
+            elif heart_rate > 95 and hrv < 20:
+                return "Severe Risk of Alzheimer's"
+            else:
+                return "Unable to determine risk"
+
+        # Get risk level prediction
+        risk_prediction = predict_alzheimers_risk(heart_rate[-1], hrv[-1])
+
+        # Display prediction note below the graph
+        st.write(f"**Prediction:** {risk_prediction}")
+
+####
+
         st.subheader("📋 Physiological Data")
 
         
