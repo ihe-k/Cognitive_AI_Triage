@@ -1053,8 +1053,12 @@ def run_app():
     }
     </style>
     """
+    html_table = df_all.head(50).to_html(index=False, classes="custom-table")
 
-    st.markdown(custom_css + html_table, unsafe_allow_html=True)
+    st.markdown(custom_css, unsafe_allow_html=True)
+    st.markdown(html_table, unsafe_allow_html=True)
+    
+    #st.markdown(custom_css + html_table, unsafe_allow_html=True)
     
     #st.write(styled_df.to_html(), unsafe_allow_html=True)
     
