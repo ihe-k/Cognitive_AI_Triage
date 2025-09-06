@@ -982,10 +982,8 @@ def run_app():
         # Hide the specified column (Important: This is done *before* styling)
             if priority_column_name in df_copy.columns:
                 df_copy = df_copy.drop(columns=[priority_column_name])
-            df_copy = df_copy.reset_index(drop=True)
-            df_copy.index + 1
             #st.write(df_copy, use_container_width=True, hide_index=true)
-            st.dataframe(df_copy, use_container_width=True) 
+            st.dataframe(df_copy, use_container_width=True, hide_index=True) 
         except Exception as e:
             st.error(f"Error displaying DataFrame: {e}")
 
