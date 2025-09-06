@@ -970,6 +970,8 @@ def run_app():
                 st.success("MFCC features extracted successfully!")
             else:
                 st.warning("No MFCC features extracted from the audio files.")
+                
+def display_dataframe(df, priority_column_name):                
     try:
     # Create a copy to avoid modifying the original DataFrame
         df_copy = df.copy()
