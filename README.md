@@ -11,6 +11,8 @@ Beyond the clinical prediction model, this project also simulates the spread of 
 
 The entire pipeline is visualised through a Streamlit app, including model predictions, explainability tools (SHAP, LIME), and a real-time network-based misinformation simulation.
 
+[Link to App](https://cognitiveaitriage-upcnmprvydp5bhgfjpox8k.streamlit.app/)
+
 ## Key Features
 * Multimodal Input: Combines features from audio (MFCC), image (ResNet), physiological signals, gaze, pose, and PHQ scores.
 * Severity Prediction: Uses Random Forest Regression to predict PHQ severity.
