@@ -694,7 +694,7 @@ def run_app():
     capacity   = st.sidebar.number_input("Treatment Capacity", min_value=1, max_value=500, value=10)
 
             # Run inference button
-    width = 200
+    
     if check_pretrained_model():
         if st.sidebar.button("▶️ Run Inference"):
             with st.spinner("Loading pretrained model and running inference..."):
@@ -1027,6 +1027,40 @@ def run_app():
         st.markdown(html_physio_table, unsafe_allow_html=True)
     
         ####
+        # Create a DataFrame
+        physio_df = pd.DataFrame(data)
+
+        # Feature Distributions Subheader
+        st.subheader("📈 Feature Distributions")
+
+        # Create the histograms with seaborn and matplotlib
+        fig, axes = plt.subplots(1, 3, figsize=(18, 4))
+
+        # Plot Breathing Rate Distribution
+        sns.histplot(physio_df["Breathing Rate (bpm)"], ax=axes[0], kde=True, color="#003A6B")
+        axes[0].set_title("Breathing Rate Distribution")
+
+        # Plot Tapping Rate Distribution
+        sns.histplot(physio_df["Tapping Rate (taps/sec)"], ax=axes[1], kde=True, color="#3776A1")
+        axes[1].set_title("Tapping Rate Distribution")
+
+        # Plot Heart Rate Distribution
+        sns.histplot(physio_df["Heart Rate (bpm)"], ax=axes[2], kde=True, color="#6EB1D6")
+        axes[2].set_title("Heart Rate Distribution")
+
+        # Display the histograms in Streamlit
+        st.pyplot(fig, use_container_width=True)
+        plt.close(fig)
+
+        # Physiological Data Subheader
+        st.subheader("📋 Physiological Data")
+
+        # Format the dataframe values to two decimal places
+        formatted_df = physio_df.applymap(lambda x: f"{x:.2f}")
+
+        # Display the formatted dataframe in Streamlit
+        st.dataframe(formatted_df, use_container_width=True)
+
         
         ####
         #st.dataframe(st.session_state["physio_data"], use_container_width=True)  # Display as a dataframe
