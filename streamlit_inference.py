@@ -1060,19 +1060,23 @@ def run_app():
     
         ####
         
-        st.subheader("Physiological Markers for the Individual")
+        st.subheader("Graphs: Physiological Markers")
+
+        # Collecting physiological markers from sliders
+        heart_rate_individual = st.slider("Heart Rate (bpm)", min_value=50, max_value=200, value=85)
+        breathing_rate_individual = st.slider("Breathing Rate (bpm)", min_value=10, max_value=30, value=16)
+        tapping_rate_individual = st.slider("Tapping Rate (taps/sec)", min_value=0.5, max_value=5.0, value=3.0)
+
         st.write(f"Heart Rate: {heart_rate_individual:.2f} bpm")
         st.write(f"Breathing Rate: {breathing_rate_individual:.2f} bpm")
         st.write(f"Tapping Rate: {tapping_rate_individual:.2f} taps/sec")
 
         # Plot histograms for each physiological marker
-        # You can replace the previous plot function calls with the new plot_histograms function
         plot_histograms()
 
-        # Calculate dementia risk based on the individual’s physiological markers
         risk = classify_dementia_risk(breathing_rate_individual, tapping_rate_individual, heart_rate_individual)
 
-        # Display dementia prediction (Part 3)
+        # Display dementia prediction
         st.subheader("Dementia Risk Prediction")
         if risk.startswith("Error"):
             st.error(risk)  # Display error message in red
