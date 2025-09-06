@@ -998,6 +998,19 @@ def run_app():
         st.write("**Audio Files Summary: Predicted Depression Severity Risk:**")
         st.dataframe(styled_df, use_container_width=True, hide_index=True)
 
+        # Calculate the mean MFCC value for the file
+        mfcc_mean_value = np.mean(mfcc_features)  # or pick a specific coefficient
+        # Get severity and priority
+        severity, priority = map_severity_with_priority(mfcc_mean_value)
+
+        if isinstance(risk, str) and risk.startswith("Error"):
+            st.error(risk)  # Display error message in red
+        else:
+            st.success(f"**Prediction:** {risk}")  # Display success message in green
+
+        # Display severity prediction for the audio
+        st.info(f"Predicted Severity from MFCC Mean: {severity}")
+
         # Define color styling function based on Predicted Severity
        # def apply_severity_color(row):
          #   severity = row['Predicted Severity']
