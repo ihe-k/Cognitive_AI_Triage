@@ -1058,7 +1058,7 @@ def run_app():
        # st.info(f"Predicted Severity from MFCC Mean: {severity}")
 
         # Reset index for styling
-     #   summary_df_reset = summary_df.reset_index(drop=True)
+        summary_df_reset = summary_df.reset_index(drop=True)
 
         # Apply styling
        # styled_df = summary_df_reset.style.apply(apply_severity_color, axis=1)
