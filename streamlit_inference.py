@@ -1102,7 +1102,7 @@ def run_app():
                 color = "background-color: #28a745; color: white;"  # Green
             elif severity in ["Mild", "Moderate"]:
                 color = "background-color: #ffc107; color: black;"  # Amber
-            else:  # "Moderately Severe" or "Severe"
+            else:  # "Moderately severe" or "Severe"
                 color = "background-color: #dc3545; color: white;"  # Red
             return [color] * len(row)
 
