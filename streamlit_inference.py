@@ -1070,15 +1070,6 @@ def run_app():
         st.pyplot(fig, use_container_width=True)
         plt.close(fig)
 
-        def classify_dementia_risk(breathing_rate, tapping_rate, heart_rate):
-            # Dummy logic for classification
-            if breathing_rate < 20 or tapping_rate < 5 or heart_rate < 100:
-                return "Dementia Risk: Low"
-            elif breathing_rate > 20 or tapping_rate > 3.0 or heart_rate > 100:
-                return "Dementia Risk: High"
-            else:
-                return "Dementia Risk: Medium"
-
         # Physiological Data Subheader
       #  st.subheader("📋 Physiological Data")
 
