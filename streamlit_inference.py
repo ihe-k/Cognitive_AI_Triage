@@ -904,17 +904,17 @@ def run_app():
             return None
 
 # Function to map MFCC mean to depression severity
-    def map_severity(mean_val):
-        if mean_val > -10:
-            return "None/Minimal"
-        elif -18 < mean_val <= -10:
-            return "Mild"
-        elif -28 < mean_val <= -18:
-            return "Moderate"
-        elif -30 < mean_val <= -28:
-            return "Moderately Severe"
-        else:
-            return "Severe"
+    #def map_severity(mean_val):
+    #    if mean_val > -10:
+     #       return "None/Minimal"
+      #  elif -18 < mean_val <= -10:
+      #      return "Mild"
+      #  elif -28 < mean_val <= -18:
+       #     return "Moderate"
+       # elif -30 < mean_val <= -28:
+        #    return "Moderately Severe"
+       # else:
+       #     return "Severe"
 
     def map_severity_with_priority(mean_val):
         if mean_val > -10:
@@ -963,7 +963,7 @@ def run_app():
         summary_df["MFCC_Mean"].fillna(0, inplace=True)  # Replace NaNs with 0 (or another suitable value)
 
         # Add Predicted Severity column
-        summary_df["Predicted Severity"] = summary_df["MFCC_Mean"].apply(map_severity)
+       # summary_df["Predicted Severity"] = summary_df["MFCC_Mean"].apply(map_severity)
 
         # Map severity and priority
         summary_df['Severity'], summary_df['Priority_Flag'] = zip(*summary_df['MFCC_Mean'].apply(map_severity_with_priority))
