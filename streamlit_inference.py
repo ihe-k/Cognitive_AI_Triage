@@ -971,22 +971,22 @@ def run_app():
             else:
                 st.warning("No MFCC features extracted from the audio files.")
 
-    # Create a copy to avoid modifying the original DataFrame
-    df_copy = df.copy()
+        # Create a copy to avoid modifying the original DataFrame
+        df_copy = df.copy()
 
-    # Hide the specified column (Important: This is done *before* styling)
-    if priority_column_name in df_copy.columns:
-        df_copy = df_copy.drop(columns=[priority_column_name])
+        # Hide the specified column (Important: This is done *before* styling)
+        if priority_column_name in df_copy.columns:
+            df_copy = df_copy.drop(columns=[priority_column_name])
 
-    # Start index from 1
-    df_copy = df_copy.reset_index(drop=True).rename_axis("Row")
-    df_copy.index += 1  # Shift index by 1
+        # Start index from 1
+        df_copy = df_copy.reset_index(drop=True).rename_axis("Row")
+        df_copy.index += 1  # Shift index by 1
 
-    # ... (rest of your styling code from the previous response)
-    # Example styling (you can customize this)
-    styled_df = df_copy.style.hide_index().set_properties(**{'text-align': 'center'})
+        # ... (rest of your styling code from the previous response)
+        # Example styling (you can customize this)
+        styled_df = df_copy.style.hide_index().set_properties(**{'text-align': 'center'})
 
-    st.dataframe(styled_df)    
+        st.dataframe(styled_df)    
     
     # Display Summary Table with Predicted Severity
     if "audio_results" in st.session_state and "summary_df" in st.session_state["audio_results"]:
