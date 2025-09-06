@@ -19,6 +19,7 @@ import shap
 import seaborn as sns
 
 
+
 # Conditional OpenCV import for cloud compatibility
 try:
     import cv2
@@ -51,6 +52,41 @@ except ImportError:
     cosine_similarity = None
     print("Warning: sklearn not available. Some audio analysis features will be disabled.")
 
+# Function to simulate or get physiological markers for multiple patients
+def get_population_data(n_patients=100):
+    heart_rate_population = np.random.uniform(60, 100, n_patients)  # Heart rate (bpm)
+    breathing_rate_population = np.random.uniform(12, 20, n_patients)  # Breathing rate (bpm)
+    tapping_rate_population = np.random.uniform(1, 5, n_patients)  # Tapping rate (taps/sec)
+    return heart_rate_population, breathing_rate_population, tapping_rate_population
+
+# Function to simulate a specific patient's data
+def get_individual_data():
+    heart_rate_individual = np.random.uniform(60, 100)  # Heart rate (bpm)
+    breathing_rate_individual = np.random.uniform(12, 20)  # Breathing rate (bpm)
+    tapping_rate_individual = np.random.uniform(1, 5)  # Tapping rate (taps/sec)
+    return heart_rate_individual, breathing_rate_individual, tapping_rate_individual
+
+# Function to classify dementia risk based on the provided criteria
+def classify_dementia_risk(breathing_rate, tapping_rate, heart_rate):
+    if heart_rate > 100 or tapping_rate < 1 or breathing_rate > 20:
+        return "High risk of dementia"
+    else:
+        return "Minimal/No risk of dementia"
+
+# Function to plot histogram and overlay the individual's result
+def plot_histogram_with_individual_data(population_data, individual_data, title, xlabel, ylabel):
+    fig, ax = plt.subplots(figsize=(8, 6))
+    ax.hist(population_data, bins=15, color='skyblue', edgecolor='black', alpha=0.7, label="Population Data")
+    
+    # Overlay the individual's data as a red marker
+    ax.axvline(individual_data, color='red', linestyle='dashed', linewidth=2, label="Individual's Data")
+    
+    ax.set_title(title)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.legend()
+    
+    st.pyplot(fig)
 
 
 # =============================================================================
@@ -1023,7 +1059,27 @@ def run_app():
         st.markdown(html_physio_table, unsafe_allow_html=True)
     
         ####
-    
+        
+        st.subheader("Physiological Markers for the Individual")
+        st.write(f"Heart Rate: {heart_rate_individual:.2f} bpm")
+        st.write(f"Breathing Rate: {breathing_rate_individual:.2f} bpm")
+        st.write(f"Tapping Rate: {tapping_rate_individual:.2f} taps/sec")
+
+        # Plot histograms for each physiological marker
+        # You can replace the previous plot function calls with the new plot_histograms function
+        plot_histograms()
+
+        # Calculate dementia risk based on the individual’s physiological markers
+        risk = classify_dementia_risk(breathing_rate_individual, tapping_rate_individual, heart_rate_individual)
+
+        # Display dementia prediction (Part 3)
+        st.subheader("Dementia Risk Prediction")
+        if risk.startswith("Error"):
+            st.error(risk)  # Display error message in red
+        else:
+            st.success(f"**Prediction:** {risk}")  # Display success message in green
+
+        ####
         #st.dataframe(st.session_state["physio_data"], use_container_width=True)  # Display as a dataframe
         # st.dataframe(physio_df, use_container_width=True)
         # formatted_df = physio_df.applymap(lambda x: f"{x:.2f}")
