@@ -971,36 +971,36 @@ def run_app():
             else:
                 st.warning("No MFCC features extracted from the audio files.")
                 
-def display_dataframe(df, priority_column_name): 
-    if df is None:
-        st.warning("DataFrame is empty or None.")
-        return
-    try:
-    # Create a copy to avoid modifying the original DataFrame
-        df_copy = df.copy()
+    def display_dataframe(df, priority_column_name): 
+        if df is None:
+            st.warning("DataFrame is empty or None.")
+            return
+        try:
+    #     Create a copy to avoid modifying the original DataFrame
+            df_copy = df.copy()
 
-    # Hide the specified column (Important: This is done *before* styling)
-        if priority_column_name in df_copy.columns:
-            df_copy = df_copy.drop(columns=[priority_column_name])
-        df_copy = df_copy.reset_index(drop=True)
-        st.write(df_copy)
-        #st.dataframe(df_copy, use_container_width=True, hide_index=False) 
-    except Exception as e:
-        st.error(f"Error displaying DataFrame: {e}")
+        # Hide the specified column (Important: This is done *before* styling)
+            if priority_column_name in df_copy.columns:
+                df_copy = df_copy.drop(columns=[priority_column_name])
+            df_copy = df_copy.reset_index(drop=True)
+            st.write(df_copy)
+            #st.dataframe(df_copy, use_container_width=True, hide_index=False) 
+        except Exception as e:
+            st.error(f"Error displaying DataFrame: {e}")
 
-        display_dataframe(df, priority_column_name)
+            display_dataframe(df, priority_column_name)
 
-        # Example with MFCC features (combining with your existing code)
-        if "mfcc_features" in st.session_state:
-            mfcc_features_list = st.session_state["mfcc_features"]
+            # Example with MFCC features (combining with your existing code)
+            if "mfcc_features" in st.session_state:
+                mfcc_features_list = st.session_state["mfcc_features"]
 
-            # Check if mfcc_features_list is valid
-            if mfcc_features_list is not None and len(mfcc_features_list) > 0:
-                # Example assuming mfcc_features_list is a list of lists (adjust as needed)
-                mfcc_df = pd.DataFrame(mfcc_features_list)
-                display_dataframe(mfcc_df, "MFCC_feature") # Replace "MFCC_feature" with your column name if needed
-            else:
-                st.warning("No valid MFCC features to display.")
+                # Check if mfcc_features_list is valid
+                if mfcc_features_list is not None and len(mfcc_features_list) > 0:
+                    # Example assuming mfcc_features_list is a list of lists (adjust as needed)
+                    mfcc_df = pd.DataFrame(mfcc_features_list)
+                    display_dataframe(mfcc_df, "MFCC_feature") # Replace "MFCC_feature" with your column name if needed
+                else:
+                    st.warning("No valid MFCC features to display.")
 
     # Display Summary Table with Predicted Severity
     if "audio_results" in st.session_state and "summary_df" in st.session_state["audio_results"]:
@@ -1011,7 +1011,7 @@ def display_dataframe(df, priority_column_name):
         summary_df["MFCC_Mean"].fillna(0, inplace=True)  # Replace NaNs with 0 (or another suitable value)
 
         # Add Predicted Severity column
-       # summary_df["Predicted Severity"] = summary_df["MFCC_Mean"].apply(map_severity)
+        # summary_df["Predicted Severity"] = summary_df["MFCC_Mean"].apply(map_severity)
 
         # Map severity and priority
         summary_df['Severity'], summary_df['Priority_Flag'] = zip(*summary_df['MFCC_Mean'].apply(map_severity_with_priority))
