@@ -1077,7 +1077,7 @@ def run_app():
             return ['display: none;' if col == 'Priority_Flag' else '' for col in s.index]
 
         styled_df = summary_df_reset.style.apply(hide_column, axis=0)
-        html_table = styled_df.render()
+       # html_table = styled_df.render()
 
         # Display the table with the hidden 'Priority_Flag' column
         # st.markdown(html_table, unsafe_allow_html=True)
