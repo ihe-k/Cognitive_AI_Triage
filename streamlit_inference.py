@@ -987,7 +987,7 @@ def run_app():
         except Exception as e:
             st.error(f"Error displaying DataFrame: {e}")
 
-    display_dataframe(df, 'priority_flag') 
+        display_dataframe(df, 'priority_flag') 
         
 
             # Example with MFCC features (combining with your existing code)
