@@ -1061,8 +1061,19 @@ def run_app():
         # Combine CSS and table HTML
         html_with_style = styled_df.to_html()
 
-        # Display the table with the new Priority column
-        st.write("**Audio Files Summary: Predicted Depression Severity Risk**")
+        # Reset index for styling and set the starting index to 1
+        summary_df_reset = summary_df_renamed.drop(columns=['Priority_Flag']).reset_index(drop=True)
+        summary_df_reset.index = summary_df_reset.index + 1  # Adjusting the index to start from 1
+
+        # Apply styling to hide 'Priority_Flag' and display the styled DataFrame
+        def hide_column(s):
+            return ['display: none;' if col == 'Priority_Flag' else '' for col in s.index]
+
+        styled_df = summary_df_reset.style.apply(hide_column, axis=0)
+        html_table = styled_df.render()
+
+        # Display the table with the hidden 'Priority_Flag' column
+        # st.markdown(html_table, unsafe_allow_html=True)
 
         # Render in Streamlit
         st.markdown("**Audio Files Summary: Predicted Depression Severity Risk**")
