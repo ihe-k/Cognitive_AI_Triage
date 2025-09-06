@@ -981,24 +981,20 @@ def run_app():
 
         # Hide the specified column (Important: This is done *before* styling)
             if priority_column_name in df_copy.columns:
-                df_copy = df_copy.drop(columns=[priority_column_name])
-            df_copy.index = df_copy.index + 1      
-            html_table = df_copy.to_html(index=False)
+                def hide_column(s):
+                    return ['display: none;' if col == priority_column_name else '' for col in s.index]
+                styled_df = df_copy.style.apply(hide_column, axis=0)
 
-            css = f"""
-                <style>
-                    /* Hide the 'priority_flag' column */
-                    .dataframe th:nth-child({df_copy.columns.get_loc(priority_column_name) + 1}), 
-                    .dataframe td:nth-child({df_copy.columns.get_loc(priority_column_name) + 1}) {{
-                        display: none;
-                    }}
-                </style>
-            """
-            html_with_style = css + html_table
-            st.markdown(html_with_style, unsafe_allow_html=True)
+                html_table = styled_df.render()
+
+                st.markdown(html_table, unsafe_allow_html=True)
+
+            else:
+            
+                st.dataframe(df_copy)
         except Exception as e:
             st.error(f"Error displaying DataFrame: {e}")
-
+            
             # Example with MFCC features (combining with your existing code)
             if "mfcc_features" in st.session_state:
                 mfcc_features_list = st.session_state["mfcc_features"]
