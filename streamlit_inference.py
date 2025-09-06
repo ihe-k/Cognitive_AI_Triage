@@ -60,9 +60,9 @@ except ImportError:
 #        return "Minimal risk of dementia"
 
 def classify_dementia_risk(breathing_rate, tapping_rate, heart_rate):
-    if breathing_rate < 20 or tapping_rate > 3 or heart_rate < 100:
+    if breathing_rate < 20 or tapping_rate > 1 or heart_rate < 100:
         return "Dementia Risk: Low"
-    elif breathing_rate > 20 or tapping_rate < 1.0 or heart_rate > 100:
+    elif breathing_rate > 20 or tapping_rate < 1 or heart_rate > 100:
         return "Dementia Risk: High"
     else:
         return "Dementia Risk: Medium"
