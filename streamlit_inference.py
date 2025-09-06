@@ -1061,8 +1061,8 @@ def run_app():
         render_summary_table(summary_df)
         ###
         # Ensure 'MFCC_Mean' is numeric
-        summary_df["MFCC_Mean"] = pd.to_numeric(summary_df["MFCC_Mean"], errors='coerce')  # Coerce non-numeric values to NaN
-        summary_df["MFCC_Mean"].fillna(0, inplace=True)  # Replace NaNs with 0 (or another suitable value)
+        summary_df["MFCC Mean"] = pd.to_numeric(summary_df["MFCC Mean"], errors='coerce')  # Coerce non-numeric values to NaN
+        summary_df["MFCC Mean"].fillna(0, inplace=True)  # Replace NaNs with 0 (or another suitable value)
 
         # Add Predicted Severity column
         # summary_df["Predicted Severity"] = summary_df["MFCC_Mean"].apply(map_severity)
