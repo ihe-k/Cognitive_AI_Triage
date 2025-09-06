@@ -975,34 +975,27 @@ try:
         df_copy = df.copy()
 
     # Hide the specified column (Important: This is done *before* styling)
-    if priority_column_name in df_copy.columns:
-        df_copy = df_copy.drop(columns=[priority_column_name])
         if priority_column_name in df_copy.columns:
-        df_copy = df_copy.drop(columns=[priority_column_name])
-        df_copy = df_copy.astype(object).applymap(lambda x: f"{x:.2f}" if isinstance(x, (int, float)) else x)  # 2 decimal places
-        df_copy.index += 1
-
-        # Style the DataFrame (important: after index modification)
-        styled_df = df_copy.style.hide_index().set_properties(**{'text-align': 'center'})
-
-        st.dataframe(styled_df)
-    except KeyError as e:
-        st.error(f"Error: Column '{priority_column_name}' not found.")
+            df_copy = df_copy.drop(columns=[priority_column_name])
+        if priority_column_name in df_copy.columns:
+        df_copy = df_copy.reset_index(drop=True)
+        st.dataframe(df_copy, use_container_width=True, hide_index=False) #hide_index=True if you want to hide the index
     except Exception as e:
-        st.error(f"An unexpected error occurred: {e}")
-        
-        # Start index from 1
-        df_copy = df_copy.reset_index(drop=True).rename_axis("Row")
-        df_copy.index += 1  # Shift index by 1
-
-        # ... (rest of your styling code from the previous response)
-        # Example styling (you can customize this)
-        styled_df = df_copy.style.hide_index().set_properties(**{'text-align': 'center'})
-
-        st.dataframe(styled_df)    
-        priority_column_name = 'priority_flag'
+        st.error(f"Error displaying DataFrame: {e}")
 
         display_dataframe(df, priority_column_name)
+
+        # Example with MFCC features (combining with your existing code)
+        if "mfcc_features" in st.session_state:
+            mfcc_features_list = st.session_state["mfcc_features"]
+
+            # Check if mfcc_features_list is valid
+            if mfcc_features_list is not None and len(mfcc_features_list) > 0:
+                # Example assuming mfcc_features_list is a list of lists (adjust as needed)
+                mfcc_df = pd.DataFrame(mfcc_features_list)
+                display_dataframe(mfcc_df, "MFCC_feature") # Replace "MFCC_feature" with your column name if needed
+            else:
+                st.warning("No valid MFCC features to display.")
 
     # Display Summary Table with Predicted Severity
     if "audio_results" in st.session_state and "summary_df" in st.session_state["audio_results"]:
