@@ -983,7 +983,7 @@ def run_app():
        # summary_df["Predicted Severity"] = summary_df["MFCC_Mean"].apply(map_severity)
 
         # Map severity and priority
-       # summary_df['Severity'], summary_df['Priority_Flag'] = zip(*summary_df['MFCC_Mean'].apply(map_severity_with_priority))
+        summary_df['Severity'], summary_df['Priority_Flag'] = zip(*summary_df['MFCC_Mean'].apply(map_severity_with_priority))
 
         summary_df['Priority'] = summary_df['Priority_Flag'].apply(lambda x: '✅ Yes' if x else '❌ No')
 
@@ -1034,7 +1034,7 @@ def run_app():
         if isinstance(drisk, str) and drisk.startswith("Error"):
             st.error(drisk)
         else:
-            st.success(f"**Prediction:** {drisk}")
+            st.success(f"**Prediction:** {drisk} risk of depression")
         
         # Display severity prediction for the audio
        # st.info(f"Predicted Severity from MFCC Mean: {severity}")
