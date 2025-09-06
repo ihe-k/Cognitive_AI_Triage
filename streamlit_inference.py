@@ -1028,29 +1028,24 @@ def run_app():
     
         ####
         # Create a DataFrame
-        physio_df = pd.DataFrame(physio_data)
+        #physio_df = pd.DataFrame(physio_data)
 
         # Feature Distributions Subheader
         st.subheader("📈 Feature Distributions")
 
-        # Create the histograms with seaborn and matplotlib
         fig, axes = plt.subplots(1, 3, figsize=(18, 4))
-
-        # Plot Breathing Rate Distribution
         sns.histplot(physio_df["Breathing Rate"], ax=axes[0], kde=True, color="#003A6B")
         axes[0].set_title("Breathing Rate Distribution")
 
-        # Plot Tapping Rate Distribution
         sns.histplot(physio_df["Tapping Rate"], ax=axes[1], kde=True, color="#3776A1")
         axes[1].set_title("Tapping Rate Distribution")
 
-        # Plot Heart Rate Distribution
         sns.histplot(physio_df["Heart Rate"], ax=axes[2], kde=True, color="#6EB1D6")
         axes[2].set_title("Heart Rate Distribution")
 
-        # Display the histograms in Streamlit
         st.pyplot(fig, use_container_width=True)
         plt.close(fig)
+
 
         # Physiological Data Subheader
         st.subheader("📋 Physiological Data")
