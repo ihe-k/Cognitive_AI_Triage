@@ -971,6 +971,23 @@ def run_app():
             else:
                 st.warning("No MFCC features extracted from the audio files.")
 
+    # Create a copy to avoid modifying the original DataFrame
+    df_copy = df.copy()
+
+    # Hide the specified column (Important: This is done *before* styling)
+    if priority_column_name in df_copy.columns:
+        df_copy = df_copy.drop(columns=[priority_column_name])
+
+    # Start index from 1
+    df_copy = df_copy.reset_index(drop=True).rename_axis("Row")
+    df_copy.index += 1  # Shift index by 1
+
+    # ... (rest of your styling code from the previous response)
+    # Example styling (you can customize this)
+    styled_df = df_copy.style.hide_index().set_properties(**{'text-align': 'center'})
+
+    st.dataframe(styled_df)    
+    
     # Display Summary Table with Predicted Severity
     if "audio_results" in st.session_state and "summary_df" in st.session_state["audio_results"]:
         summary_df = st.session_state["audio_results"]["summary_df"].copy()
@@ -984,6 +1001,8 @@ def run_app():
 
         # Map severity and priority
         summary_df['Severity'], summary_df['Priority_Flag'] = zip(*summary_df['MFCC_Mean'].apply(map_severity_with_priority))
+
+       # summary_df['Severity'], summary_df['Priority_Flag'] = zip(*summary_df['MFCC_Mean'].apply(map_severity_with_priority))
 
         summary_df['Priority'] = summary_df['Priority_Flag'].apply(lambda x: '✅ Yes' if x else '❌ No')
 
@@ -1015,25 +1034,10 @@ def run_app():
         # Format numeric columns
         styled_df = styled_df.format({
             'MFCC Mean': '{:.2f}', 
-            'MFCC Std Dev': '{:.2f}', 
-            'MFCC Range (Max-Min)': '{:.2f}'
+            'MFCC SD': '{:.2f}', 
+            'MFCC Range': '{:.2f}'
         })
 
-    #    html_str = styled_df.render()
-    #    custom_css = """
-    #    <style>
-    #    /* Apply to the table with class 'dataframe' or your custom class if set */
-    #    table.dataframe {
-    #        width: 100%;
-    #        border-collapse: collapse;
-    #    }
-    #    table.dataframe th, table.dataframe td {
-    #        text-align: left !important;
-    #        padding: 6px 12px;
-    #        border: 1px solid #ddd;
-    #    }
-    #    </style>
-    #    """
 
         # Combine CSS and table HTML
         html_with_style = styled_df.to_html()
