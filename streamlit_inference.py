@@ -1128,8 +1128,8 @@ def run_app():
                     'props': [('text-align', 'left')]
                 }])
 
-        st.markdown("**Audio Files Summary: Predicted Depression Severity Risk**")
-        st.markdown(styled_df.to_html(), unsafe_allow_html=True)
+       # st.markdown("**Audio Files Summary: Predicted Depression Severity Risk**")
+       # st.markdown(styled_df.to_html(), unsafe_allow_html=True)
 
         # Apply styling
         #styled_df = summary_df_reset.style.apply(apply_severity_color, axis=1)
