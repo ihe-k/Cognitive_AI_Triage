@@ -980,7 +980,7 @@ def run_app():
             physio_data = np.array(physio_data)
     
         num_physio_samples = physio_data.shape[0] # if isinstance(physio_data, np.ndarray) else len(physio_data)
-        expected_samples = len(arts["pred_sample])
+       # expected_samples = len(arts["pred_sample])
                                
         if num_physio_samples < expected_samples:
             padding = np.full((expected_samples - num_physio_samples, physio_data.shape[1]), None)
