@@ -1228,7 +1228,7 @@ def run_app():
         
                 st.pyplot(fig, use_container_width=True)
                 plt.close(fig)
-            else:
+            elif method == "SHAP":
                 st.subheader("SHAP Explanation")
                 shap_values = arts["explainer_shap"].shap_values(arts["X_sample_s"][patient_idx:patient_idx+1])
                 if isinstance(shap_values, list):
@@ -1271,7 +1271,7 @@ def run_app():
                 plt.close(fig_local)
 
                 # Misinformation Spread Over Time
-                st.subheader("📉 Misinformation Spread Over Time")
+                st.subheader("Misinformation Spread Over Time")
                 fig_misinfo, ax_misinfo = plt.subplots()
                 ax_misinfo.plot(S_list_, label="Susceptible", color='#003A6B', linewidth=2)
                 ax_misinfo.plot(I_list_, label="Infected", color='#3776A1', linewidth=2)
