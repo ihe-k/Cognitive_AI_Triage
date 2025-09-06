@@ -59,20 +59,6 @@ def classify_dementia_risk(breathing_rate, tapping_rate, heart_rate):
     else:
         return "Minimal/No risk of dementia"
 
-# Function to plot histogram and overlay the individual's result
-def plot_histogram_with_individual_data(population_data, individual_data, title, xlabel, ylabel):
-    fig, ax = plt.subplots(figsize=(8, 6))
-    ax.hist(population_data, bins=15, color='skyblue', edgecolor='black', alpha=0.7, label="Population Data")
-    
-    # Overlay the individual's data as a red marker
-    ax.axvline(individual_data, color='red', linestyle='dashed', linewidth=2, label="Individual's Data")
-    
-    ax.set_title(title)
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel(ylabel)
-    ax.legend()
-    
-    st.pyplot(fig)
 
 
 # =============================================================================
@@ -708,6 +694,7 @@ def run_app():
     capacity   = st.sidebar.number_input("Treatment Capacity", min_value=1, max_value=500, value=10)
 
             # Run inference button
+    width = 200
     if check_pretrained_model():
         if st.sidebar.button("▶️ Run Inference"):
             with st.spinner("Loading pretrained model and running inference..."):
@@ -1043,23 +1030,68 @@ def run_app():
         
         st.subheader("Graphs: Physiological Markers")
 
-        # Collecting physiological markers from sliders
-      
-        st.write(f"Heart Rate: {heart_rate:.2f} bpm")
-        st.write(f"Breathing Rate: {breathing_rate:.2f} bpm")
-        st.write(f"Tapping Rate: {tapping_rate:.2f} taps/sec")
+        # Function to plot histograms for the physiological data
+def plot_histogram_with_individual_data(population_data, individual_data, title, x_label, y_label):
+        fig, ax = plt.subplots(figsize=(10, 6))
 
-        # Plot histograms for each physiological marker
-        plot_histograms()
+        # Plot histogram for population data
+        ax.hist(population_data, bins=30, alpha=0.5, label="Population", color='blue')
 
-        risk = classify_dementia_risk(breathing_rate, tapping_rate, heart_rate)
+        # Plot histogram for individual data
+        ax.hist(individual_data, bins=30, alpha=0.5, label="Individual", color='red')
 
-        # Display dementia prediction
-        st.subheader("Dementia Risk Prediction")
-        if risk.startswith("Error"):
-            st.error(risk)  # Display error message in red
-        else:
-            st.success(f"**Prediction:** {risk}")  # Display success message in green
+        # Customize the plot
+        ax.set_title(title)
+        ax.set_xlabel(x_label)
+        ax.set_ylabel(y_label)
+        ax.legend(loc='upper right')
+        ax.grid(True)
+
+        # Display the plot in Streamlit
+        st.pyplot(fig)
+
+        # Example values (replace with actual data)
+    heart_rate = 72.5
+    breathing_rate = 16.0
+    tapping_rate = 2.5
+
+    heart_rate_population = [65, 72, 80, 90, 70, 60, 85, 77, 74, 68]  # Example population data
+    heart_rate_individual = [72, 70, 68, 75]  # Example individual data
+
+    breathing_rate_population = [12, 16, 18, 15, 17, 14, 16, 18]  # Example population data
+    breathing_rate_individual = [16, 17, 15]  # Example individual data
+
+    tapping_rate_population = [2.4, 2.6, 2.7, 2.5, 2.4, 2.9]  # Example population data
+    tapping_rate_individual = [2.5, 2.3, 2.8]  # Example individual data
+
+    # Display the physiological data
+    st.write(f"Heart Rate: {heart_rate:.2f} bpm")
+    st.write(f"Breathing Rate: {breathing_rate:.2f} bpm")
+    st.write(f"Tapping Rate: {tapping_rate:.2f} taps/sec")
+
+    # Classify dementia risk (assuming classify_dementia_risk is defined)
+    risk = classify_dementia_risk(breathing_rate, tapping_rate, heart_rate)
+
+    # Display dementia prediction
+    st.subheader("Dementia Risk Prediction")
+    if risk.startswith("Error"):
+        st.error(risk)  # Display error message in red
+    else:
+        st.success(f"**Prediction:** {risk}")  # Display success message in green
+
+    # Plot histograms for each physiological marker
+    plot_histogram_with_individual_data(heart_rate_population, heart_rate_individual, 
+                                        "Heart Rate Distribution (Population vs Individual)", 
+                                        "Heart Rate (bpm)", "Frequency")
+
+    plot_histogram_with_individual_data(breathing_rate_population, breathing_rate_individual, 
+                                        "Breathing Rate Distribution (Population vs Individual)", 
+                                        "Breathing Rate (bpm)", "Frequency")
+
+    plot_histogram_with_individual_data(tapping_rate_population, tapping_rate_individual, 
+                                        "Tapping Rate Distribution (Population vs Individual)", 
+                                        "Tapping Rate (taps/sec)", "Frequency")
+
 
         ####
         #st.dataframe(st.session_state["physio_data"], use_container_width=True)  # Display as a dataframe
