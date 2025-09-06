@@ -1030,8 +1030,11 @@ def run_app():
         })
 
         # Reset index for styling
-        summary_df_reset = summary_df.drop(columns=['Priority_Flag']).reset_index(drop=True)
-        summary_df_reset.index = summary_df_reset.index + 1 
+        summary_df = summary_df.reset_index(drop=True)
+
+        render_summary_table(summary_df)
+       # summary_df_reset = summary_df.drop(columns=['Priority_Flag']).reset_index(drop=True)
+       # summary_df_reset.index = summary_df_reset.index + 1 
 
        # def hide_column(s):
         #    return ['display: none;' if col == 'Priority_Flag' else '' for col in s.index]
@@ -1052,28 +1055,52 @@ def run_app():
                 color = "background-color: #dc3545; color: white;"  # Red
             return [color] * len(row)
 
+        def render_summary_table(df):
+
+            df_visible = df.drop(columns=['Priority_Flag'])
+
+            df_visible.index = df_visible.index + 1
+
+            styled_df = df_visible.style \
+                .apply(apply_severity_color, axis=1) \
+                .format({
+                    'MFCC Mean': '{:.2f}',
+                    'MFCC SD': '{:.2f}',
+                    'MFCC Range': '{:.2f}'
+                }) \
+                .set_properties(**{
+                    'text-align': 'left'
+                }) \
+                .set_table_styles([{
+                    'selector': 'th',
+                    'props': [('text-align', 'left')]
+                }])
+
+        st.markdown("**Audio Files Summary: Predicted Depression Severity Risk**")
+        st.markdown(styled_df.to_html(), unsafe_allow_html=True)
+
         # Apply styling
         #styled_df = summary_df_reset.style.apply(apply_severity_color, axis=1)
-        styled_df = summary_df_renamed.style.apply(apply_severity_color, axis=1)
+        #styled_df = summary_df_renamed.style.apply(apply_severity_color, axis=1)
 
         # Format numeric columns
-        styled_df = styled_df.format({
-            'MFCC Mean': '{:.2f}', 
-            'MFCC SD': '{:.2f}', 
-            'MFCC Range': '{:.2f}'
-        })
+       # styled_df = styled_df.format({
+        #    'MFCC Mean': '{:.2f}', 
+        #    'MFCC SD': '{:.2f}', 
+        #    'MFCC Range': '{:.2f}'
+       # })
 
 
         # Combine CSS and table HTML
-        styled_df = styled_df.set_properties(**{'text-align': 'left'}, subset=['MFCC Mean', 'MFCC SD', 'MFCC Range'])
-        styled_df = styled_df.set_properties(**{'text-align': 'left'}, subset=[col for col in styled_df.columns])
+        #styled_df = styled_df.set_properties(**{'text-align': 'left'}, subset=['MFCC Mean', 'MFCC SD', 'MFCC Range'])
+       # styled_df = styled_df.set_properties(**{'text-align': 'left'}, subset=[col for col in styled_df.columns])
 
         # Apply styling to hide 'Priority_Flag' and display the styled DataFrame
-        def hide_column(s):
-            return ['display: none;' if col == 'Priority_Flag' else '' for col in s.index]
+       # def hide_column(s):
+       #     return ['display: none;' if col == 'Priority_Flag' else '' for col in s.index]
 
-        styled_df = styled_df.apply(hide_column, axis=0)
-        st.dataframe(styled_df)
+       # styled_df = styled_df.apply(hide_column, axis=0)
+       # st.dataframe(styled_df)
         
        # st.markdown("**Audio Files Summary: Predicted Depression Severity Risk**")
        # st.markdown(html_with_style, unsafe_allow_html=True)
