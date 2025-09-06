@@ -1051,18 +1051,18 @@ def plot_histogram_with_individual_data(population_data, individual_data, title,
         st.pyplot(fig)
 
         # Example values (replace with actual data)
-    heart_rate = 72.5
-    breathing_rate = 16.0
-    tapping_rate = 2.5
+        heart_rate = 72.5
+        breathing_rate = 16.0
+        tapping_rate = 2.5
 
-    heart_rate_population = [65, 72, 80, 90, 70, 60, 85, 77, 74, 68]  # Example population data
-    heart_rate_individual = [72, 70, 68, 75]  # Example individual data
+        heart_rate_population = [65, 72, 80, 90, 70, 60, 85, 77, 74, 68]  # Example population data
+        heart_rate_individual = [72, 70, 68, 75]  # Example individual data
 
-    breathing_rate_population = [12, 16, 18, 15, 17, 14, 16, 18]  # Example population data
-    breathing_rate_individual = [16, 17, 15]  # Example individual data
+        breathing_rate_population = [12, 16, 18, 15, 17, 14, 16, 18]  # Example population data
+        breathing_rate_individual = [16, 17, 15]  # Example individual data
 
-    tapping_rate_population = [2.4, 2.6, 2.7, 2.5, 2.4, 2.9]  # Example population data
-    tapping_rate_individual = [2.5, 2.3, 2.8]  # Example individual data
+        tapping_rate_population = [2.4, 2.6, 2.7, 2.5, 2.4, 2.9]  # Example population data
+        tapping_rate_individual = [2.5, 2.3, 2.8]  # Example individual data
 
     # Display the physiological data
     st.write(f"Heart Rate: {heart_rate:.2f} bpm")
