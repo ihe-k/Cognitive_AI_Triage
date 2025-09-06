@@ -1028,7 +1028,7 @@ def run_app():
     
         ####
         # Create a DataFrame
-        physio_df = pd.DataFrame(data)
+        physio_df = pd.DataFrame(physio_data)
 
         # Feature Distributions Subheader
         st.subheader("📈 Feature Distributions")
