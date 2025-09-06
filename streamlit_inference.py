@@ -657,8 +657,8 @@ def run_app():
     if OPENCV_AVAILABLE:
         st.sidebar.success("✅ OpenCV ready!")
     else:
-        st.sidebar.warning("⚠️ OpenCV not available!")
-        st.sidebar.info("ℹ️ Note: OpenCV  is not available. Using PIL fallback for image processing. Some advanced image features may be limited.")
+        st.sidebar.warning("⚠️ OpenCV not available. Using PIL fallback for image processing. Some advanced image features may be limited")
+      #  st.sidebar.info("ℹ️ Note: OpenCV  is not available. Using PIL fallback for image processing. Some advanced image features may be limited.")
     
     # Audio processing status check
     if librosa is None:
@@ -970,14 +970,27 @@ def run_app():
                 st.success("MFCC features extracted successfully!")
             else:
                 st.warning("No MFCC features extracted from the audio files.")
-
-        # Create a copy to avoid modifying the original DataFrame
+try:
+    # Create a copy to avoid modifying the original DataFrame
         df_copy = df.copy()
 
-        # Hide the specified column (Important: This is done *before* styling)
+    # Hide the specified column (Important: This is done *before* styling)
+    if priority_column_name in df_copy.columns:
+        df_copy = df_copy.drop(columns=[priority_column_name])
         if priority_column_name in df_copy.columns:
-            df_copy = df_copy.drop(columns=[priority_column_name])
+        df_copy = df_copy.drop(columns=[priority_column_name])
+        df_copy = df_copy.astype(object).applymap(lambda x: f"{x:.2f}" if isinstance(x, (int, float)) else x)  # 2 decimal places
+        df_copy.index += 1
 
+        # Style the DataFrame (important: after index modification)
+        styled_df = df_copy.style.hide_index().set_properties(**{'text-align': 'center'})
+
+        st.dataframe(styled_df)
+    except KeyError as e:
+        st.error(f"Error: Column '{priority_column_name}' not found.")
+    except Exception as e:
+        st.error(f"An unexpected error occurred: {e}")
+        
         # Start index from 1
         df_copy = df_copy.reset_index(drop=True).rename_axis("Row")
         df_copy.index += 1  # Shift index by 1
@@ -987,7 +1000,10 @@ def run_app():
         styled_df = df_copy.style.hide_index().set_properties(**{'text-align': 'center'})
 
         st.dataframe(styled_df)    
-    
+        priority_column_name = 'priority_flag'
+
+        display_dataframe(df, priority_column_name)
+
     # Display Summary Table with Predicted Severity
     if "audio_results" in st.session_state and "summary_df" in st.session_state["audio_results"]:
         summary_df = st.session_state["audio_results"]["summary_df"].copy()
