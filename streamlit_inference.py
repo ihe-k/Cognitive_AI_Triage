@@ -534,10 +534,16 @@ def simulate_physiological_markers(n_samples, breathing_range=(12, 20), tapping_
     Returns:
         Array of shape (n_samples, 3) with [breathing, tapping, heart_rate]
     """
+####
     breathing = np.random.uniform(breathing_range[0], breathing_range[1], size=(n_samples, 1))
     tapping = np.random.uniform(tapping_range[0], tapping_range[1], size=(n_samples, 1))
     heart_rate = np.random.uniform(heart_rate_range[0], heart_rate_range[1], size=(n_samples, 1))
     return np.hstack([breathing, tapping, heart_rate])
+####
+    #breathing = np.random.uniform(breathing_range[0], breathing_range[1], size=(n_samples, 1))
+    #tapping = np.random.uniform(tapping_range[0], tapping_range[1], size=(n_samples, 1))
+    #heart_rate = np.random.uniform(heart_rate_range[0], heart_rate_range[1], size=(n_samples, 1))
+    #return np.hstack([breathing, tapping, heart_rate])
 
 # =============================================================================
 # 5) MISINFORMATION SIMULATION
@@ -946,7 +952,10 @@ def run_app():
         st.info("Click **Run Inference** to load the pretrained model and generate predictions")
     else:
         arts = st.session_state["arts"]
-        
+        num_patients = arts["TOTAL_N"]  # Get the number of patients
+####
+
+####        
         expected_samples = len(arts["pred_sample"])
 
         if "physio_data" not in st.session_state:
