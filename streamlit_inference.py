@@ -1009,38 +1009,40 @@ def run_app():
             return [color] * len(row)
 
         # Apply styling
-        styled_df = summary_df_reset.style.apply(apply_severity_color, axis=1)
+        #styled_df = summary_df_reset.style.apply(apply_severity_color, axis=1)
+        styled_df = summary_df_renamed.style.apply(apply_severity_color, axis=1)
 
         # Format numeric columns
         styled_df = styled_df.format({
-            'MFCC_Mean': '{:.2f}', 
-            'MFCC_Std': '{:.2f}', 
-            'MFCC_Range': '{:.2f}'
+            'MFCC Mean': '{:.2f}', 
+            'MFCC Std Dev': '{:.2f}', 
+            'MFCC Range (Max-Min)': '{:.2f}'
         })
 
-        html_str = styled_df.to_html()
-        custom_css = """
-        <style>
-        /* Apply to the table with class 'dataframe' or your custom class if set */
-        table.dataframe {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        table.dataframe th, table.dataframe td {
-            text-align: left !important;
-            padding: 6px 12px;
-            border: 1px solid #ddd;
-        }
-        </style>
-        """
+    #    html_str = styled_df.render()
+    #    custom_css = """
+    #    <style>
+    #    /* Apply to the table with class 'dataframe' or your custom class if set */
+    #    table.dataframe {
+    #        width: 100%;
+    #        border-collapse: collapse;
+    #    }
+    #    table.dataframe th, table.dataframe td {
+    #        text-align: left !important;
+    #        padding: 6px 12px;
+    #        border: 1px solid #ddd;
+    #    }
+    #    </style>
+    #    """
 
         # Combine CSS and table HTML
-        html_with_style = custom_css + html_str
+        html_with_style = styled_df.render()
 
         # Display the table with the new Priority column
         st.write("**Audio Files Summary: Predicted Depression Severity Risk**")
 
         # Render in Streamlit
+        st.markdown("**Audio Files Summary: Predicted Depression Severity Risk**")
         st.markdown(html_with_style, unsafe_allow_html=True)
 
         # Display the table with the new Priority column
