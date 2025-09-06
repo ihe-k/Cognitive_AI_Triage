@@ -983,7 +983,7 @@ def run_app():
        # summary_df["Predicted Severity"] = summary_df["MFCC_Mean"].apply(map_severity)
 
         # Map severity and priority
-        summary_df['Severity'], summary_df['Priority_Flag'] = zip(*summary_df['MFCC_Mean'].apply(map_severity_with_priority))
+       # summary_df['Severity'], summary_df['Priority_Flag'] = zip(*summary_df['MFCC_Mean'].apply(map_severity_with_priority))
 
         summary_df['Priority'] = summary_df['Priority_Flag'].apply(lambda x: '✅ Yes' if x else '❌ No')
 
