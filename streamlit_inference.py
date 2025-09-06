@@ -1030,15 +1030,6 @@ def run_app():
         # Create a DataFrame
         #physio_df = pd.DataFrame(physio_data)
 
-        def classify_dementia_risk(breathing_rate, tapping_rate, heart_rate):
-            # Dummy logic for classification
-            if breathing_rate < 20 or tapping_rate < 5 or heart_rate < 100:
-                return "Low Risk"
-            elif breathing_rate > 20 or tapping_rate > 3.0 or heart_rate > 100:
-                return "High Risk"
-            else:
-                return "Medium Risk"
-
         # Extracting the average values for prediction
         breathing_rate = physio_df["Breathing Rate"].mean()
         tapping_rate = physio_df["Tapping Rate"].mean()
@@ -1070,6 +1061,14 @@ def run_app():
         st.pyplot(fig, use_container_width=True)
         plt.close(fig)
 
+        def classify_dementia_risk(breathing_rate, tapping_rate, heart_rate):
+            # Dummy logic for classification
+            if breathing_rate < 20 or tapping_rate < 5 or heart_rate < 100:
+                return "Dementia Risk: Low"
+            elif breathing_rate > 20 or tapping_rate > 3.0 or heart_rate > 100:
+                return "Dementia Risk: High"
+            else:
+                return "Dementia Risk: Medium"
 
         # Physiological Data Subheader
       #  st.subheader("📋 Physiological Data")
