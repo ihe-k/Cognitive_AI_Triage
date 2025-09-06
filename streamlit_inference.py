@@ -760,7 +760,7 @@ def run_app():
                 st.markdown('<div class="upload-box">', unsafe_allow_html=True)
                 audio_files = st.file_uploader(
                     "Upload Audio Files",
-                    type=["wav", "mp3", "flac"],
+                    type=["wav", "mp3", "flac","aac"],
                     accept_multiple_files=True,
                     key="audio_uploads",
                     label_visibility="collapsed",
