@@ -960,7 +960,8 @@ def run_app():
 
         if "physio_data" not in st.session_state:
             st.session_state["physio_data"] = simulate_physiological_markers(
-                st.session_state.get("n_samples_ui", expected_samples),
+                #st.session_state.get("n_samples_ui", expected_samples),
+                st.session_state.get("n_samples_ui", num_patients),
                 breathing_range=(breathing_min, breathing_max),
                 tapping_range=(tapping_min, tapping_max),
                 heart_rate_range=(heart_rate_min, heart_rate_max)
@@ -968,17 +969,19 @@ def run_app():
 
         #num_physio_samples = len(st.session_state["physio_data"])
         physio_data = st.session_state["physio_data"]
-    
-        if not isinstance(st.session_state["physio_data"], list):
-            st.session_state["physio_data"] = st.session_state["physio_data"].tolist()
 
-        num_physio_samples = len(st.session_state["physio_data"])
+       
+        #if not isinstance(st.session_state["physio_data"], list):
+        #    st.session_state["physio_data"] = st.session_state["physio_data"].tolist()
+
+        #num_physio_samples = len(st.session_state["physio_data"])
     
         if isinstance(physio_data, list):
             physio_data = np.array(physio_data)
     
-        num_physio_samples = physio_data.shape[0] if isinstance(physio_data, np.ndarray) else len(physio_data)
-
+        num_physio_samples = physio_data.shape[0] # if isinstance(physio_data, np.ndarray) else len(physio_data)
+        expected_samples = len(arts["pred_sample])
+                               
         if num_physio_samples < expected_samples:
             padding = np.full((expected_samples - num_physio_samples, physio_data.shape[1]), None)
             physio_data = np.vstack([physio_data, padding])
@@ -986,7 +989,7 @@ def run_app():
 
         # Convert to DataFrame
         physio_df = pd.DataFrame(
-            "physio_data",
+            physio_data,
             columns=["Breathing Rate", "Tapping Rate", "Heart Rate"],
             index=range(1, expected_samples + 1)
         )
