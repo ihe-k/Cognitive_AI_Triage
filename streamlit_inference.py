@@ -1013,7 +1013,7 @@ def run_app():
 
         # Display the table with the new Priority column
         st.write("**Audio Files Summary: Predicted Depression Severity Risk**")
-        st.dataframe(styled_df, use_container_width=True, hide_index=True)
+   #     st.dataframe(styled_df, use_container_width=True, hide_index=True)
 
         # Compute the MFCC mean value (from your features)
         mfcc_mean_value = np.mean(mfcc_features)  # or specific coefficient
