@@ -1012,7 +1012,7 @@ def run_app():
         })
 
         # Display the table with the new Priority column
-        st.write("**Audio Files Summary: Predicted Depression Severity Risk:**")
+        st.write("**Audio Files Summary: Predicted Depression Severity Risk**")
         st.dataframe(styled_df, use_container_width=True, hide_index=True)
 
         # Compute the MFCC mean value (from your features)
@@ -1035,32 +1035,57 @@ def run_app():
             st.error(drisk)
         else:
             st.success(f"**Prediction:** {drisk} risk of depression")
+
+        # Rename columns for clarity
+      #  summary_df_reset = summary_df.rename(columns={
+      #      'MFCC_Mean': 'MFCC Mean (Averaged)',
+      #      'MFCC_Std': 'MFCC Std Dev',
+      #      'MFCC_Range': 'MFCC Range (Max-Min)'
+      #  })
+
+        # Reapply styling
+       # styled_df = summary_df_reset.style.apply(apply_severity_color)
+
+       # styled_df = styled_df.format({
+       #     'MFCC Mean (Averaged)': '{:.2f}',
+       #     'MFCC Std Dev': '{:.2f}',
+       #     'MFCC Range (Max-Min)': '{:.2f}'
+       # })
+
+       # st.dataframe(styled_df, use_container_width=True, hide_index=True)
         
         # Display severity prediction for the audio
        # st.info(f"Predicted Severity from MFCC Mean: {severity}")
-
-        # Define color styling function based on Predicted Severity
-       # def apply_severity_color(row):
-         #   severity = row['Predicted Severity']
-         #   if severity == "None/Minimal":
-          #      color = "background-color: #28a745; color: white;"  # Green
-          #  elif severity in ["Mild", "Moderate"]:
-          #      color = "background-color: #ffc107; color: black;"  # Amber
-          #  else:  # "Moderately Severe" or "Severe"
-          #      color = "background-color: #dc3545; color: white;"  # Red
-          #  return [color] * len(row)  # Apply color to entire row
 
         # Reset index for styling
         summary_df_reset = summary_df.reset_index(drop=True)
 
         # Apply styling
-        styled_df = summary_df_reset.style.apply(apply_severity_color, axis=1)
-        styled_df = styled_df.format({
-            'MFCC_Mean': '{:.2f}', 
-            'MFCC_Std': '{:.2f}', 
-            'MFCC_Range': '{:.2f}'
+       # styled_df = summary_df_reset.style.apply(apply_severity_color, axis=1)
+       # styled_df = styled_df.format({
+       #     'MFCC_Mean': '{:.2f}', 
+       #     'MFCC_Std': '{:.2f}', 
+       #     'MFCC_Range': '{:.2f}'
+       # })
+
+        # Rename columns for clarity
+        summary_df_reset = summary_df.rename(columns={
+            'MFCC_Mean': 'MFCC Mean (Averaged)',
+            'MFCC_Std': 'MFCC Std Dev',
+            'MFCC_Range': 'MFCC Range (Max-Min)'
         })
-        
+
+        # Reapply styling
+        styled_df = summary_df_reset.style.apply(apply_severity_color)
+
+        styled_df = styled_df.format({
+            'MFCC Mean (Averaged)': '{:.2f}',
+            'MFCC Std Dev': '{:.2f}',
+            'MFCC Range (Max-Min)': '{:.2f}'
+        })
+
+        st.dataframe(styled_df, use_container_width=True, hide_index=True)
+
         # Display summary table with predicted severity
        # st.write("**Audio Files Summary: Predicted Depression Severity Risk:**")
        # st.dataframe(styled_df, use_container_width=True, hide_index=True)
