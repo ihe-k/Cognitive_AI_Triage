@@ -658,7 +658,7 @@ def run_app():
         st.sidebar.success("✅ OpenCV ready!")
     else:
         st.sidebar.warning("⚠️ OpenCV not available!")
-        st.sidebar.info("Using PIL fallback for image processing. Some advanced image features may be limited.")
+        st.sidebar.info("ℹ️ Note: OpenCV  is not available. Using PIL fallback for image processing. Some advanced image features may be limited.")
     
     # Audio processing status check
     if librosa is None:
@@ -852,8 +852,8 @@ def run_app():
 
         
         # Show OpenCV status for image processing
-        if not OPENCV_AVAILABLE:
-            st.info("ℹ️ **Note:** OpenCV is not available. Using PIL for image processing. This may affect some advanced image features.")
+      #  if not OPENCV_AVAILABLE:
+       #     st.info("ℹ️ **Note:** OpenCV is not available. Using PIL for image processing. This may affect some advanced image features.")
         
         # Load Alzheimer model
         if "alzheimer_model" not in st.session_state:
@@ -1009,8 +1009,8 @@ def run_app():
         # Rename columns to more descriptive names
         summary_df_renamed = summary_df.rename(columns={
             'MFCC_Mean': 'MFCC Mean',
-            'MFCC_Std': 'MFCC Std Dev',
-            'MFCC_Range': 'MFCC Range (Max-Min)'
+            'MFCC_Std': 'MFCC SD',
+            'MFCC_Range': 'MFCC Range'
         })
 
         # Reset index for styling
