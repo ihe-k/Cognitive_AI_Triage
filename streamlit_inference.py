@@ -1033,8 +1033,8 @@ def run_app():
         </style>
         """
 
-        st.markdown(custom_css, unsafe_allow_html=True)
-        #st.markdown(html_styled_df, unsafe_allow_html=True)
+        #st.markdown(custom_css, unsafe_allow_html=True)
+        st.markdown(html_styled_df, unsafe_allow_html=True)
 
         # Display the table with the new Priority column
         st.write("**Audio Files Summary: Predicted Depression Severity Risk**")
