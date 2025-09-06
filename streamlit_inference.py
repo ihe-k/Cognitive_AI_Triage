@@ -53,13 +53,19 @@ except ImportError:
     print("Warning: sklearn not available. Some audio analysis features will be disabled.")
 
 # Function to classify dementia risk based on the provided criteria
+#def classify_dementia_risk(breathing_rate, tapping_rate, heart_rate):
+#    if heart_rate > 100 or tapping_rate < 1 or breathing_rate > 20:
+#        return "High risk of dementia"
+#    else:
+#        return "Minimal risk of dementia"
+
 def classify_dementia_risk(breathing_rate, tapping_rate, heart_rate):
-    if heart_rate > 100 or tapping_rate < 1 or breathing_rate > 20:
-        return "High risk of dementia"
+    if breathing_rate < 20 or tapping_rate > 3 or heart_rate < 100:
+        return "Dementia Risk: Low"
+    elif breathing_rate > 20 or tapping_rate < 1.0 or heart_rate > 100:
+        return "Dementia Risk: High"
     else:
-        return "Minimal risk of dementia"
-
-
+        return "Dementia Risk: Medium"
 
 # =============================================================================
 # 0) CONFIG
@@ -1029,16 +1035,7 @@ def run_app():
         ####
         # Create a DataFrame
         #physio_df = pd.DataFrame(physio_data)
-
-         #def classify_dementia_risk(breathing_rate, tapping_rate, heart_rate):
-            # Dummy logic for classification
-          #  if breathing_rate < 20 or tapping_rate < 5 or heart_rate < 100:
-          #      return "Dementia Risk: Low"
-          #  elif breathing_rate > 20 or tapping_rate > 3.0 or heart_rate > 100:
-          #      return "Dementia Risk: High"
-          #  else:
-           #     return "Dementia Risk: Medium"
-        
+     
         # Extracting the average values for prediction
         breathing_rate = physio_df["Breathing Rate"].mean()
         tapping_rate = physio_df["Tapping Rate"].mean()
