@@ -1068,18 +1068,18 @@ def run_app():
         # summary_df["Predicted Severity"] = summary_df["MFCC_Mean"].apply(map_severity)
 
         # Map severity and priority
-        summary_df['Severity'], summary_df['Priority_Flag'] = zip(*summary_df['MFCC_Mean'].apply(map_severity_with_priority))
+        summary_df['Severity'], summary_df['Priority_Flag'] = zip(*summary_df['MFCC Mean'].apply(map_severity_with_priority))
 
-       # summary_df['Severity'], summary_df['Priority_Flag'] = zip(*summary_df['MFCC_Mean'].apply(map_severity_with_priority))
+       # summary_df['Severity'], summary_df['Priority_Flag'] = zip(*summary_df['MFCC Mean'].apply(map_severity_with_priority))
 
         summary_df['Priority'] = summary_df['Priority_Flag'].apply(lambda x: '✅ Yes' if x else '❌ No')
 
         # Rename columns to more descriptive names
-        summary_df_renamed = summary_df.rename(columns={
-            'MFCC_Mean': 'MFCC Mean',
-            'MFCC_Std': 'MFCC SD',
-            'MFCC_Range': 'MFCC Range'
-        })
+        #summary_df_renamed = summary_df.rename(columns={
+        #    'MFCC_Mean': 'MFCC Mean',
+        #    'MFCC_Std': 'MFCC SD',
+        #    'MFCC_Range': 'MFCC Range'
+       # })
 
         # Reset index for styling
         summary_df = summary_df.reset_index(drop=True)
