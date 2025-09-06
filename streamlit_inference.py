@@ -983,12 +983,13 @@ def run_app():
             if priority_column_name in df_copy.columns:
                 df_copy = df_copy.drop(columns=[priority_column_name])
             df_copy = df_copy.reset_index(drop=True)
-            st.write(df_copy)
+            df_copy.index = df_copy.index + 1
+            st.write(df_copy, use_container_width=True, hide_index=False)
             #st.dataframe(df_copy, use_container_width=True, hide_index=False) 
         except Exception as e:
             st.error(f"Error displaying DataFrame: {e}")
 
-            display_dataframe(df, priority_column_name)
+        
 
             # Example with MFCC features (combining with your existing code)
             if "mfcc_features" in st.session_state:
