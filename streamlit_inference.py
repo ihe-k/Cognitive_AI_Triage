@@ -1054,7 +1054,7 @@ def run_app():
         formatted_df = physio_df.applymap(lambda x: f"{x:.2f}")
 
         # Display the formatted dataframe in Streamlit
-        st.dataframe(formatted_df, use_container_width=True)
+       # st.dataframe(formatted_df, use_container_width=True)
 
         
         ####
