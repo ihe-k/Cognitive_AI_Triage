@@ -984,7 +984,6 @@ def run_app():
                 def hide_column(s):
                     return ['display: none;' if col == priority_column_name else '' for col in s.index]
                 styled_df = df_copy.style.apply(hide_column, axis=0)
-
                 st.dataframe(styled_df)
 
             else:
@@ -1034,13 +1033,13 @@ def run_app():
         summary_df_reset = summary_df.drop(columns=['Priority_Flag']).reset_index(drop=True)
         summary_df_reset.index = summary_df_reset.index + 1 
 
-        def hide_column(s):
-            return ['display: none;' if col == 'Priority_Flag' else '' for col in s.index]
+       # def hide_column(s):
+        #    return ['display: none;' if col == 'Priority_Flag' else '' for col in s.index]
 
-        styled_df = summary_df_reset.style.apply(hide_column, axis=0)
+        #styled_df = summary_df_reset.style.apply(hide_column, axis=0)
 
         # Display the table with the hidden 'Priority_Flag' column
-        st.dataframe(styled_df)
+       # st.dataframe(styled_df)
         
         # Define color styling based on severity
         def apply_severity_color(row):
@@ -1066,25 +1065,18 @@ def run_app():
 
 
         # Combine CSS and table HTML
-        html_with_style = styled_df.to_html()
-
-        # Reset index for styling and set the starting index to 1
-        summary_df_reset = summary_df_renamed.drop(columns=['Priority_Flag']).reset_index(drop=True)
-        summary_df_reset.index = summary_df_reset.index + 1  # Adjusting the index to start from 1
+        styled_df = styled_df.set_properties(**{'text-align': 'left'}, subset=['MFCC Mean', 'MFCC SD', 'MFCC Range'])
+        styled_df = styled_df.set_properties(**{'text-align': 'left'}, subset=[col for col in styled_df.columns])
 
         # Apply styling to hide 'Priority_Flag' and display the styled DataFrame
         def hide_column(s):
             return ['display: none;' if col == 'Priority_Flag' else '' for col in s.index]
 
-        styled_df = summary_df_reset.style.apply(hide_column, axis=0)
-       # html_table = styled_df.render()
-
-        # Display the table with the hidden 'Priority_Flag' column
-        # st.markdown(html_table, unsafe_allow_html=True)
-
-        # Render in Streamlit
-        st.markdown("**Audio Files Summary: Predicted Depression Severity Risk**")
-        st.markdown(html_with_style, unsafe_allow_html=True)
+        styled_df = sstyled_df.apply(hide_column, axis=0)
+        st.dataframe(styled_df)
+        
+       # st.markdown("**Audio Files Summary: Predicted Depression Severity Risk**")
+       # st.markdown(html_with_style, unsafe_allow_html=True)
 
         # Display the table with the new Priority column
      #   st.write("**Audio Files Summary: Predicted Depression Severity Risk**")
