@@ -1030,8 +1030,32 @@ def run_app():
         # Create a DataFrame
         #physio_df = pd.DataFrame(physio_data)
 
+        def classify_dementia_risk(breathing_rate, tapping_rate, heart_rate):
+            # Dummy logic for classification
+            if breathing_rate < 20 or tapping_rate < 5 or heart_rate < 100:
+                return "Low Risk"
+            elif breathing_rate > 20 or tapping_rate > 3.0 or heart_rate > 100:
+                return "High Risk"
+            else:
+                return "Medium Risk"
+
+        # Extracting the average values for prediction
+        breathing_rate = physio_df["Breathing Rate"].mean()
+        tapping_rate = physio_df["Tapping Rate"].mean()
+        heart_rate = physio_df["Heart Rate"].mean()
+
+        # Classify dementia risk (using the example classify_dementia_risk function)
+        risk = classify_dementia_risk(breathing_rate, tapping_rate, heart_rate)
+
+        # Display dementia risk prediction
+        st.subheader("📋 Dementia Risk Prediction")
+        if isinstance(risk, str) and risk.startswith("Error"):
+            st.error(risk)  # Display error message in red
+        else:
+            st.success(f"**Prediction:** {risk}")  # Display success message in green
+        
         # Feature Distributions Subheader
-        st.subheader("📈 Feature Distributions")
+        st.subheader("Feature Distributions")
 
         fig, axes = plt.subplots(1, 3, figsize=(18, 4))
         sns.histplot(physio_df["Breathing Rate"], ax=axes[0], kde=True, color="#003A6B")
