@@ -989,9 +989,9 @@ def run_app():
 
         # Rename columns to more descriptive names
         summary_df_renamed = summary_df.rename(columns={
-            'MFCC Mean': 'MFCC_Mean',
-            'MFCC Std Dev': 'MFCC_Std',
-            'MFCC Range (Max-Min)': 'MFCC_Range'
+            'MFCC_Mean': 'MFCC Mean',
+            'MFCC_Std': 'MFCC Std Dev',
+            'MFCC_Range': 'MFCC Range (Max-Min)'
         })
 
         # Reset index for styling
