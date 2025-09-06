@@ -1008,6 +1008,58 @@ def run_app():
     if "audio_results" in st.session_state and "summary_df" in st.session_state["audio_results"]:
         summary_df = st.session_state["audio_results"]["summary_df"].copy()
 
+                # Define color styling based on severity
+        def apply_severity_color(row):
+            severity = row['Severity']
+            if severity == "None/Minimal":
+                color = "background-color: #28a745; color: white;"  # Green
+            elif severity in ["Mild", "Moderate"]:
+                color = "background-color: #ffc107; color: black;"  # Amber
+            else:  # "Moderately Severe" or "Severe"
+                color = "background-color: #dc3545; color: white;"  # Red
+            return [color] * len(row)
+
+        def render_summary_table(df):
+
+            df_visible = df.drop(columns=['Priority_Flag'])
+
+            df_visible.index = df_visible.index + 1
+
+            styled_df = df_visible.style \
+                .apply(apply_severity_color, axis=1) \
+                .format({
+                    'MFCC Mean': '{:.2f}',
+                    'MFCC SD': '{:.2f}',
+                    'MFCC Range': '{:.2f}'
+                }) \
+                .set_properties(**{
+                    'text-align': 'left'
+                }) \
+                .set_table_styles([{
+                    'selector': 'th',
+                    'props': [('text-align', 'left')]
+                }])
+
+            st.markdown("**Audio Files Summary: Predicted Depression Severity Risk**")
+            st.markdown(styled_df.to_html(), unsafe_allow_html=True)
+
+
+        summary_df = st.session_state["audio_results"]["summary_df"].copy()
+
+        summary_df["MFCC_Mean"] = pd.to_numeric(summary_df["MFCC_Mean"], errors='coerce').fillna(0)
+
+        summary_df['Severity'], summary_df['Priority_Flag'] = zip(*summary_df['MFCC_Mean'].apply(map_severity_with_priority))
+        summary_df['Priority'] = summary_df['Priority_Flag'].apply(lambda x: '✅ Yes' if x else '❌ No')
+
+        summary_df = summary_df.rename(columns={
+            'MFCC_Mean': 'MFCC Mean',
+            'MFCC_Std': 'MFCC SD',
+            'MFCC_Range': 'MFCC Range'
+        }).reset_index(drop=True)
+
+        # 🔹 3. Now you can call the function
+        render_summary_table(summary_df)
+        ###
         # Ensure 'MFCC_Mean' is numeric
         summary_df["MFCC_Mean"] = pd.to_numeric(summary_df["MFCC_Mean"], errors='coerce')  # Coerce non-numeric values to NaN
         summary_df["MFCC_Mean"].fillna(0, inplace=True)  # Replace NaNs with 0 (or another suitable value)
