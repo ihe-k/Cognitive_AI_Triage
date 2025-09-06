@@ -994,7 +994,7 @@ def run_app():
         # Convert to DataFrame
         physio_df = pd.DataFrame(
             physio_data,
-            columns=["breathing_rate", "tapping_rate", "heart_rate"],
+            columns=["Breathing Rate", "Tapping Rate", "Heart Rate"],
             index=range(1, expected_samples + 1)
         )
 
@@ -1037,15 +1037,15 @@ def run_app():
         fig, axes = plt.subplots(1, 3, figsize=(18, 4))
 
         # Plot Breathing Rate Distribution
-        sns.histplot(physio_df["Breathing Rate)"], ax=axes[0], kde=True, color="#003A6B")
+        sns.histplot(physio_df["breathing_rate"], ax=axes[0], kde=True, color="#003A6B")
         axes[0].set_title("Breathing Rate Distribution")
 
         # Plot Tapping Rate Distribution
-        sns.histplot(physio_df["Tapping Rate"], ax=axes[1], kde=True, color="#3776A1")
+        sns.histplot(physio_df["tapping_rate"], ax=axes[1], kde=True, color="#3776A1")
         axes[1].set_title("Tapping Rate Distribution")
 
         # Plot Heart Rate Distribution
-        sns.histplot(physio_df["Heart Rate"], ax=axes[2], kde=True, color="#6EB1D6")
+        sns.histplot(physio_df["heart_rate"], ax=axes[2], kde=True, color="#6EB1D6")
         axes[2].set_title("Heart Rate Distribution")
 
         # Display the histograms in Streamlit
