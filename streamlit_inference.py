@@ -1057,8 +1057,7 @@ def run_app():
             'MFCC_Range': 'MFCC Range'
         }).reset_index(drop=True)
 
-        # 🔹 3. Now you can call the function
-        render_summary_table(summary_df)
+      #  render_summary_table(summary_df)
         ###
         # Ensure 'MFCC_Mean' is numeric
         summary_df["MFCC Mean"] = pd.to_numeric(summary_df["MFCC Mean"], errors='coerce')  # Coerce non-numeric values to NaN
