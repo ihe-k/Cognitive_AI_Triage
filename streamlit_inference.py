@@ -987,6 +987,13 @@ def run_app():
 
         summary_df['Priority'] = summary_df['Priority_Flag'].apply(lambda x: '✅ Yes' if x else '❌ No')
 
+        # Rename columns to more descriptive names
+        summary_df_renamed = summary_df.rename(columns={
+            'MFCC_Mean': 'MFCC Mean',
+            'MFCC_Std': 'MFCC Std Dev',
+            'MFCC_Range': 'MFCC Range (Max-Min)'
+        })
+
         # Reset index for styling
         summary_df_reset = summary_df.drop(columns=['Priority_Flag']).reset_index(drop=True)
 
@@ -1011,46 +1018,39 @@ def run_app():
             'MFCC_Range': '{:.2f}'
         })
 
+        styled_df = styled_df.set_table_styles([
+            {
+                'selector': 'th',
+                'props': [('text-align', 'left')]
+            },
+            {
+                'selector': 'td',
+                'props': [('text-align', 'left')]
+            }
+        ])
+
         # Display the table with the new Priority column
         st.write("**Audio Files Summary: Predicted Depression Severity Risk**")
         st.dataframe(styled_df, use_container_width=True, hide_index=True)
 
         # Compute the MFCC mean value (from your features)
-        mfcc_mean_value = np.mean(mfcc_features)  # or specific coefficient
+        mfcc_mean_value = np.mean(st.session_state["audio_results"]["summary_df"]['MFCC_Mean'])
+        #mfcc_mean_value = np.mean(mfcc_features)  # or specific coefficient
 
         # Map to severity and priority
         severity, priority_flag = map_severity_with_priority(mfcc_mean_value)
 
-        
         drisk = severity  # or any other logic you prefer
 
-        # If you want to handle errors, you can do:
         try:
             drisk = severity
         except Exception as e:
             drisk = f"Error: {str(e)}"
 
-        # Then, check and display
         if isinstance(drisk, str) and drisk.startswith("Error"):
             st.error(drisk)
         else:
             st.success(f"**Prediction:** {drisk} risk of depression")
-
-        # Rename columns for clarity
-      #  summary_df_reset = summary_df.rename(columns={
-      #      'MFCC_Mean': 'MFCC Mean (Averaged)',
-      #      'MFCC_Std': 'MFCC Std Dev',
-      #      'MFCC_Range': 'MFCC Range (Max-Min)'
-      #  })
-
-        # Reapply styling
-       # styled_df = summary_df_reset.style.apply(apply_severity_color)
-
-       # styled_df = styled_df.format({
-       #     'MFCC Mean (Averaged)': '{:.2f}',
-       #     'MFCC Std Dev': '{:.2f}',
-       #     'MFCC Range (Max-Min)': '{:.2f}'
-       # })
 
        # st.dataframe(styled_df, use_container_width=True, hide_index=True)
         
@@ -1059,31 +1059,7 @@ def run_app():
 
         # Reset index for styling
         summary_df_reset = summary_df.reset_index(drop=True)
-
-        # Apply styling
-       # styled_df = summary_df_reset.style.apply(apply_severity_color, axis=1)
-       # styled_df = styled_df.format({
-       #     'MFCC_Mean': '{:.2f}', 
-       #     'MFCC_Std': '{:.2f}', 
-       #     'MFCC_Range': '{:.2f}'
-       # })
-
-        # Rename columns for clarity
-        summary_df_reset = summary_df.rename(columns={
-            'MFCC_Mean': 'MFCC Mean (Averaged)',
-            'MFCC_Std': 'MFCC Std Dev',
-            'MFCC_Range': 'MFCC Range (Max-Min)'
-        })
-
-        # Reapply styling
-        styled_df = summary_df_reset.style.apply(apply_severity_color)
-
-        styled_df = styled_df.format({
-            'MFCC Mean (Averaged)': '{:.2f}',
-            'MFCC Std Dev': '{:.2f}',
-            'MFCC Range (Max-Min)': '{:.2f}'
-        })
-
+        
         st.dataframe(styled_df, use_container_width=True, hide_index=True)
 
         # Display summary table with predicted severity
