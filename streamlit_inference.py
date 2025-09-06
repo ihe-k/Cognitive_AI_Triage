@@ -994,7 +994,7 @@ def run_app():
         # Convert to DataFrame
         physio_df = pd.DataFrame(
             physio_data,
-            columns=["Breathing Rate", "Tapping Rate", "Heart Rate"],
+            columns=["breathing_rate", "tapping_rate", "heart_rate"],
             index=range(1, expected_samples + 1)
         )
 
