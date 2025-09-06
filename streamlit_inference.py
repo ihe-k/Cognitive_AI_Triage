@@ -984,8 +984,8 @@ def run_app():
                 df_copy = df_copy.drop(columns=[priority_column_name])
             df_copy = df_copy.reset_index(drop=True)
             df_copy.index + 1
-            st.write(df_copy, use_container_width=True, hide_index=true)
-            #st.dataframe(df_copy, use_container_width=True, hide_index=true) 
+            #st.write(df_copy, use_container_width=True, hide_index=true)
+            st.dataframe(df_copy, use_container_width=True) 
         except Exception as e:
             st.error(f"Error displaying DataFrame: {e}")
 
