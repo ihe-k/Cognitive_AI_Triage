@@ -989,9 +989,9 @@ def run_app():
 
         # Rename columns to more descriptive names
         summary_df_renamed = summary_df.rename(columns={
-            'MFCC_Mean': 'MFCC Mean',
-            'MFCC_Std': 'MFCC Std Dev',
-            'MFCC_Range': 'MFCC Range (Max-Min)'
+            'MFCC Mean': 'MFCC_Mean',
+            'MFCC Std Dev': 'MFCC_Std',
+            'MFCC Range (Max-Min)': 'MFCC_Range'
         })
 
         # Reset index for styling
@@ -1018,20 +1018,27 @@ def run_app():
             'MFCC_Range': '{:.2f}'
         })
 
-        styled_df = styled_df.set_table_styles([
-            {
-                'selector': 'th',
-                'props': [('text-align', 'left')]
-            },
-            {
-                'selector': 'td',
-                'props': [('text-align', 'left')]
-            }
-        ])
+         # Custom CSS to align numbers to the left
+        custom_css = """
+        <style>
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .custom-table th, .custom-table td {
+            text-align: left !important;
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+        }
+        </style>
+        """
+
+        st.markdown(custom_css, unsafe_allow_html=True)
+        st.markdown(html_styled_df, unsafe_allow_html=True)
 
         # Display the table with the new Priority column
         st.write("**Audio Files Summary: Predicted Depression Severity Risk**")
-        st.dataframe(styled_df, use_container_width=True, hide_index=True)
+       # st.dataframe(styled_df, use_container_width=True, hide_index=True)
 
         # Compute the MFCC mean value (from your features)
         mfcc_mean_value = np.mean(st.session_state["audio_results"]["summary_df"]['MFCC_Mean'])
@@ -1060,7 +1067,7 @@ def run_app():
         # Reset index for styling
         summary_df_reset = summary_df.reset_index(drop=True)
         
-        st.dataframe(styled_df, use_container_width=True, hide_index=True)
+      #  st.dataframe(styled_df, use_container_width=True, hide_index=True)
 
         # Display summary table with predicted severity
        # st.write("**Audio Files Summary: Predicted Depression Severity Risk:**")
