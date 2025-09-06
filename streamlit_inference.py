@@ -970,14 +970,13 @@ def run_app():
                 st.success("MFCC features extracted successfully!")
             else:
                 st.warning("No MFCC features extracted from the audio files.")
-try:
+    try:
     # Create a copy to avoid modifying the original DataFrame
         df_copy = df.copy()
 
     # Hide the specified column (Important: This is done *before* styling)
         if priority_column_name in df_copy.columns:
             df_copy = df_copy.drop(columns=[priority_column_name])
-        if priority_column_name in df_copy.columns:
         df_copy = df_copy.reset_index(drop=True)
         st.dataframe(df_copy, use_container_width=True, hide_index=False) #hide_index=True if you want to hide the index
     except Exception as e:
