@@ -980,7 +980,8 @@ def display_dataframe(df, priority_column_name):
         if priority_column_name in df_copy.columns:
             df_copy = df_copy.drop(columns=[priority_column_name])
         df_copy = df_copy.reset_index(drop=True)
-        st.dataframe(df_copy, use_container_width=True, hide_index=False) #hide_index=True if you want to hide the index
+        st.write(df_copy)
+        #st.dataframe(df_copy, use_container_width=True, hide_index=False) 
     except Exception as e:
         st.error(f"Error displaying DataFrame: {e}")
 
