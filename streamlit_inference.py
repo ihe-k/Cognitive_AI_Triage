@@ -1018,14 +1018,15 @@ def run_app():
             'MFCC_Range': '{:.2f}'
         })
 
-         # Custom CSS to align numbers to the left
+        html_str = styled_df.to_html()
         custom_css = """
         <style>
-        .custom-table {
+        /* Apply to the table with class 'dataframe' or your custom class if set */
+        table.dataframe {
             width: 100%;
             border-collapse: collapse;
         }
-        .custom-table th, .custom-table td {
+        table.dataframe th, table.dataframe td {
             text-align: left !important;
             padding: 6px 12px;
             border: 1px solid #ddd;
@@ -1033,11 +1034,17 @@ def run_app():
         </style>
         """
 
-        #st.markdown(custom_css, unsafe_allow_html=True)
-        st.markdown(html_styled_df, unsafe_allow_html=True)
+        # Combine CSS and table HTML
+        html_with_style = custom_css + html_str
 
         # Display the table with the new Priority column
         st.write("**Audio Files Summary: Predicted Depression Severity Risk**")
+
+        # Render in Streamlit
+        st.markdown(html_with_style, unsafe_allow_html=True)
+
+        # Display the table with the new Priority column
+     #   st.write("**Audio Files Summary: Predicted Depression Severity Risk**")
        # st.dataframe(styled_df, use_container_width=True, hide_index=True)
 
         # Compute the MFCC mean value (from your features)
