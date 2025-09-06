@@ -52,12 +52,37 @@ except ImportError:
     cosine_similarity = None
     print("Warning: sklearn not available. Some audio analysis features will be disabled.")
 
-# Function to classify dementia risk based on the provided criteria
-#def classify_dementia_risk(breathing_rate, tapping_rate, heart_rate):
-#    if heart_rate > 100 or tapping_rate < 1 or breathing_rate > 20:
-#        return "High risk of dementia"
-#    else:
-#        return "Minimal risk of dementia"
+# Function to map MFCC mean to depression severity
+    def map_severity(mean_val):
+        if mean_val > -10:
+            return "None/Minimal"
+        elif -18 < mean_val <= -10:
+            return "Mild"
+        elif -28 < mean_val <= -18:
+            return "Moderate"
+        elif -30 < mean_val <= -28:
+            return "Moderately Severe"
+        else:
+            return "Severe"
+
+def map_severity_with_priority(mean_val):
+    if mean_val > -10:
+        severity = "None/Minimal"
+        priority = False
+    elif -18 < mean_val <= -10:
+        severity = "Mild"
+        priority = False
+    elif -28 < mean_val <= -18:
+        severity = "Moderate"
+        priority = True
+    elif -30 < mean_val <= -28:
+        severity = "Moderately Severe"
+        priority = True
+    else:
+        severity = "Severe"
+        priority = True
+    return severity, priority
+    
 
 def classify_dementia_risk(breathing_rate, tapping_rate, heart_rate):
     if breathing_rate < 20 or tapping_rate > 1 or heart_rate < 100:
@@ -878,18 +903,6 @@ def run_app():
             st.error(f"Error extracting MFCC: {e}")
             return None
 
-# Function to map MFCC mean to depression severity
-    def map_severity(mean_val):
-        if mean_val > -10:
-            return "None/Minimal"
-        elif -18 < mean_val <= -10:
-            return "Mild"
-        elif -28 < mean_val <= -18:
-            return "Moderate"
-        elif -30 < mean_val <= -28:
-            return "Moderately Severe"
-        else:
-            return "Severe"
 
     # Ensure audio file is uploaded and MFCC features are extracted
     if "audio_results" in st.session_state and "audio_files" in st.session_state["audio_results"]:
@@ -921,16 +934,49 @@ def run_app():
         # Add Predicted Severity column
         summary_df["Predicted Severity"] = summary_df["MFCC_Mean"].apply(map_severity)
 
-        # Define color styling function based on Predicted Severity
+        # Map severity and priority
+        summary_df['Severity'], summary_df['Priority_Flag'] = zip(*summary_df['MFCC_Mean'].apply(map_severity_with_priority))
+
+        summary_df['Priority'] = summary_df['Priority_Flag'].apply(lambda x: '✅ Yes' if x else '❌ No')
+
+        # Reset index for styling
+        summary_df_reset = summary_df.drop(columns=['Priority_Flag']).reset_index(drop=True)
+
+        # Define color styling based on severity
         def apply_severity_color(row):
-            severity = row['Predicted Severity']
+            severity = row['Severity']
             if severity == "None/Minimal":
                 color = "background-color: #28a745; color: white;"  # Green
             elif severity in ["Mild", "Moderate"]:
                 color = "background-color: #ffc107; color: black;"  # Amber
             else:  # "Moderately Severe" or "Severe"
                 color = "background-color: #dc3545; color: white;"  # Red
-            return [color] * len(row)  # Apply color to entire row
+            return [color] * len(row)
+
+        # Apply styling
+        styled_df = summary_df_reset.style.apply(apply_severity_color, axis=1)
+
+        # Format numeric columns
+        styled_df = styled_df.format({
+            'MFCC_Mean': '{:.2f}', 
+            'MFCC_Std': '{:.2f}', 
+            'MFCC_Range': '{:.2f}'
+        })
+
+        # Display the table with the new Priority column
+        st.write("**Audio Files Summary: Predicted Depression Severity Risk:**")
+        st.dataframe(styled_df, use_container_width=True, hide_index=True)
+
+        # Define color styling function based on Predicted Severity
+       # def apply_severity_color(row):
+         #   severity = row['Predicted Severity']
+         #   if severity == "None/Minimal":
+          #      color = "background-color: #28a745; color: white;"  # Green
+          #  elif severity in ["Mild", "Moderate"]:
+          #      color = "background-color: #ffc107; color: black;"  # Amber
+          #  else:  # "Moderately Severe" or "Severe"
+          #      color = "background-color: #dc3545; color: white;"  # Red
+          #  return [color] * len(row)  # Apply color to entire row
 
         # Reset index for styling
         summary_df_reset = summary_df.reset_index(drop=True)
