@@ -903,6 +903,37 @@ def run_app():
             st.error(f"Error extracting MFCC: {e}")
             return None
 
+# Function to map MFCC mean to depression severity
+def map_severity(mean_val):
+    if mean_val > -10:
+        return "None/Minimal"
+    elif -18 < mean_val <= -10:
+        return "Mild"
+    elif -28 < mean_val <= -18:
+        return "Moderate"
+    elif -30 < mean_val <= -28:
+        return "Moderately Severe"
+    else:
+        return "Severe"
+
+def map_severity_with_priority(mean_val):
+    if mean_val > -10:
+        severity = "None/Minimal"
+        priority = False
+    elif -18 < mean_val <= -10:
+        severity = "Mild"
+        priority = False
+    elif -28 < mean_val <= -18:
+        severity = "Moderate"
+        priority = True
+    elif -30 < mean_val <= -28:
+        severity = "Moderately Severe"
+        priority = True
+    else:
+        severity = "Severe"
+        priority = True
+    return severity, priority
+    
 
     # Ensure audio file is uploaded and MFCC features are extracted
     if "audio_results" in st.session_state and "audio_files" in st.session_state["audio_results"]:
