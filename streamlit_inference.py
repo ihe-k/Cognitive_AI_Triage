@@ -985,9 +985,7 @@ def run_app():
                     return ['display: none;' if col == priority_column_name else '' for col in s.index]
                 styled_df = df_copy.style.apply(hide_column, axis=0)
 
-                html_table = styled_df.render()
-
-                st.markdown(html_table, unsafe_allow_html=True)
+                st.dataframe(styled_df)
 
             else:
             
