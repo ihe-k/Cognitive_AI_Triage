@@ -1140,7 +1140,7 @@ def run_app():
             else:
                 # Fallback if physio data missing or mismatch e.g., 10 samples to inference 100
                 adjusted_all_ = arts["pred_sample"] * (1 - misinfo_risk_)
-                st.warning("⚠️ Physiological data mismatch. Falling back to severity adjusted by misinformation only.")
+                st.warning("⚠️ Physiological data mismatch. Falling back to severity adjusted by misinformation only. Increase the number of physiological samples to include the data in results")
 
             treated, untreated = allocate_resources(adjusted_all_, capacity=capacity)
 
