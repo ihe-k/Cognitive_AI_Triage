@@ -1030,7 +1030,7 @@ def run_app():
         # Create a DataFrame
         #physio_df = pd.DataFrame(physio_data)
 
-     def classify_dementia_risk(breathing_rate, tapping_rate, heart_rate):
+         def classify_dementia_risk(breathing_rate, tapping_rate, heart_rate):
             # Dummy logic for classification
             if breathing_rate < 20 or tapping_rate < 5 or heart_rate < 100:
                 return "Dementia Risk: Low"
