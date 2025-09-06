@@ -1064,33 +1064,33 @@ def plot_histogram_with_individual_data(population_data, individual_data, title,
         tapping_rate_population = [2.4, 2.6, 2.7, 2.5, 2.4, 2.9]  # Example population data
         tapping_rate_individual = [2.5, 2.3, 2.8]  # Example individual data
 
-    # Display the physiological data
-    st.write(f"Heart Rate: {heart_rate:.2f} bpm")
-    st.write(f"Breathing Rate: {breathing_rate:.2f} bpm")
-    st.write(f"Tapping Rate: {tapping_rate:.2f} taps/sec")
+        # Display the physiological data
+        st.write(f"Heart Rate: {heart_rate:.2f} bpm")
+        st.write(f"Breathing Rate: {breathing_rate:.2f} bpm")
+        st.write(f"Tapping Rate: {tapping_rate:.2f} taps/sec")
 
-    # Classify dementia risk (assuming classify_dementia_risk is defined)
-    risk = classify_dementia_risk(breathing_rate, tapping_rate, heart_rate)
+        # Classify dementia risk (assuming classify_dementia_risk is defined)
+        risk = classify_dementia_risk(breathing_rate, tapping_rate, heart_rate)
 
-    # Display dementia prediction
-    st.subheader("Dementia Risk Prediction")
-    if risk.startswith("Error"):
-        st.error(risk)  # Display error message in red
-    else:
-        st.success(f"**Prediction:** {risk}")  # Display success message in green
+        # Display dementia prediction
+        st.subheader("Dementia Risk Prediction")
+        if risk.startswith("Error"):
+            st.error(risk)  # Display error message in red
+        else:
+            st.success(f"**Prediction:** {risk}")  # Display success message in green
 
-    # Plot histograms for each physiological marker
-    plot_histogram_with_individual_data(heart_rate_population, heart_rate_individual, 
-                                        "Heart Rate Distribution (Population vs Individual)", 
-                                        "Heart Rate (bpm)", "Frequency")
+        # Plot histograms for each physiological marker
+        plot_histogram_with_individual_data(heart_rate_population, heart_rate_individual, 
+                                            "Heart Rate Distribution (Population vs Individual)", 
+                                            "Heart Rate (bpm)", "Frequency")
 
-    plot_histogram_with_individual_data(breathing_rate_population, breathing_rate_individual, 
-                                        "Breathing Rate Distribution (Population vs Individual)", 
-                                        "Breathing Rate (bpm)", "Frequency")
+        plot_histogram_with_individual_data(breathing_rate_population, breathing_rate_individual, 
+                                            "Breathing Rate Distribution (Population vs Individual)", 
+                                            "Breathing Rate (bpm)", "Frequency")
 
-    plot_histogram_with_individual_data(tapping_rate_population, tapping_rate_individual, 
-                                        "Tapping Rate Distribution (Population vs Individual)", 
-                                        "Tapping Rate (taps/sec)", "Frequency")
+        plot_histogram_with_individual_data(tapping_rate_population, tapping_rate_individual, 
+                                            "Tapping Rate Distribution (Population vs Individual)", 
+                                            "Tapping Rate (taps/sec)", "Frequency")
 
 
         ####
