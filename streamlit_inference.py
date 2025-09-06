@@ -1021,8 +1021,8 @@ def run_app():
         })
         
         # Display summary table with predicted severity
-        st.write("**Audio Files Summary: Predicted Depression Severity Risk:**")
-        st.dataframe(styled_df, use_container_width=True, hide_index=True)
+       # st.write("**Audio Files Summary: Predicted Depression Severity Risk:**")
+       # st.dataframe(styled_df, use_container_width=True, hide_index=True)
 
        
     else:
