@@ -1072,7 +1072,7 @@ def run_app():
         def hide_column(s):
             return ['display: none;' if col == 'Priority_Flag' else '' for col in s.index]
 
-        styled_df = sstyled_df.apply(hide_column, axis=0)
+        styled_df = styled_df.apply(hide_column, axis=0)
         st.dataframe(styled_df)
         
        # st.markdown("**Audio Files Summary: Predicted Depression Severity Risk**")
