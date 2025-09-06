@@ -1047,13 +1047,7 @@ def run_app():
         # Classify dementia risk (using the example classify_dementia_risk function)
         risk = classify_dementia_risk(breathing_rate, tapping_rate, heart_rate)
 
-        # Display dementia risk prediction
-        st.subheader("📋 Dementia Risk Prediction")
-        if isinstance(risk, str) and risk.startswith("Error"):
-            st.error(risk)  # Display error message in red
-        else:
-            st.success(f"**Prediction:** {risk}")  # Display success message in green
-        
+                
         # Feature Distributions Subheader
         st.subheader("Feature Distributions")
 
@@ -1069,6 +1063,12 @@ def run_app():
 
         st.pyplot(fig, use_container_width=True)
         plt.close(fig)
+
+
+        if isinstance(risk, str) and risk.startswith("Error"):
+            st.error(risk)  # Display error message in red
+        else:
+            st.success(f"**Prediction:** {risk}")  # Display success message in green
 
         # Physiological Data Subheader
       #  st.subheader("📋 Physiological Data")
