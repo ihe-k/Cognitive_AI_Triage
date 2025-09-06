@@ -983,11 +983,11 @@ def run_app():
             if priority_column_name in df_copy.columns:
                 df_copy = df_copy.drop(columns=[priority_column_name])
             #st.write(df_copy, use_container_width=True, hide_index=true)
-            st.dataframe(df_copy, use_container_width=True, hide_index=True) 
+            st.dataframe(df_copy, 'priority_flag', use_container_width=True, hide_index=True) 
         except Exception as e:
             st.error(f"Error displaying DataFrame: {e}")
 
-        display_dataframe(df, 'priority_flag') 
+   # display_dataframe(df, 'priority_flag') 
         
 
             # Example with MFCC features (combining with your existing code)
