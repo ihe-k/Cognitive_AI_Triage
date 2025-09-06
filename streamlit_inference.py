@@ -52,20 +52,6 @@ except ImportError:
     cosine_similarity = None
     print("Warning: sklearn not available. Some audio analysis features will be disabled.")
 
-# Function to simulate or get physiological markers for multiple patients
-def get_population_data(n_patients=100):
-    heart_rate_population = np.random.uniform(60, 100, n_patients)  # Heart rate (bpm)
-    breathing_rate_population = np.random.uniform(12, 20, n_patients)  # Breathing rate (bpm)
-    tapping_rate_population = np.random.uniform(1, 5, n_patients)  # Tapping rate (taps/sec)
-    return heart_rate_population, breathing_rate_population, tapping_rate_population
-
-# Function to simulate a specific patient's data
-def get_individual_data():
-    heart_rate_individual = np.random.uniform(60, 100)  # Heart rate (bpm)
-    breathing_rate_individual = np.random.uniform(12, 20)  # Breathing rate (bpm)
-    tapping_rate_individual = np.random.uniform(1, 5)  # Tapping rate (taps/sec)
-    return heart_rate_individual, breathing_rate_individual, tapping_rate_individual
-
 # Function to classify dementia risk based on the provided criteria
 def classify_dementia_risk(breathing_rate, tapping_rate, heart_rate):
     if heart_rate > 100 or tapping_rate < 1 or breathing_rate > 20:
