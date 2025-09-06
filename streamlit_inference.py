@@ -1036,7 +1036,7 @@ def run_app():
     #    """
 
         # Combine CSS and table HTML
-        html_with_style = styled_df.render()
+        html_with_style = styled_df.to_html()
 
         # Display the table with the new Priority column
         st.write("**Audio Files Summary: Predicted Depression Severity Risk**")
