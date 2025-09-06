@@ -1032,7 +1032,16 @@ def run_app():
 
         # Reset index for styling
         summary_df_reset = summary_df.drop(columns=['Priority_Flag']).reset_index(drop=True)
+        summary_df_reset.index = summary_df_reset.index + 1 
 
+        def hide_column(s):
+            return ['display: none;' if col == 'Priority_Flag' else '' for col in s.index]
+
+        styled_df = summary_df_reset.style.apply(hide_column, axis=0)
+
+        # Display the table with the hidden 'Priority_Flag' column
+        st.dataframe(styled_df)
+        
         # Define color styling based on severity
         def apply_severity_color(row):
             severity = row['Severity']
