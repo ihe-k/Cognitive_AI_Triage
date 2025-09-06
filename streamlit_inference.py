@@ -971,7 +971,10 @@ def run_app():
             else:
                 st.warning("No MFCC features extracted from the audio files.")
                 
-def display_dataframe(df, priority_column_name):                
+def display_dataframe(df, priority_column_name): 
+    if df is None:
+        st.warning("DataFrame is empty or None.")
+        return
     try:
     # Create a copy to avoid modifying the original DataFrame
         df_copy = df.copy()
