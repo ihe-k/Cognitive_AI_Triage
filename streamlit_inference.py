@@ -82,7 +82,24 @@ def map_severity_with_priority(mean_val):
         severity = "Severe"
         priority = True
     return severity, priority
-    
+
+def classify_depression_risk(severity):
+    if mean_val > -10:
+        severity = "None/Minimal"
+        priority = False
+    elif -18 < mean_val <= -10:
+        severity = "Mild"
+        priority = False
+    elif -28 < mean_val <= -18:
+        severity = "Moderate"
+        priority = True
+    elif -30 < mean_val <= -28:
+        severity = "Moderately Severe"
+        priority = True
+    else:
+        severity = "Severe"
+        priority = True
+    return severity, priority
 
 def classify_dementia_risk(breathing_rate, tapping_rate, heart_rate):
     if breathing_rate < 20 or tapping_rate > 1 or heart_rate < 100:
@@ -998,18 +1015,29 @@ def run_app():
         st.write("**Audio Files Summary: Predicted Depression Severity Risk:**")
         st.dataframe(styled_df, use_container_width=True, hide_index=True)
 
-        # Calculate the mean MFCC value for the file
-        mfcc_mean_value = np.mean(mfcc_features)  # or pick a specific coefficient
-        # Get severity and priority
-        severity, priority = map_severity_with_priority(mfcc_mean_value)
+        # Compute the MFCC mean value (from your features)
+        mfcc_mean_value = np.mean(mfcc_features)  # or specific coefficient
 
-        if isinstance(risk, str) and risk.startswith("Error"):
-            st.error(risk)  # Display error message in red
+        # Map to severity and priority
+        severity, priority_flag = map_severity_with_priority(mfcc_mean_value)
+
+        
+        drisk = severity  # or any other logic you prefer
+
+        # If you want to handle errors, you can do:
+        try:
+            drisk = severity
+        except Exception as e:
+            drisk = f"Error: {str(e)}"
+
+        # Then, check and display
+        if isinstance(drisk, str) and drisk.startswith("Error"):
+            st.error(drisk)
         else:
-            st.success(f"**Prediction:** {risk}")  # Display success message in green
-
+            st.success(f"**Prediction:** {drisk}")
+        
         # Display severity prediction for the audio
-        st.info(f"Predicted Severity from MFCC Mean: {severity}")
+       # st.info(f"Predicted Severity from MFCC Mean: {severity}")
 
         # Define color styling function based on Predicted Severity
        # def apply_severity_color(row):
