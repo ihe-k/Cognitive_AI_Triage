@@ -23,29 +23,40 @@ The entire pipeline is visualised through a Streamlit app, including model predi
 
 ## Interpreting Results
 
+### Physiological Markers
+
+| **Dementia Risk** | **Breathing Rate (bpm)** | **Tapping (Hz)** | **Heart Rate (bpm)** |
+|-------------------|--------------------------|------------------|----------------------|
+| Low               | > 16                     | > 1              | > 60                 |
+| Medium            | 12 - 16                  | 0.75 - 1         | 50 - 60              |
+| High              | < 12                     | < 0.75           | < 50                 |
+
 ### MFCC Mean Ranges: Depression Severity
 
-MFCC Mean Range | Interactive Speech Profile | Possible Depression Severity
---------------- | -------------------------- | ----------------------------
-\> -10           | Clear/expressive/energetic | None/Minimal
-\-10 - 18        | Reduced variability/energy | Mild            
-\-18 - 24        | Flat/monotonic tone        | Moderate
-\-24 - 30        | Dull/low-affect/low-volume | Moderately Severe
-\< -30           | Flat/withdrawn             | Severe
+MFCC Mean Range | Interactive Speech Profile | Possible Depression Severity |
+--------------- | -------------------------- | -----------------------------
+\> -10          | Clear/expressive/energetic | None/Minimal                 |
+\-10 - 18       | Reduced variability/energy | Mild                         |
+\-18 - 28       | Flat/monotonic tone        | Moderate                     |
+\-28 - 30       | Dull/low-affect/low-volume | Moderately Severe            |
+\< -30          | Flat/withdrawn             | Severe                       |
+
+The mean of the MFCC coefficients across timeframes are calculated, representing the overall spectral features of the audio so as to classify speech patterns related to depression in order to assess the severity as well as clinical priority (for follow-ups or intervention) of a user.
+
+These thresholds are a guide and are based on existing literature that describe general trends between MFCC features and depression.  As this speech analysis is intended to be used with other data modalities such as physiological data (tapping, breathing and heart rate), imaging and text-based sentiment analysis from patient interviews, it offers a holistic approach to depression/Alzheimer's risk assessment.  However, this approach may benefit from validation or tuning with a large-scale dataset.  Additionally, as variations in speech due to language, culture or individual characteristics, model performance may not generalise well to all individuals or diverse populations.  To improve accuracy, inclusion of additional ausio samples or features, like pauses, accents, speech patterns or emotional tone may help issue a more nuanced analysis of depression through the capture of the emotional context of a user's speech.  Furthermore, cross-validating the severity thresholds by incorporating clinical professionals' feedback may also help improve data accuracy.  
+
+### Misinformation Risk Score (MRS): Mental Health Influence
+
+MRS Mean Range  | Interpretation                        | Possible Impact on Mental State |
+--------------- | ------------------------------------- | --------------------------------
+0.00 - 0.10     | Minimal exposure/resistance           | None/Minimal                    |
+0.11 - 0.25     | Low exposure/weak influence           | Mild                            |
+0.26 - 0.50     | Moderate exposure/internalisation     | Moderate                        |
+0.51 - 0.75     | High exposure/psychological impact    | Moderately Severe               |
+0.76 - 1.00     | Very high exposure/echo chamber efect | Severe                          |
 
 
-### Misinformation Risk Score (MRS) : Mental Health Influence
-
-MRS Mean Range | Interpretation                        | Possible Impact on Mental State
---------------- | ------------------------------------- | -------------------------------
-0.00 - 0.10     | Minimal exposure/resistance           | None/Minimal
-0.11 - 0.25     | Low exposure/weak influence           | Mild            
-0.26 - 0.50     | Moderate exposure/internalisation     | Moderate
-0.51 - 0.75     | High exposure/psychological impact    | Moderately Severe
-0.76 - 1.00     | Very high exposure/echo chamber efect | Severe
-
-
-### Raw Severity Score: PHQ-8 Depression Severity Score Prediction from the Model)
+### Raw Severity Score: PHQ-8 Depression Severity Score Prediction from the Model
 
 Score Range   | Interpretation
 -----------   | --------------
@@ -90,9 +101,9 @@ Then open the local Streamlit URL (usually http://localhost:8501) in your browse
 
 ## How It Works
 ### 1. Feature Extraction
-extract_mfcc_features(audio_files) – Audio MFCC extraction via librosa
-extract_resnet_features(image_files) – Image embeddings using pretrained ResNet-18
-Physiological markers are synthetically simulated (breathing, tapping, heart rate)
+* extract_mfcc_features(audio_files) – Audio MFCC extraction via librosa
+* extract_resnet_features(image_files) – Image embeddings using pretrained ResNet-18
+* Physiological markers are synthetically simulated (breathing, tapping, heart rate)
 
 ### 2. Model Training
 * All features are concatenated and standardised
