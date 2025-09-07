@@ -1073,37 +1073,37 @@ def run_app():
                     st.warning("No valid MFCC features to display.")
 
 ####
-            if "audio_results" in st.session_state and "audio_files" in st.session_state["audio_results"]:
-                audio_files = st.session_state["audio_results"]["audio_files"]
+                if "audio_results" in st.session_state and "audio_files" in st.session_state["audio_results"]:
+                    audio_files = st.session_state["audio_results"]["audio_files"]
     
-                if audio_files:
-                    # Extract MFCC features for each file
-                    mfcc_features_list = []
-                    file_names = []
-                    for file in audio_files:
-                        mfcc, file_name = extract_mfcc([file])
-                        if mfcc is not None:
-                            mfcc_features_list.append(mfcc)
-                            file_names.append(file_name)
+                    if audio_files:
+                        # Extract MFCC features for each file
+                        mfcc_features_list = []
+                        file_names = []
+                        for file in audio_files:
+                            mfcc, file_name = extract_mfcc([file])
+                            if mfcc is not None:
+                                mfcc_features_list.append(mfcc)
+                                file_names.append(file_name)
         
-                    # Store the MFCC features in session state
-                    if mfcc_features_list:
-                        st.session_state["mfcc_features"] = np.array(mfcc_features_list)  # Store as a numpy array
-                        st.success("MFCC features extracted successfully!")
-                    else:
-                        st.warning("No MFCC features extracted from the audio files.")
+                        # Store the MFCC features in session state
+                        if mfcc_features_list:
+                            st.session_state["mfcc_features"] = np.array(mfcc_features_list)  # Store as a numpy array
+                            st.success("MFCC features extracted successfully!")
+                        else:
+                            st.warning("No MFCC features extracted from the audio files.")
 
             # --- Visualizing the MFCC features ---
-            if "mfcc_features" in st.session_state:
-                mfcc_features = st.session_state["mfcc_features"]
-                file_names = ["File 1", "File 2", "File 3"]  # Example file names
+                        if "mfcc_features" in st.session_state:
+                            mfcc_features = st.session_state["mfcc_features"]
+                            file_names = ["File 1", "File 2", "File 3"]  # Example file names
 
-                # Visualize the MFCC features using heatmap, bar plot, and distribution
-                plot_mfcc_heatmap(mfcc_features, file_names)
-                plot_mfcc_mean(mfcc_features, file_names)
-                plot_mfcc_mean_distribution(mfcc_features)
-            else:
-                st.info("Upload audio files to visualize MFCC features.")
+                            # Visualize the MFCC features using heatmap, bar plot, and distribution
+                            plot_mfcc_heatmap(mfcc_features, file_names)
+                            plot_mfcc_mean(mfcc_features, file_names)
+                            plot_mfcc_mean_distribution(mfcc_features)
+                        else:
+                            st.info("Upload audio files to visualize MFCC features.")
 
 ####
 
