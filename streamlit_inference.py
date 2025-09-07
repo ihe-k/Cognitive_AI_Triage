@@ -109,26 +109,6 @@ def classify_dementia_risk(breathing_rate, tapping_rate, heart_rate):
     else:
         return "Based on the simulation, the estimated population-level dementia risk is medium"
 
-import streamlit as st
-import numpy as np
-import matplotlib.pyplot as plt
-
-# Function to plot MFCC mean values
-def plot_mfcc_mean(mfcc_features, file_names):
-    try:
-        # Calculate the mean MFCC values for each file
-        mfcc_mean = np.mean(mfcc_features, axis=1)
-        
-        # Plotting the MFCC mean values
-        plt.figure(figsize=(12, 6))
-        plt.bar(file_names, mfcc_mean, color='skyblue')
-        plt.title('Mean MFCC Coefficients for Audio Files')
-        plt.xlabel('Audio Files')
-        plt.ylabel('Mean MFCC Value')
-        plt.xticks(rotation=45, ha='right')
-        st.pyplot()
-    except Exception as e:
-        st.error(f"Error in plotting MFCC Mean: {e}")
 # =============================================================================
 # 0) CONFIG
 # =============================================================================
@@ -1023,17 +1003,6 @@ def run_app():
                     display_dataframe(mfcc_df, "MFCC_feature") # Replace "MFCC_feature" with your column name if needed
                 else:
                     st.warning("No valid MFCC features to display.")
-
-####
-                if "mfcc_features" in st.session_state:
-                    mfcc_features = st.session_state["mfcc_features"]
-                    file_names = ["File 1", "File 2", "File 3"]  # Replace with actual file names
-
-                    # Visualize the MFCC mean values
-                    plot_mfcc_mean(mfcc_features, file_names)
-                else:
-                    st.info("Upload audio files to visualize MFCC features.")
-####
 
     
     # Display Summary Table with Predicted Severity
