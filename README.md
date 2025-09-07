@@ -31,6 +31,13 @@ The entire pipeline is visualised through a Streamlit app, including model predi
 | Medium            | 12 - 16                  | 0.75 - 1         | 50 - 60              |
 | High              | < 12                     | < 0.75           | < 50                 |
 
+**Physiological Marker Controls**
+- **Breathing Rate (bpm)**: Represents breaths per minute. Lower values may indicate high risk for dementia.
+- **Tapping Rate (taps/sec)**: Reflects tapping speed. A slower rate may be correlated with cognitive decline.
+- **Heart Rate (bpm)**: Represents beats per minute. A lower heart rate may indicate a higher dementia risk.
+
+Using the sliders and inputs, user adjusts the physiological markers so as to simulate dementia risk
+
 ### MFCC Mean Ranges: Depression Severity
 
 MFCC Mean Range | Interactive Speech Profile | Possible Depression Severity |
