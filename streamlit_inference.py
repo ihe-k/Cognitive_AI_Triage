@@ -102,9 +102,9 @@ def classify_depression_risk(severity):
     return severity, priority
 
 def classify_dementia_risk(breathing_rate, tapping_rate, heart_rate):
-    if breathing_rate > 12 or tapping_rate > 0.75 or heart_rate > 50:
+    if breathing_rate > 12 and tapping_rate > 0.75 and heart_rate > 50:
         return "Based on the simulation, the estimated population-level dementia risk is low"
-    elif breathing_rate < 12 or tapping_rate < 0.75 or heart_rate < 50:
+    elif breathing_rate < 12 and tapping_rate < 0.75 and heart_rate < 50:
         return "Based on the simulation, the estimated population-level dementia risk is high"
     else:
         return "Based on the simulation, the estimated population-level dementia risk is medium"
