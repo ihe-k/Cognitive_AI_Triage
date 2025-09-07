@@ -17,7 +17,7 @@ import re
 import matplotlib.ticker as mtick
 import shap
 import seaborn as sns
-
+import librosa
 
 
 # Conditional OpenCV import for cloud compatibility
@@ -108,6 +108,74 @@ def classify_dementia_risk(breathing_rate, tapping_rate, heart_rate):
         return "Based on the simulation, the estimated population-level dementia risk is high"
     else:
         return "Based on the simulation, the estimated population-level dementia risk is medium"
+
+def plot_mfcc_heatmap(mfcc_features, file_names):
+    plt.figure(figsize=(12, 6))
+    sns.heatmap(mfcc_features.T, cmap='coolwarm', annot=True, fmt='.2f', xticklabels=file_names, yticklabels=[f'MFCC_{i+1}' for i in range(mfcc_features.shape[0])])
+    plt.title('MFCC Features Heatmap')
+    plt.xlabel('Audio Files')
+    plt.ylabel('MFCC Coefficients')
+    st.pyplot()
+
+def plot_mfcc_mean(mfcc_features, file_names):
+    mfcc_mean = np.mean(mfcc_features, axis=1)
+    plt.figure(figsize=(12, 6))
+    plt.bar(file_names, mfcc_mean, color='skyblue')
+    plt.title('Mean MFCC Coefficients for Audio Files')
+    plt.xlabel('Audio Files')
+    plt.ylabel('Mean MFCC Value')
+    plt.xticks(rotation=45, ha='right')
+    st.pyplot()
+
+def plot_mfcc_mean_distribution(mfcc_features):
+    mfcc_mean = np.mean(mfcc_features, axis=1)
+    plt.figure(figsize=(10, 6))
+    plt.hist(mfcc_mean, bins=20, color='lightgreen', edgecolor='black')
+    plt.title('Distribution of MFCC Mean Values')
+    plt.xlabel('MFCC Mean Value')
+    plt.ylabel('Frequency')
+    plt.grid(True)
+    st.pyplot()
+
+def extract_mfcc(audio_files):
+    """Extract MFCC features from audio files."""
+    if librosa is None:
+        return None, "librosa not available for audio processing"
+    
+    try:
+        mfcc_feats = []
+        file_names = []
+        
+        for file in audio_files:
+            # Save uploaded file temporarily
+            temp_path = f"temp_audio_{random.randint(1000, 9999)}.wav"
+            with open(temp_path, "wb") as f:
+                f.write(file.getbuffer())
+            
+            try:
+                y, sr = librosa.load(temp_path, sr=None)
+                mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13)
+                mfcc_mean = np.mean(mfcc, axis=1)
+                mfcc_feats.append(mfcc_mean)
+                file_names.append(file.name)
+                
+                # Clean up temp file
+                os.remove(temp_path)
+                
+            except Exception as e:
+                print(f"Error processing audio file {file.name}: {e}")
+                if os.path.exists(temp_path):
+                    os.remove(temp_path)
+                continue
+        
+        if not mfcc_feats:
+            return None, "No valid audio files could be processed"
+        
+        return np.array(mfcc_feats), file_names
+        
+    except Exception as e:
+        return None, f"Error in MFCC extraction: {str(e)}"
+
 
 # =============================================================================
 # 0) CONFIG
@@ -1004,6 +1072,42 @@ def run_app():
                 else:
                     st.warning("No valid MFCC features to display.")
 
+####
+            if "audio_results" in st.session_state and "audio_files" in st.session_state["audio_results"]:
+                audio_files = st.session_state["audio_results"]["audio_files"]
+    
+                if audio_files:
+                    # Extract MFCC features for each file
+                    mfcc_features_list = []
+                    file_names = []
+                    for file in audio_files:
+                        mfcc, file_name = extract_mfcc([file])
+                        if mfcc is not None:
+                            mfcc_features_list.append(mfcc)
+                            file_names.append(file_name)
+        
+                    # Store the MFCC features in session state
+                    if mfcc_features_list:
+                        st.session_state["mfcc_features"] = np.array(mfcc_features_list)  # Store as a numpy array
+                        st.success("MFCC features extracted successfully!")
+                    else:
+                        st.warning("No MFCC features extracted from the audio files.")
+
+            # --- Visualizing the MFCC features ---
+            if "mfcc_features" in st.session_state:
+                mfcc_features = st.session_state["mfcc_features"]
+                file_names = ["File 1", "File 2", "File 3"]  # Example file names
+
+                # Visualize the MFCC features using heatmap, bar plot, and distribution
+                plot_mfcc_heatmap(mfcc_features, file_names)
+                plot_mfcc_mean(mfcc_features, file_names)
+                plot_mfcc_mean_distribution(mfcc_features)
+            else:
+                st.info("Upload audio files to visualize MFCC features.")
+
+####
+
+    
     # Display Summary Table with Predicted Severity
     if "audio_results" in st.session_state and "summary_df" in st.session_state["audio_results"]:
         summary_df = st.session_state["audio_results"]["summary_df"].copy()
