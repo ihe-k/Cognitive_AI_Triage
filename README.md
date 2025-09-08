@@ -85,7 +85,7 @@ Patient prioritisation is based on an adjusted severity score which factors in t
 
 The adjusted severity for each patient is calculated using the formula:
 
-<img src="https://github.com/ihe-k/Cognitive_AI_Triage/blob/main/Project_3_Eq_1.png?raw=true" width="800" />
+<img src="https://github.com/ihe-k/Cognitive_AI_Triage/blob/main/Project_3_Eq_1.png?raw=true" width="750" />
 
 - Misinformation risk represents a factor that reduces the severity of depression based on misinformation spread.
 - Physiological risk highlights how breathing, tapping or heart rate exacerbates or alleviates the severity of depression.
