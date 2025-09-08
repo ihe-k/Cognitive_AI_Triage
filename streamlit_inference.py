@@ -1065,11 +1065,11 @@ def run_app():
         st.pyplot(fig)
         plt.close(fig)
 
-    if "mfcc_features" in st.session_state:
-        show_mfcc_boxplot_top5()
-    with st.expander("📊 Show MFCC Coefficient Boxplot (Top 5)", expanded=True):
-        if "mfcc_features" in st.session_state:
-            show_mfcc_boxplot_top5()
+    #if "mfcc_features" in st.session_state:
+    show_mfcc_boxplot_top5()
+   # with st.expander("📊 Show MFCC Coefficient Boxplot (Top 5)", expanded=True):
+       # if "mfcc_features" in st.session_state:
+          #  show_mfcc_boxplot_top5()
 
     #####
     
