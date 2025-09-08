@@ -1201,6 +1201,45 @@ def run_app():
     else:
         st.info("Upload audio files to predict depressive risk")
 
+    ###
+
+        def plot_depression_risk_bar(df):
+        # Count severity categories
+            severity_counts = df['Severity'].value_counts().reindex(
+                ["None/Minimal", "Mild", "Moderate", "Moderately Severe", "Severe"]
+            ).fillna(0)
+
+            # Map severity to colors (match your existing style)
+            color_map = {
+                "None/Minimal": "#28a745",   # Green
+                "Mild": "#ffc107",           # Amber
+                "Moderate": "#ffc107",       # Amber
+                "Moderately Severe": "#dc3545",  # Red
+                "Severe": "#dc3545"              # Red
+            }
+            bar_colors = [color_map.get(sev, "#6c757d") for sev in severity_counts.index]
+
+            # Plot
+            fig, ax = plt.subplots()
+            bars = ax.bar(severity_counts.index, severity_counts.values, color=bar_colors)
+
+            ax.set_title("Depression Severity Distribution")
+            ax.set_xlabel("Severity Level")
+            ax.set_ylabel("Number of Patients")
+            ax.set_xticks(range(len(severity_counts)))
+            ax.set_xticklabels(severity_counts.index, rotation=45)
+
+            # Add count labels on top of bars
+            for bar in bars:
+                height = bar.get_height()
+                ax.annotate(f"{int(height)}",
+                            xy=(bar.get_x() + bar.get_width() / 2, height),
+                            ha='center', va='bottom')
+
+            plt.tight_layout()
+            st.pyplot(fig)
+            plt.close(fig)
+    
     ##
 
     st.subheader("📋 Physiological Data")
