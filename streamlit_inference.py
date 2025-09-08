@@ -1163,7 +1163,7 @@ def run_app():
        # st.dataframe(styled_df, use_container_width=True, hide_index=True)
 
         # Compute the MFCC mean value (from your features)
-        mfcc_mean_value = np.mean(st.session_state["audio_results"]["summary_df"]['MFCC_Mean'])
+        mfcc_mean_value = np.mean(st.session_state["audio_results"]["summary_df"]['MFCC Mean'])
         #mfcc_mean_value = np.mean(mfcc_features)  # or specific coefficient
 
         # Map to severity and priority
