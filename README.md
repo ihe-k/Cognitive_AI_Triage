@@ -25,18 +25,15 @@ The entire pipeline is visualised through a Streamlit app and includes model pre
 
 ### Alzheimer's Disease Image Analysis
 This module processes MRI images and the process involves several steps:
-* Loading and Preprocessing: Images are loaded from files, resized to a standard size (e.g., 224x224 pixels), normalized to have pixel values between 0 and 1, and converted to grayscale if necessary. This ensures consistency and prepares the images for analysis.
-Feature Extraction: From each processed image, statistical features are computed, including measures like mean, standard deviation, minimum, and maximum pixel intensity. Additionally, a histogram of pixel intensities is created to capture texture information. These features collectively form a numerical representation of the image’s key characteristics.
-Feature Vector Formation: The extracted features are combined into a single vector—a structured array of numbers—that summarizes the image’s important attributes.
-Scaling and Classification: The feature vector is scaled using a pre-trained scaler (a tool that adjusts feature values based on the training data to improve model performance). The scaled features are then input into a trained machine learning classifier—such as a Random Forest or Support Vector Machine—that has learned to distinguish between different disease stages based on training data.
-Prediction: The classifier outputs a category label indicating the risk level or stage of Alzheimer’s disease (e.g., non-demented, mild, moderate dementia). This prediction supports early diagnosis by providing an objective assessment based on brain imaging data.
-How the Alzheimer's Classification Has Been Developed
-The models have been trained on large, labeled datasets of brain scans, enabling them to recognize subtle structural and textural changes associated with different stages of Alzheimer’s disease. The approach automates the detection process, offering a standardized, objective, and scalable tool that can assist clinicians in early diagnosis and disease monitoring. This integration of image processing, feature extraction, and machine learning classification represents a novel application in clinical neuroimaging analysis, promising to enhance diagnostic accuracy and early intervention.
-Additional Scripts Supporting the Pipeline
-Beyond the core classification process, the pipeline includes scripts for inference and deployment. One script demonstrates how to load a trained model and make predictions on new patient data: it loads new brain scan images, preprocesses them identically to training images, extracts features, scales them, and outputs disease stage predictions. This facilitates rapid, real-time assessment in clinical settings.
-Another script showcases how to handle multi-modal data, combining features from MRI, PET, and other sources. It loads features from different modalities, aligns them to a common template, scales them, and predicts disease risk. This multi-modal integration enhances model robustness by leveraging diverse data types, providing a comprehensive view of patient health.
-Finally, a deployment-oriented script exemplifies how to load a trained model, load new participant features, handle missing modalities gracefully, and generate predictions efficiently. This modular, flexible approach allows for scalable deployment in various clinical workflows, ensuring that new data can be processed reliably and quickly.
-In summary, these scripts collectively establish an automated, scalable pipeline for brain image analysis and disease classification. They incorporate advanced preprocessing, feature engineering, multi-modal data integration, and explainability techniques to support early and accurate Alzheimer’s diagnosis, representing a significant step toward applying machine learning in clinical neuroimaging.
+* Loading and Preprocessing: Initially, images are loaded from files, resized to a standard size and normalised to have pixel values between 0 and 1 to ensure consistency for analysis.
+* Feature Extraction: Statistical measures like mean, standard deviation, minimum and maximum pixel intensity are computed from each processed image. These features collectively form a numerical representation of the image’s key characteristics.
+* Feature Vector Formation: The extracted features are combined into a structured array of numbers (a vector) that summarises the image’s important attributes.
+* Scaling and Classification: The feature vector is scaled using a tool, pre-trained scaler, that adjusts feature values based on the training data to improve model performance. The scaled features are then analysed by Random Forest, a trained machine learning classifier that has learned to distinguish between the subtle structural and textural changes associated with the different stages of Alzheimer’s disease in the training data.
+* Prediction: The classifier outputs a category label indicating the risk level or stage of Alzheimer’s disease (e.g., non-demented, mild, very mild and moderate dementia). 
+
+This approach supports clinicians in early diagnosis and disease monitoring by automating the detection process, offering a standardised, objective and rapid real-time assessment tool that is capable of integrating image processing, feature extraction and machine learning classification.
+
+The pipeline also includes scripts for showcasing ways of handling multi-modal data by loading the features of different modalities, aligning them to a common template, scaling them and predicting disease risk. By leveraging diverse data types, this model presents a more comprehensive view of patient health.
 
 ### Physiological Markers
 
@@ -46,7 +43,7 @@ In summary, these scripts collectively establish an automated, scalable pipeline
 | Medium            | 12 - 16                  | 0.75 - 1         | 50 - 60              |
 | High              | < 12                     | < 0.75           | < 50                 |
 
-**Physiological Marker Controls**
+#### Physiological Marker Controls
 - **Breathing Rate (bpm)**: Represents breaths per minute. Lower values may indicate high risk for dementia.
 - **Tapping Rate (taps/sec)**: Reflects tapping speed. A slower rate may be correlated with cognitive decline.
 - **Heart Rate (bpm)**: Represents beats per minute. A lower heart rate may indicate a higher dementia risk.
@@ -79,10 +76,9 @@ MRS Mean Range  | Interpretation                        | Possible Impact on Men
 0.76 - 1.00     | Very high exposure/echo chamber efect | Severe                          |
 
 ### Depression Severity
-
 The depression severity model is a multimodal Random Forest regressor trained to predict depression severity (PHQ-8 score) using features extracted from video, audio and text.  It processes audio, facial keypoints, gaze, body pose as well as transcribed or spoken text and summarises them into statistical features.  It also incorporates demographic data (e.g., gender) amd PHQ-8 subscores.  The final vector features that are standardised to train the model outputs a continuous PHQ-8 score that indicates predicted depression severity.
 
-### Raw Severity Score: PHQ-8 Depression Severity Score Prediction from the Model
+#### Raw Severity Score: PHQ-8 Depression Severity Score Prediction from the Model
 
 Score Range   | Interpretation
 -----------   | --------------
@@ -96,8 +92,7 @@ Raw depression severity is a baseline measure of depression based on model predi
 
 NB: The model achieves an R² of 0.71 and MAE of 2.43 on the validation set, showing strong ability to learn PHQ-8 severity from physiological and behavioural features.  However, generalisation to the test set suggests the need for more diverse training data or regularisation.
 
-### Adjusted Severity
-
+#### Adjusted Severity
 Patient prioritisation is based on an adjusted severity score which factors in the raw severity score (the base depression severity score based on PHQ-8 score) and adjustments of other factors such as misinformation risk and physiological risk (e.g., breathing, tapping and heart rate).  Prioritisation is done by compaaring the adjusted severity to a threshold as it is likely that this score provides a more accurate reflection of the true risk.  Those with higher adjusted severity scores are prioritised for treatment as depression is a strong risk factor for dementia, particularly when it becomes chronic or severe (indicated by the "✅ Yes" in the priority column).  Populations with high adjusted depression severity have a higher likelihood of cognitive decline as prolonged depression may impact brain function and accelerate neurodegeneration.  By prioritising early intervention to prevent the cognitive symptoms observed in the early stages of dementia (e.g., memory loss or concentration difficulties), this model can be used to help address the root causes of depression (including misinformation and physiological health), reduce dementia risk and subsequently prevent further cognitive deterioration.  Adjusting the treament capacity slider reallocates resources and the number of patients potentially treated.
 
 The adjusted severity for each patient is calculated using the formula:
@@ -111,12 +106,10 @@ The adjusted severity for each patient is calculated using the formula:
 The adjusted risk is always lower than the raw score as the model simulated the risk of misinformation spread across the population.  A higher  misinformation risk will reduce the adjusted severity risk as misinformation tends to artificially inflate perceived depression severity.  When misinformation is corrected for, the severity of depressive symptoms is adjusted downward. Additionally, incorporating physiological data reflects that physiological health buffers or moderated the psychological impacts of depressive symptoms and help paint a more nuanced picture of a patient's health.  
 
 ## Data Collection
-
 [Alzheimer's Disease MRI Dataset from Kaggle](https://www.kaggle.com/datasets/programmer3/mripet-fusion-dataset-for-alzheimers-detection)  
 [Depression severity dataset from Kaggle](https://www.kaggle.com/datasets/trilism/tramcam-daic-woz-e?resource=download)
 
 ## Testing
-
 I have included MRI images of patients diagnosed with mild dementia, moderate dementia, very mild dementia and non-dementia that may be used to test the app.
 
 ## Project Structure
