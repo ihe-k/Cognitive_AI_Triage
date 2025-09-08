@@ -1195,23 +1195,22 @@ def run_app():
        # st.write("**Audio Files Summary: Predicted Depression Severity Risk:**")
        # st.dataframe(styled_df, use_container_width=True, hide_index=True)
 
-        st.subheader("🧠 Depression Severity vs. MFCC Mean")
+    st.subheader("🧠 Depression Severity vs. MFCC Mean")
 
-        if "audio_results" in st.session_state and "summary_df" in st.session_state["audio_results"]:
-            summary_df = st.session_state["audio_results"]["summary_df"].copy()
-            if "Severity" in summary_df.columns and "MFCC Mean" in summary_df.columns:
-                fig, ax = plt.subplots(figsize=(10, 5))
-                sns.boxplot(data=summary_df, x="Severity", y="MFCC Mean", palette="RdYlGn_r", ax=ax)
-                sns.stripplot(data=summary_df, x="Severity", y="MFCC Mean", color='black', size=4, jitter=True, ax=ax)
-                ax.set_title("Distribution of MFCC Mean Values by Predicted Depression Severity")
-                ax.set_xlabel("Predicted Depression Severity")
-                ax.set_ylabel("MFCC Mean Value")
-                st.pyplot(fig, use_container_width=True)
-                plt.close(fig)
-            else:
-                st.warning("Severity or MFCC Mean column missing.")
+    if "audio_results" in st.session_state and "summary_df" in st.session_state["audio_results"]:
+        summary_df = st.session_state["audio_results"]["summary_df"].copy()
+        if "Severity" in summary_df.columns and "MFCC Mean" in summary_df.columns:
+            fig, ax = plt.subplots(figsize=(10, 5))
+            sns.boxplot(data=summary_df, x="Severity", y="MFCC Mean", palette="RdYlGn_r", ax=ax)
+            sns.stripplot(data=summary_df, x="Severity", y="MFCC Mean", color='black', size=4, jitter=True, ax=ax)
+            ax.set_title("Distribution of MFCC Mean Values by Predicted Depression Severity")
+            ax.set_xlabel("Predicted Depression Severity")
+            ax.set_ylabel("MFCC Mean Value")
+            st.pyplot(fig, use_container_width=True)
+            plt.close(fig)
         else:
-            st.info("Upload audio files and run predictions to generate this graph.")
+            st.warning("Severity or MFCC Mean column missing.")
+   
 
 
     else:
