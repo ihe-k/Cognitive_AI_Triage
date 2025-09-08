@@ -23,6 +23,21 @@ The entire pipeline is visualised through a Streamlit app and includes model pre
 
 ## Interpreting Results
 
+### Alzheimer's Disease Image Analysis
+This module processes MRI images and the process involves several steps:
+* Loading and Preprocessing: Images are loaded from files, resized to a standard size (e.g., 224x224 pixels), normalized to have pixel values between 0 and 1, and converted to grayscale if necessary. This ensures consistency and prepares the images for analysis.
+Feature Extraction: From each processed image, statistical features are computed, including measures like mean, standard deviation, minimum, and maximum pixel intensity. Additionally, a histogram of pixel intensities is created to capture texture information. These features collectively form a numerical representation of the image’s key characteristics.
+Feature Vector Formation: The extracted features are combined into a single vector—a structured array of numbers—that summarizes the image’s important attributes.
+Scaling and Classification: The feature vector is scaled using a pre-trained scaler (a tool that adjusts feature values based on the training data to improve model performance). The scaled features are then input into a trained machine learning classifier—such as a Random Forest or Support Vector Machine—that has learned to distinguish between different disease stages based on training data.
+Prediction: The classifier outputs a category label indicating the risk level or stage of Alzheimer’s disease (e.g., non-demented, mild, moderate dementia). This prediction supports early diagnosis by providing an objective assessment based on brain imaging data.
+How the Alzheimer's Classification Has Been Developed
+The models have been trained on large, labeled datasets of brain scans, enabling them to recognize subtle structural and textural changes associated with different stages of Alzheimer’s disease. The approach automates the detection process, offering a standardized, objective, and scalable tool that can assist clinicians in early diagnosis and disease monitoring. This integration of image processing, feature extraction, and machine learning classification represents a novel application in clinical neuroimaging analysis, promising to enhance diagnostic accuracy and early intervention.
+Additional Scripts Supporting the Pipeline
+Beyond the core classification process, the pipeline includes scripts for inference and deployment. One script demonstrates how to load a trained model and make predictions on new patient data: it loads new brain scan images, preprocesses them identically to training images, extracts features, scales them, and outputs disease stage predictions. This facilitates rapid, real-time assessment in clinical settings.
+Another script showcases how to handle multi-modal data, combining features from MRI, PET, and other sources. It loads features from different modalities, aligns them to a common template, scales them, and predicts disease risk. This multi-modal integration enhances model robustness by leveraging diverse data types, providing a comprehensive view of patient health.
+Finally, a deployment-oriented script exemplifies how to load a trained model, load new participant features, handle missing modalities gracefully, and generate predictions efficiently. This modular, flexible approach allows for scalable deployment in various clinical workflows, ensuring that new data can be processed reliably and quickly.
+In summary, these scripts collectively establish an automated, scalable pipeline for brain image analysis and disease classification. They incorporate advanced preprocessing, feature engineering, multi-modal data integration, and explainability techniques to support early and accurate Alzheimer’s diagnosis, representing a significant step toward applying machine learning in clinical neuroimaging.
+
 ### Physiological Markers
 
 | **Dementia Risk** | **Breathing Rate (bpm)** | **Tapping (Hz)** | **Heart Rate (bpm)** |
