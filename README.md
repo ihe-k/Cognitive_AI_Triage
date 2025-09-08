@@ -3,7 +3,7 @@ This project presents a comprehensive multimodal AI framework designed to predic
 
 * Neuroimaging: Structural and functional data from MRI scans
 * Vocal Biomarkers: Audio features (e.g., MFCCs) capturing speech characteristics correlated with cognitive decline
-* Physiological & Behavioural Signals: Including  breathing rate, heart rate and motor tapping
+* Physiological & Behavioural Signals: Including facial keypoints, gaze, body pose, transcribed or text features, breathing rate, heart rate and motor tapping
 * Clinical Scores: Such as PHQ scores, indicating depression and mood-related symptoms
 
 These multimodal inputs are used to train a predictive model that estimates cognitive severity, supporting early intervention and optimised care.
@@ -65,6 +65,8 @@ MRS Mean Range  | Interpretation                        | Possible Impact on Men
 
 ### Depression Severity
 
+The depression severity model is a multimodal Random Forest regressor trained to predict depression severity (PHQ-8 score) using features extracted from video, audio and text.  It processes audio, facial keypoints, gaze, body pose as well as transcribed or spoken text and summarises them into statistical features.  It also incorporates demographic data (e.g., gender) amd PHQ-8 subscores.  The final vector features that are standardised to train the model outputs a continuous PHQ-8 score that indicates predicted depression severity.
+
 ### Raw Severity Score: PHQ-8 Depression Severity Score Prediction from the Model
 
 Score Range   | Interpretation
@@ -92,6 +94,11 @@ The adjusted severity for each patient is calculated using the formula:
 - Alpha is a weighting factor that determines the extent of influence that physiological data has on adjusted severity.
 
 The adjusted risk is always lower than the raw score as the model simulated the risk of misinformation spread across the population.  A higher  misinformation risk will reduce the adjusted severity risk as misinformation tends to artificially inflate perceived depression severity.  When misinformation is corrected for, the severity of depressive symptoms is adjusted downward. Additionally, incorporating physiological data reflects that physiological health buffers or moderated the psychological impacts of depressive symptoms and help paint a more nuanced picture of a patient's health.  
+
+## Data Collection
+
+[Alzheimer's Disease MRI Dataset from Kaggle](https://www.kaggle.com/datasets/programmer3/mripet-fusion-dataset-for-alzheimers-detection)
+[Depression severity dataset from Kaggle](https://www.kaggle.com/datasets/trilism/tramcam-daic-woz-e?resource=download)
 
 ## Project Structure
 ```plaintext
