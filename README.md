@@ -1,9 +1,9 @@
 # Resource Allocation using Multimodal AI with Misinformation Mitigation in Healthcare
 This project presents a comprehensive multimodal AI framework designed to predict mental health severity, particularly in the context of Alzheimer's disease, by leveraging diverse data sources:
 
-* Neuroimaging: Structural and functional data from MRI and PET scans
+* Neuroimaging: Structural and functional data from MRI scans
 * Vocal Biomarkers: Audio features (e.g., MFCCs) capturing speech characteristics correlated with cognitive decline
-* Physiological & Behavioural Signals: Including gaze patterns, body pose, breathing rate, heart rate, and motor tapping
+* Physiological & Behavioural Signals: Including  breathing rate, heart rate and motor tapping
 * Clinical Scores: Such as PHQ scores, indicating depression and mood-related symptoms
 
 These multimodal inputs are used to train a predictive model that estimates cognitive severity, supporting early intervention and optimised care.
@@ -85,7 +85,7 @@ Patient prioritisation is based on an adjusted severity score which factors in t
 
 The adjusted severity for each patient is calculated using the formula:
 
-[Equation_1]
+<img src="https://github.com/ihe-k/Cognitive_AI_Triage/blob/main/Project_3_Eq_1.png?raw=true" width="250" />
 
 - Misinformation risk represents a factor that reduces the severity of depression based on misinformation spread.
 - Physiological risk highlights how breathing, tapping or heart rate exacerbates or alleviates the severity of depression.
