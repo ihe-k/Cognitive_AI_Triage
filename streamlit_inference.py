@@ -1201,8 +1201,8 @@ def run_app():
 
             if "Severity" in summary_df.columns and "MFCC_Mean" in summary_df.columns:
                 fig, ax = plt.subplots(figsize=(10, 5))
-                sns.boxplot(data=summary_df, x="Severity", y="MFCC_Mean", palette="RdYlGn_r", ax=ax)
-                sns.stripplot(data=summary_df, x="Severity", y="MFCC_Mean", color='black', size=4, jitter=True, ax=ax)
+                sns.boxplot(data=summary_df, x="Severity", y="MFCC Mean", palette="RdYlGn_r", ax=ax)
+                sns.stripplot(data=summary_df, x="Severity", y="MFCC Mean", color='black', size=4, jitter=True, ax=ax)
                 ax.set_title("Distribution of MFCC Mean Values by Predicted Depression Severity")
                 ax.set_xlabel("Predicted Depression Severity")
                 ax.set_ylabel("MFCC Mean Value")
