@@ -100,12 +100,17 @@ The adjusted risk is always lower than the raw score as the model simulated the 
 [Alzheimer's Disease MRI Dataset from Kaggle](https://www.kaggle.com/datasets/programmer3/mripet-fusion-dataset-for-alzheimers-detection)  
 [Depression severity dataset from Kaggle](https://www.kaggle.com/datasets/trilism/tramcam-daic-woz-e?resource=download)
 
+## Testing
+
+I have included MRI images of patients diagnosed with mild dementia, moderate dementia, very mild dementia and non-dementia that may be used to test the app.
+
 ## Project Structure
 ```plaintext
 project/
 │
 ├── requirements.txt
 ├── train_model.py
+├── Practice_Files/
 ├── artifacts/
 │   └── alzheimer_classifier.pkl
 │   └── severity_model.pkl
