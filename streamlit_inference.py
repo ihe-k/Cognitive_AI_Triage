@@ -1005,7 +1005,7 @@ def run_app():
                     st.warning("No valid MFCC features to display.")
 
     ####
- def display_dataframe(df, priority_column_name): 
+def display_dataframe(df, priority_column_name): 
     if df is None:
         st.warning("DataFrame is empty or None.")
         return
