@@ -1004,74 +1004,7 @@ def run_app():
                 else:
                     st.warning("No valid MFCC features to display.")
 
-    ####
-    def display_dataframe(df, priority_column_name): 
-        if df is None:
-            st.warning("DataFrame is empty or None.")
-            return
-
-        try:
-            df_copy = df.copy()
-            if priority_column_name in df_copy.columns:
-                def hide_column(s):
-                    return ['display: none;' if col == priority_column_name else '' for col in s.index]
-                styled_df = df_copy.style.apply(hide_column, axis=0)
-                st.dataframe(styled_df)
-            else:
-                st.dataframe(df_copy)
-        except Exception as e:
-            st.error(f"Error displaying DataFrame: {e}")
-
-    def show_mfcc_boxplot_top5():
-        if "mfcc_features" not in st.session_state:
-            st.warning("No MFCC features available.")
-            return
-
-        mfcc_features_list = st.session_state["mfcc_features"]
-
-        if not mfcc_features_list or len(mfcc_features_list) == 0:
-            st.warning("MFCC features list is empty.")
-            return
-
-        num_coeffs_to_display = 5  # Show first 5 MFCCs
-        mfcc_df_list = []
-
-        for i, mfcc in enumerate(mfcc_features_list):
-            if mfcc.ndim == 2:
-                mfcc_subset = mfcc[:num_coeffs_to_display]
-                df = pd.DataFrame(mfcc_subset.T, columns=[f"MFCC {j+1}" for j in range(num_coeffs_to_display)])
-                df["File"] = f"Audio {i+1}"
-                mfcc_df_list.append(df)
-
-        if not mfcc_df_list:
-            st.warning("No valid MFCC data to display.")
-            return
-
-        combined_df = pd.concat(mfcc_df_list, ignore_index=True)
-        melted_df = pd.melt(combined_df, id_vars="File", var_name="MFCC", value_name="Coefficient")
-
-        fig, ax = plt.subplots(figsize=(10, 5))
-        sns.boxplot(data=melted_df, x="MFCC", y="Coefficient", hue="File", ax=ax)
-        sns.stripplot(data=melted_df, x="MFCC", y="Coefficient", hue="File",
-                      dodge=True, jitter=True, ax=ax, color="black", alpha=0.4, marker='o', size=2)
-
-        ax.set_title("MFCC Coefficients 1–5 by Audio File")
-        ax.set_ylabel("MFCC Value")
-        ax.set_xlabel("MFCC Coefficient")
-        ax.legend(title="Audio File", bbox_to_anchor=(1.05, 1), loc='upper left')
-        plt.tight_layout()
-
-        st.subheader("🎙️ MFCC Coefficient Distribution (1–5)")
-        st.pyplot(fig)
-        plt.close(fig)
-
-    #if "mfcc_features" in st.session_state:
-    show_mfcc_boxplot_top5()
-   # with st.expander("📊 Show MFCC Coefficient Boxplot (Top 5)", expanded=True):
-       # if "mfcc_features" in st.session_state:
-          #  show_mfcc_boxplot_top5()
-
-    #####
+    
     
     # Display Summary Table with Predicted Severity
     if "audio_results" in st.session_state and "summary_df" in st.session_state["audio_results"]:
