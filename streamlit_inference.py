@@ -1194,39 +1194,25 @@ def run_app():
        # st.write("**Audio Files Summary: Predicted Depression Severity Risk:**")
        # st.dataframe(styled_df, use_container_width=True, hide_index=True)
 
-        # Visualize MFCC Mean with severity
-        st.subheader("🎵 MFCC Mean per Audio File")
+        st.subheader("🧠 Depression Severity vs. MFCC Mean")
 
-        severity_colors = {
-            "None/Minimal": "#28a745",
-            "Mild": "#ffc107",
-            "Moderate": "#fd7e14",
-            "Moderately Severe": "#dc3545",
-            "Severe": "#721c24"
-        }
+        if "audio_results" in st.session_state and "summary_df" in st.session_state["audio_results"]:
+            summary_df = st.session_state["audio_results"]["summary_df"].copy()
 
-        fig, ax = plt.subplots(figsize=(10, 5))
+            if "Severity" in summary_df.columns and "MFCC_Mean" in summary_df.columns:
+                fig, ax = plt.subplots(figsize=(10, 5))
+                sns.boxplot(data=summary_df, x="Severity", y="MFCC_Mean", palette="RdYlGn_r", ax=ax)
+                sns.stripplot(data=summary_df, x="Severity", y="MFCC_Mean", color='black', size=4, jitter=True, ax=ax)
+                ax.set_title("Distribution of MFCC Mean Values by Predicted Depression Severity")
+                ax.set_xlabel("Predicted Depression Severity")
+                ax.set_ylabel("MFCC Mean Value")
+                st.pyplot(fig, use_container_width=True)
+                plt.close(fig)
+            else:
+                st.warning("Severity or MFCC_Mean column missing.")
+        else:
+            st.info("Upload audio files and run predictions to generate this graph.")
 
-        # Bar colors based on severity
-        bar_colors = summary_df["Severity"].map(severity_colors)
-
-        # Bar plot
-        ax.bar(summary_df.index + 1, summary_df["MFCC Mean"], color=bar_colors)
-
-        # Labels and formatting
-        ax.set_xlabel("Audio File Index")
-        ax.set_ylabel("MFCC Mean")
-        ax.set_title("MFCC Mean by Audio File with Predicted Severity")
-        ax.set_xticks(summary_df.index + 1)
-        ax.set_xticklabels([f"File {i+1}" for i in summary_df.index], rotation=45)
-
-        # Add a legend manually
-        from matplotlib.patches import Patch
-        legend_patches = [Patch(color=color, label=severity) for severity, color in severity_colors.items()]
-        ax.legend(handles=legend_patches, title="Predicted Severity")
-
-        st.pyplot(fig, use_container_width=True)
-        plt.close(fig)
 
     else:
         st.info("Upload audio files to predict depressive risk")
