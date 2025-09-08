@@ -9,12 +9,12 @@ This project presents a comprehensive multimodal AI framework designed to predic
 These multimodal inputs are used to train a predictive model that estimates cognitive severity, supporting early intervention and optimised care.
 Beyond the clinical prediction model, this project also simulates the spread of health misinformation via social media networks, modelling how exposure to inaccurate or harmful information can impact perception and decision-making. This simulation is used to adjust severity predictions and dynamically inform resource allocation — ensuring patients most at risk (both medically and informationally) are prioritised for treatment.
 
-The entire pipeline is visualised through a Streamlit app, including model predictions, explainability tools (SHAP, LIME), and a real-time network-based misinformation simulation.
+The entire pipeline is visualised through a Streamlit app and includes model predictions, explainability tools (SHAP and LIME) as well as a real-time network-based misinformation simulation.
 
 [Link to App](https://cognitiveaitriage-upcnmprvydp5bhgfjpox8k.streamlit.app/)
 
 ## Key Features
-* Multimodal Input: Combines features from audio (MFCC), image (ResNet), physiological signals, gaze, pose, and PHQ scores.
+* Multimodal Input: Combines features from audio (MFCC), image (ResNet), physiological signals, gaze, pose and PHQ scores.
 * Severity Prediction: Uses Random Forest Regression to predict PHQ severity.
 * Misinformation Spread Simulation: Network-based misinformation modelling to adjust severity scores.
 * Resource Allocation: Dynamically allocate limited treatment resources based on adjusted scores.
