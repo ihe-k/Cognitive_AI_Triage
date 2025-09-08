@@ -97,7 +97,7 @@ The adjusted risk is always lower than the raw score as the model simulated the 
 
 ## Data Collection
 
-[Alzheimer's Disease MRI Dataset from Kaggle](https://www.kaggle.com/datasets/programmer3/mripet-fusion-dataset-for-alzheimers-detection)
+[Alzheimer's Disease MRI Dataset from Kaggle](https://www.kaggle.com/datasets/programmer3/mripet-fusion-dataset-for-alzheimers-detection)  
 [Depression severity dataset from Kaggle](https://www.kaggle.com/datasets/trilism/tramcam-daic-woz-e?resource=download)
 
 ## Project Structure
