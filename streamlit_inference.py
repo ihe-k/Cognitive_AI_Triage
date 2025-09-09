@@ -46,16 +46,14 @@ feature_values_dict = {
 }
 
 features = np.array([feature_values_dict.get(name, np.nan) for name in feat_names])
-
-# Create DataFrame for inspection / formatting
+features_rounded = np.round(features_raw, 2)
 dp = pd.DataFrame({
     'feature_name': feat_names,
-    'feature_value': features
+    'feature_value_raw': features_raw,
+    'feature_value_rounded_num': features_rounded,
+    'feature_value_rounded_str': [f"{x:.2f}" if not np.isnan(x) else "NaN" for x in features_rounded]
 })
-dp['feature_value_2dp_str'] = dp['feature_value'].apply(lambda x: f"{x:.2f}" if not pd.isna(x) else "NaN")
-dp['feature_value_2dp_num'] = dp['feature_value'].round(2)
-
-print(dp[['feature_name', 'feature_value_2dp_str', 'feature_value_2dp_num']])
+print(dp[['feature_name', 'feature_value_raw', 'feature_value_rounded_num', 'feature_value_rounded_str']])
 
 
 # Conditional OpenCV import for cloud compatibility
