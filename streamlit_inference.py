@@ -1586,19 +1586,20 @@ def run_app():
                 }
 
                 expl = arts["explainer_shap"]
-                shap_expl = expl(features_rounded.reshape(1, -1)) 
+                shap_expl = explainer_shap(features_array)
                 sv = shap_expl.values[0] 
-                fv = shap_expl.data[0]
+                fv = shap_expl.data[0]  
                 fn = shap_expl.feature_names
+                ev = shap_expl.base_values[0]  
                 
-                explainer_shap = shap.TreeExplainer(model, data=X_sample_s, feature_names=feat_names)
-                #features_array = explainer_shap(features_array)
-                shap_values = explainer_shap(features_array)
+                #explainer_shap = shap.Explainer(model, feature_names=feat_names)
+               # features_array = explainer_shap(features_array)
+               # shap_values = explainer_shap(features_array)
                 fig = shap.force_plot(
-                    base_value=shap_values.base_values[0],
-                    shap_values=shap_values.values[0],
-                    features=features_array[0],
-                    feature_names=feat_names,
+                    base_value=ev,
+                    shap_values=sv
+                    features=fv,
+                    feature_names=fn,
                 
                     matplotlib=True,  # Using Matplotlib for plotting
                     show=False  # Don't show the plot immediately, we'll customize it
