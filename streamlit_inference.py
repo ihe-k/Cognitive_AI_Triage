@@ -18,7 +18,7 @@ import matplotlib.ticker as mtick
 import shap
 import seaborn as sns
 import librosa
-
+from streamlit_shap import st_shap
 
 with open("artifacts/severity_model.pkl", "rb") as f:
     model_artifact = pickle.load(f)
