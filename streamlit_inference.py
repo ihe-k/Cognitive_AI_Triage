@@ -24,7 +24,14 @@ with open("artifacts/severity_model.pkl", "rb") as f:
     model_artifact = pickle.load(f)
 
 feat_names = model_artifact["feature_names"]  # This loads a feature names list
+features = np.array([...])
+dp = pd.DataFrame({
+    'feature_value': features
+})
 
+dp['feature_name'] = feat_names
+dp['feature_value_2dp'] = dp['feature_value'].map(lambda x: f"{x:.2f}")
+print(dp)
 
 # Conditional OpenCV import for cloud compatibility
 try:
