@@ -45,14 +45,16 @@ feature_values_dict = {
     "PHQ8_Appetite": PHQ8_Appetite,
 }
 
-features = np.array([feature_values_dict.get(name, np.nan) for name in feat_names])
-features_rounded = np.round(features, 2)
+features_rounded_num = np.round(features_raw, 2)
+features_rounded_str = [f"{x:.2f}" if not np.isnan(x) else "NaN" for x in features_raw]
 dp = pd.DataFrame({
     'feature_name': feat_names,
-    'feature_value_raw': features,
-    'feature_value_rounded_num': features_rounded,
-    'feature_value_rounded_str': [f"{x:.2f}" if not np.isnan(x) else "NaN" for x in features_rounded]
+    'feature_value_raw': features_raw,
+    'feature_value_2dp_num': features_rounded_num,
+    'feature_value_2dp_str': features_rounded_str
 })
+pd.set_option('display.float_format', '{:.2f}'.format)
+
 print(dp[['feature_name', 'feature_value_raw', 'feature_value_rounded_num', 'feature_value_rounded_str']])
 
 
