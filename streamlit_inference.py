@@ -19,9 +19,8 @@ import shap
 import seaborn as sns
 import librosa
 
-import pickle
 
-with open("artifacts/severity_model.pkl.gz", "rb") as f:
+with gzip.open("artifacts/severity_model.pkl.gz", "rb") as f:
     model_artifact = pickle.load(f)
 
 feat_names = model_artifact["feature_names"]  # This loads a feature names list
