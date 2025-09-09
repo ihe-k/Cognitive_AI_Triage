@@ -1589,9 +1589,7 @@ def run_app():
                 if shap_values_local is not None and len(shap_values_local) > 0:
                     shap_values_rounded = np.round(shap_values_local, 2)
                     features_rounded = np.round(x_input, 2)
-                    print(f"shap_values_local shape: {shap_values_local.shape}")
-                    print(f"feat_names length: {len(feat_names)}")
-
+                   
                     if len(shap_values_rounded[0]) == len(feat_names):
                         shap_value_display = {
                             feat_names[i]: f"{shap_values_rounded[0][i]:.2f}"
@@ -1600,15 +1598,17 @@ def run_app():
                     else:
                         st.error(f"Mismatch between number of SHAP values ({len(shap_values_rounded[0])}) and feature names ({len(feat_names)})")
                
-
+                    relevant_feature_indices = [0, 1, 2, 3, 4, 5, 6]
+                    relevant_shap_values = shap_values_local[:, relevant_feature_indices]
+                    relevant_features = x_input[:, relevant_feature_indices]
                
                 #explainer_shap = shap.Explainer(model, feature_names=feat_names)
                # features_array = explainer_shap(features_array)
                # shap_values = explainer_shap(features_array)
                     fig = shap.force_plot(
                         base_value=expl.expected_value,
-                        shap_values=shap_values_local[0],
-                        features=features_rounded[0],
+                        shap_values=relevant_shap_values[0],
+                        features=relevant_features[0],
                         feature_names=feat_names,
                 
                         matplotlib=True,  # Using Matplotlib for plotting
