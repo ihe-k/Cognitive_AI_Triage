@@ -46,10 +46,10 @@ feature_values_dict = {
 }
 
 features = np.array([feature_values_dict.get(name, np.nan) for name in feat_names])
-features_rounded = np.round(features_raw, 2)
+features_rounded = np.round(features, 2)
 dp = pd.DataFrame({
     'feature_name': feat_names,
-    'feature_value_raw': features_raw,
+    'feature_value_raw': features,
     'feature_value_rounded_num': features_rounded,
     'feature_value_rounded_str': [f"{x:.2f}" if not np.isnan(x) else "NaN" for x in features_rounded]
 })
