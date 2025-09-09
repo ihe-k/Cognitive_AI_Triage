@@ -1585,15 +1585,21 @@ def run_app():
                     for i in range(len(shap_values_rounded[0]))
                 }
 
+                expl = arts["explainer_shap"]
+                shap_expl = expl(features_rounded.reshape(1, -1)) 
+                sv = shap_expl.values[0] 
+                fv = shap_expl.data[0]
+                fn = shap_expl.feature_names
+                
                 force_obj = shap.force_plot(
                 #shap.force_plot(
-                    arts["explainer_shap"].expected_value,  # Expected value
+                    base_value=expl.expected_value,
                     #shap_values_rounded[0],  # Rounded SHAP values for the selected instance (access the first instance)
-                    shap_values.values[0],
-                    features=features_rounded[0],  # Feature values for the selected instance
-                    feature_names=feat_names,
-                 #   matplotlib=True,  # Using Matplotlib for plotting
-                 #   show=False  # Don't show the plot immediately, we'll customize it
+                    shap_values=sv,
+                    feature_names=fn,
+                
+                    matplotlib=True,  # Using Matplotlib for plotting
+                    show=False  # Don't show the plot immediately, we'll customize it
                 )
                 st_shap(force_obj, height=300) #new
                
