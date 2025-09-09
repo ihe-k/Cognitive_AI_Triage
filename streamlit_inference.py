@@ -1591,12 +1591,12 @@ def run_app():
                 fv = shap_expl.data[0]
                 fn = shap_expl.feature_names
                 
-                force_obj = shap.force_plot(
-                #shap.force_plot(
-                    base_value=expl.expected_value,
-                    #shap_values_rounded[0],  # Rounded SHAP values for the selected instance (access the first instance)
-                    shap_values=sv,
-                    feature_names=fn,
+                
+                shap.force_plot(
+                    explainer_shap.expected_value,
+                    shap_values[0],
+                    features_rounded,
+                    feature_names=feat_names,
                 
                     matplotlib=True,  # Using Matplotlib for plotting
                     show=False  # Don't show the plot immediately, we'll customize it
