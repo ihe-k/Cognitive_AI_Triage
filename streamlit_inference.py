@@ -1569,37 +1569,44 @@ def run_app():
                 plt.close(fig)
             elif method == "SHAP":
                 st.subheader("SHAP Explanation")
-                shap_values = arts["explainer_shap"].shap_values(arts["X_sample_s"][patient_idx:patient_idx+1])
-                if isinstance(shap_values, list):
+
+                expl = arts["explainer_shap"] 
+                
+                #shap_values = arts["explainer_shap"].shap_values(arts["X_sample_s"][patient_idx:patient_idx+1])
+
+                
+
+                x_input = arts["X_sample_s"][patient_idx:patient_idx+1]  # shape (1, n)
+                shap_values_all = expl.shap_values(x_input)
+
+                
+                if isinstance(shap_values_all, list):
             # Assuming binary classification, use the SHAP values for the positive class (index 1)
-                    shap_values_local = shap_values[1]
+                    shap_values_local = shap_values-all[1]
                 else:
-                    shap_values_local = shap_values
+                    shap_values_local = shap_values_all
 
         # Round SHAP values and feature values to 2 decimals
                 shap_values_rounded = np.round(shap_values_local, 2)
-                features_rounded = np.round(arts["X_sample_s"][patient_idx:patient_idx+1], 2)
-
+                #features_rounded = np.round(arts["X_sample_s"][patient_idx:patient_idx+1], 2)
+                features_rounded = np.round(x_input, 2)
+                
                 shap_value_display = {
-                    f"Feature {i}": f"{shap_values_rounded[0][i]:.2f}"  # Accessing the individual value within the inner array
+                 #   f"Feature {i}": f"{shap_values_rounded[0][i]:.2f}" 
+                 #   for i in range(len(shap_values_rounded[0]))
+                    feat_names[i]: f"{shap_values_rounded[0][i]:.2f}"
                     for i in range(len(shap_values_rounded[0]))
                 }
 
-                expl = arts["explainer_shap"]
-                shap_expl = expl(features_array)
-                sv = shap_expl.values[0] 
-                fv = shap_expl.data[0]  
-                fn = shap_expl.feature_names
-                ev = shap_expl.base_values[0]  
-                
+               
                 #explainer_shap = shap.Explainer(model, feature_names=feat_names)
                # features_array = explainer_shap(features_array)
                # shap_values = explainer_shap(features_array)
                 fig = shap.force_plot(
-                    base_value=ev,
-                    shap_values=sv,
-                    features=fv,
-                    feature_names=fn,
+                    base_value=expl.expected_value,
+                    shap_values=shap_values_local[0],
+                    features=features_rounded[0],
+                    feature_names=feat_names,
                 
                     matplotlib=True,  # Using Matplotlib for plotting
                     show=False  # Don't show the plot immediately, we'll customize it
