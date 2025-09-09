@@ -22,7 +22,16 @@ import librosa
 
 with open("artifacts/severity_model.pkl", "rb") as f:
     model_artifact = pickle.load(f)
-feat_names = model_artifact["feature_names"]
+#feat_names = model_artifact["feature_names"]
+feat_names = [
+    "PHQ8_Concentrating",
+    "PHQ8_NoInterest",
+    "PHQ8_Tired",
+    "PHQ8_Failure",
+    "PHQ8_Depressed",
+    "PHQ8_Sleep",
+    "PHQ8_Appetite"
+]
 
 # Your manually defined feature values
 PHQ8_Concentrating = 1.1399999856948893
