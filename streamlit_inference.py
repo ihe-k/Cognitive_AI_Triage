@@ -1601,7 +1601,7 @@ def run_app():
                     matplotlib=True,  # Using Matplotlib for plotting
                     show=False  # Don't show the plot immediately, we'll customize it
                 )
-                st_shap(force_obj, height=300) #new
+                
                
                 fig_local = plt.gcf()
                 ax = plt.gca()
