@@ -103,7 +103,7 @@ The adjusted severity for each patient is calculated using the formula:
 - Physiological risk highlights how breathing, tapping or heart rate exacerbates or alleviates the severity of depression.
 - Alpha is a weighting factor that determines the extent of influence that physiological data has on adjusted severity.
 
-The adjusted risk is always lower than the raw score as the model simulated the risk of misinformation spread across the population.  A higher  misinformation risk will reduce the adjusted severity risk as misinformation tends to artificially inflate perceived depression severity.  When misinformation is corrected for, the severity of depressive symptoms is adjusted downward. Additionally, incorporating physiological data reflects that physiological health buffers or moderated the psychological impacts of depressive symptoms and help paint a more nuanced picture of a patient's health.  
+The adjusted risk is always lower than the raw score as the model simulates the risk of misinformation spread across the population.  A higher  misinformation risk will reduce the adjusted severity risk as misinformation tends to artificially inflate perceived depression severity.  When misinformation is corrected for, the severity of depressive symptoms is adjusted downward. Additionally, incorporating physiological data reflects that good physiological health buffers or moderates the psychological impacts of depressive symptoms and helps paint a more nuanced picture of patient health.  
 
 ## Data Collection
 [Alzheimer's Disease MRI dataset from Kaggle](https://www.kaggle.com/datasets/programmer3/mripet-fusion-dataset-for-alzheimers-detection)  
