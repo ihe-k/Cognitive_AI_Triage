@@ -1591,11 +1591,13 @@ def run_app():
                 fv = shap_expl.data[0]
                 fn = shap_expl.feature_names
                 
-                
-                shap.force_plot(
-                    explainer_shap.expected_value,
-                    shap_values[0],
-                    features_rounded,
+                explainer_shap = shap.Explainer(model)
+                features_array = features_rounded.reshape(1, -1)
+                shap_values = explainer_shap(features_array)
+                fig = shap.force_plot(
+                    base_value=shap_values.base_values[0],
+                    shap_values=shap_values.values[0],
+                    features=features_array[0],
                     feature_names=feat_names,
                 
                     matplotlib=True,  # Using Matplotlib for plotting
