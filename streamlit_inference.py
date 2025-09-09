@@ -1586,11 +1586,10 @@ def run_app():
                 else:
                     shap_values_local = shap_values_all
 
-                
-        # Round SHAP values and feature values to 2 decimals
-                shap_values_rounded = np.round(shap_values_local, 2)
-                #features_rounded = np.round(arts["X_sample_s"][patient_idx:patient_idx+1], 2)
-                features_rounded = np.round(x_input, 2)
+                if shap_values_local.shape[1] == len(feat_names):
+                    shap_values_rounded = np.round(shap_values_local, 2)
+                    features_rounded = np.round(x_input, 2)
+                    
                 
                 shap_value_display = {
                  #   f"Feature {i}": f"{shap_values_rounded[0][i]:.2f}" 
@@ -1629,7 +1628,9 @@ def run_app():
         
                 st.pyplot(fig_local, use_container_width=True)
                 plt.close(fig_local)
-
+            else: #new
+                st.error("Mismatch between SHAP values and feature names length.")
+                
         # Misinformation Spread Over Time
         st.subheader("Misinformation Spread Over Time")
         fig_misinfo, ax_misinfo = plt.subplots()
