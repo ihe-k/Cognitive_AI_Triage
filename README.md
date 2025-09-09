@@ -106,7 +106,7 @@ The adjusted severity for each patient is calculated using the formula:
 The adjusted risk is always lower than the raw score as the model simulated the risk of misinformation spread across the population.  A higher  misinformation risk will reduce the adjusted severity risk as misinformation tends to artificially inflate perceived depression severity.  When misinformation is corrected for, the severity of depressive symptoms is adjusted downward. Additionally, incorporating physiological data reflects that physiological health buffers or moderated the psychological impacts of depressive symptoms and help paint a more nuanced picture of a patient's health.  
 
 ## Data Collection
-[Alzheimer's Disease MRI Dataset from Kaggle](https://www.kaggle.com/datasets/programmer3/mripet-fusion-dataset-for-alzheimers-detection)  
+[Alzheimer's Disease MRI dataset from Kaggle](https://www.kaggle.com/datasets/programmer3/mripet-fusion-dataset-for-alzheimers-detection)  
 [Depression severity dataset from Kaggle](https://www.kaggle.com/datasets/trilism/tramcam-daic-woz-e?resource=download)
 
 ## Testing
