@@ -24,14 +24,39 @@ with open("artifacts/severity_model.pkl", "rb") as f:
     model_artifact = pickle.load(f)
 
 feat_names = model_artifact["feature_names"]
-features = np.array([-0.259999990463, 0.8399999737739563, 0.123456, -0.987654])
-features_clean = [float(f) for f in features]
+
+# Define your feature values as variables
+PHQ8_Concentrating = 1.1399999856948893
+PHQ8_NoInterest = 0.019999999552965164
+PHQ8_Tired = -1.37
+PHQ8_Failure = -1.37
+PHQ8_Depressed = -1.09
+PHQ8_Sleep = -0.3
+PHQ8_Appetite = -1.80
+
+# Map feature names to your variables - make sure keys exactly match feat_names
+feature_values_dict = {
+    "PHQ8_Concentrating": PHQ8_Concentrating,
+    "PHQ8_Nolnterest": PHQ8_NoInterest,
+    "PHQ8_Tired": PHQ8_Tired,
+    "PHQ8_Failure": PHQ8_Failure,
+    "PHQ8_Depressed": PHQ8_Depressed,
+    "PHQ8_Sleep": PHQ8_Sleep,
+    "PHQ8_Appetite": PHQ8_Appetite,
+}
+
+features = np.array([feature_values_dict.get(name, np.nan) for name in feat_names])
+
+# Create DataFrame for inspection / formatting
 dp = pd.DataFrame({
-    'feature_value': features_clean
+    'feature_name': feat_names,
+    'feature_value': features
 })
-dp['feature_name'] = feat_names[:len(dp)]
-dp['feature_value_2dp'] = dp['feature_value'].apply(lambda x: f"{x:.2f}")
-print(dp)
+dp['feature_value_2dp_str'] = dp['feature_value'].apply(lambda x: f"{x:.2f}" if not pd.isna(x) else "NaN")
+dp['feature_value_2dp_num'] = dp['feature_value'].round(2)
+
+print(dp[['feature_name', 'feature_value_2dp_str', 'feature_value_2dp_num']])
+
 
 # Conditional OpenCV import for cloud compatibility
 try:
