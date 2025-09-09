@@ -1554,7 +1554,6 @@ def run_app():
                     arts["explainer_shap"].expected_value,  # Expected value
                     shap_values_rounded[0],  # Rounded SHAP values for the selected instance (access the first instance)
                     features=features_rounded[0],  # Feature values for the selected instance
-                    feature_names=feat_names,
                     matplotlib=True,  # Using Matplotlib for plotting
                     show=False  # Don't show the plot immediately, we'll customize it
                 )
