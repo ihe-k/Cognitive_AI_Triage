@@ -105,6 +105,14 @@ The adjusted severity for each patient is calculated using the formula:
 
 The adjusted risk is always lower than the raw score as the model simulates the risk of misinformation spread across the population.  A higher  misinformation risk will reduce the adjusted severity risk as misinformation tends to artificially inflate perceived depression severity.  When misinformation is corrected for, the severity of depressive symptoms is adjusted downward. Additionally, incorporating physiological data reflects that good physiological health buffers or moderates the psychological impacts of depressive symptoms and helps paint a more nuanced picture of patient health.  
 
+### Explanations
+#### SHAP (SHapely Additive exPlanations)
+SHAP is an explainable AI (XAI) technique that I have used in this app to explain individual depression risk scores by showing how physiological (e.g., heart rate) and behavioural features (e.g., MFCC) contribute to the model's output (a concept borrowed from game theory).  The plot visualises the push-and-pull influence of features on the predicted depression severity score (PHQ-8) for a selected patient.  The red bar (force plot arrows) illustrate features that push the prediction higher.  In this example, the red bars indicate features pushing the predicted depression severity upward.  For instance, a high MFCC mean is associated with a higher depression risk.
+
+
+
+
+
 ## Data Collection
 [Alzheimer's Disease MRI dataset from Kaggle](https://www.kaggle.com/datasets/programmer3/mripet-fusion-dataset-for-alzheimers-detection)  
 [Depression severity dataset from Kaggle](https://www.kaggle.com/datasets/trilism/tramcam-daic-woz-e?resource=download)
