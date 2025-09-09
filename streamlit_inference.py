@@ -23,15 +23,20 @@ import librosa
 with open("artifacts/severity_model.pkl", "rb") as f:
     model_artifact = pickle.load(f)
 
-feat_names = model_artifact["feature_names"]  # This loads a feature names list
-features = np.array([...])
+feat_names = model_artifact["feature_names"]  # List of feature names
+features = np.array([...])  # your features, e.g., shape=(n,)
+print(f"feat_names length: {len(feat_names)}")
+print(f"features length: {len(features)}")
+min_len = min(len(feat_names), len(features))
+
 dp = pd.DataFrame({
-    'feature_value': features
+    'feature_value': features[:min_len]
 })
 
-dp['feature_name'] = feat_names
+dp['feature_name'] = feat_names[:min_len]
 dp['feature_value_2dp'] = dp['feature_value'].map(lambda x: f"{x:.2f}")
 print(dp)
+
 
 # Conditional OpenCV import for cloud compatibility
 try:
