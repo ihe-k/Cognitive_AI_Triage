@@ -32,7 +32,7 @@ feat_names = [
     "PHQ8_Appetite"
 ]
 
-# Manually defined feature values
+# Feature values
 feature_values_dict = {
     "PHQ8_Concentrating": 1.1399999856948893,
     "PHQ8_NoInterest": 0.019999999552965164,
@@ -43,23 +43,17 @@ feature_values_dict = {
     "PHQ8_Appetite": -1.80,
 }
 
-# Align values with feature names
+# Convert to array in order of feat_names
 features_raw = np.array([feature_values_dict.get(name, np.nan) for name in feat_names])
+features_rounded = np.round(features_raw, 2)
 
-# Round values to 2 decimal places
-features_rounded_num = np.round(features_raw, 2)
-features_rounded_str = [f"{x:.2f}" if not np.isnan(x) else "NaN" for x in features_raw]
-
-# Create a DataFrame
+# Display table (optional)
 dp = pd.DataFrame({
     'feature_name': feat_names,
     'feature_value_raw': features_raw,
-    'feature_value_2dp_num': features_rounded_num,
-    'feature_value_2dp_str': features_rounded_str
+    'feature_value_rounded': features_rounded
 })
-
-# Show only the cleaned 2dp values
-print(dp[['feature_name', 'feature_value_2dp_num']])
+print(dp)
 
 # Conditional OpenCV import for cloud compatibility
 try:
@@ -1593,7 +1587,8 @@ def run_app():
 
                 shap.force_plot(
                     arts["explainer_shap"].expected_value,  # Expected value
-                    shap_values_rounded[0],  # Rounded SHAP values for the selected instance (access the first instance)
+                    #shap_values_rounded[0],  # Rounded SHAP values for the selected instance (access the first instance)
+                    shap_values=shap_values.values[0],
                     features=features_rounded[0],  # Feature values for the selected instance
                     feature_names=feat_names,
                     matplotlib=True,  # Using Matplotlib for plotting
