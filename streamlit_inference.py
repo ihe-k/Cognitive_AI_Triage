@@ -20,7 +20,7 @@ import seaborn as sns
 import librosa
 
 
-with gzip.open("artifacts/severity_model.pkl.gz", "rb") as f:
+with open("artifacts/severity_model.pkl", "rb") as f:
     model_artifact = pickle.load(f)
 
 feat_names = model_artifact["feature_names"]  # This loads a feature names list
@@ -648,7 +648,7 @@ def run_app():
     # Model status check
     if not check_pretrained_model():
         st.sidebar.error("❌ Pretrained model not found or invalid!")
-        st.sidebar.info("Please ensure 'artifacts/severity_model.pkl.gz' exists and contains a valid model.")
+        st.sidebar.info("Please ensure 'artifacts/severity_model.pkl' exists and contains a valid model.")
     else:
         st.sidebar.success("✅ Pretrained model ready!")
     
