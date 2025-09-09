@@ -23,16 +23,14 @@ import librosa
 with open("artifacts/severity_model.pkl", "rb") as f:
     model_artifact = pickle.load(f)
 
-feat_names = model_artifact["feature_names"]  # List of feature names
-features = np.array([0.123456, -0.987654, 0.564738, 0.000012])
+feat_names = model_artifact["feature_names"]
+features = np.array([-0.259999990463, 0.8399999737739563, 0.123456, -0.987654])
+features_clean = [float(f) for f in features]
 dp = pd.DataFrame({
-    'feature_value': features
+    'feature_value': features_clean
 })
-dp['feature_name'] = feat_names[:len(dp)]  # truncate or pad as needed
-dp['feature_value'] = pd.to_numeric(dp['feature_value'], errors='coerce')
-dp['feature_value_2dp'] = dp['feature_value'].map(
-    lambda x: f"{x:.2f}" if pd.notna(x) else "NaN"
-)
+dp['feature_name'] = feat_names[:len(dp)]
+dp['feature_value_2dp'] = dp['feature_value'].apply(lambda x: f"{x:.2f}")
 print(dp)
 
 # Conditional OpenCV import for cloud compatibility
