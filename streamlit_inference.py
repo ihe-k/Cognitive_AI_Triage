@@ -44,6 +44,7 @@ feature_values_dict = {
     "PHQ8_Sleep": PHQ8_Sleep,
     "PHQ8_Appetite": PHQ8_Appetite,
 }
+features_raw = np.array([feature_values_dict.get(name, np.nan) for name in feat_names])
 
 features_rounded_num = np.round(features_raw, 2)
 features_rounded_str = [f"{x:.2f}" if not np.isnan(x) else "NaN" for x in features_raw]
