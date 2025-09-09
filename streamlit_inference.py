@@ -1591,7 +1591,7 @@ def run_app():
                 fv = shap_expl.data[0]
                 fn = shap_expl.feature_names
                 
-                explainer_shap = shap.Explainer(model)
+                explainer_shap = shap.TreeExplainer(model)
                 features_array = features_rounded.reshape(1, -1)
                 shap_values = explainer_shap(features_array)
                 fig = shap.force_plot(
