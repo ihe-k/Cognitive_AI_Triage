@@ -22,7 +22,6 @@ import librosa
 
 with open("artifacts/severity_model.pkl", "rb") as f:
     model_artifact = pickle.load(f)
-#feat_names = model_artifact["feature_names"]
 feat_names = [
     "PHQ8_Concentrating",
     "PHQ8_NoInterest",
@@ -33,34 +32,25 @@ feat_names = [
     "PHQ8_Appetite"
 ]
 
-# Your manually defined feature values
-PHQ8_Concentrating = 1.1399999856948893
-PHQ8_NoInterest = 0.019999999552965164
-PHQ8_Tired = -1.37
-PHQ8_Failure = -1.37
-PHQ8_Depressed = -1.09
-PHQ8_Sleep = -0.3
-PHQ8_Appetite = -1.80
-
-# Map feature names to values
+# Manually defined feature values
 feature_values_dict = {
-    "PHQ8_Concentrating": PHQ8_Concentrating,
-    "PHQ8_NoInterest": PHQ8_NoInterest,
-    "PHQ8_Tired": PHQ8_Tired,
-    "PHQ8_Failure": PHQ8_Failure,
-    "PHQ8_Depressed": PHQ8_Depressed,
-    "PHQ8_Sleep": PHQ8_Sleep,
-    "PHQ8_Appetite": PHQ8_Appetite,
+    "PHQ8_Concentrating": 1.1399999856948893,
+    "PHQ8_NoInterest": 0.019999999552965164,
+    "PHQ8_Tired": -1.37,
+    "PHQ8_Failure": -1.37,
+    "PHQ8_Depressed": -1.09,
+    "PHQ8_Sleep": -0.3,
+    "PHQ8_Appetite": -1.80,
 }
 
-# Match values to feature names (handle missing values with NaN)
+# Align values with feature names
 features_raw = np.array([feature_values_dict.get(name, np.nan) for name in feat_names])
 
-# Round numerically and format as string to 2dp
+# Round values to 2 decimal places
 features_rounded_num = np.round(features_raw, 2)
 features_rounded_str = [f"{x:.2f}" if not np.isnan(x) else "NaN" for x in features_raw]
 
-# Create a nicely formatted DataFrame
+# Create a DataFrame
 dp = pd.DataFrame({
     'feature_name': feat_names,
     'feature_value_raw': features_raw,
@@ -68,8 +58,7 @@ dp = pd.DataFrame({
     'feature_value_2dp_str': features_rounded_str
 })
 
-# Show with proper formatting
-pd.set_option('display.float_format', '{:.2f}'.format)
+# Show only the cleaned 2dp values
 print(dp[['feature_name', 'feature_value_2dp_num']])
 
 # Conditional OpenCV import for cloud compatibility
