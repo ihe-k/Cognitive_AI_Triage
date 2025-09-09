@@ -1582,10 +1582,11 @@ def run_app():
                 
                 if isinstance(shap_values_all, list):
             # Assuming binary classification, use the SHAP values for the positive class (index 1)
-                    shap_values_local = shap_values-all[1]
+                    shap_values_local = shap_values_all[1]
                 else:
                     shap_values_local = shap_values_all
 
+                
         # Round SHAP values and feature values to 2 decimals
                 shap_values_rounded = np.round(shap_values_local, 2)
                 #features_rounded = np.round(arts["X_sample_s"][patient_idx:patient_idx+1], 2)
