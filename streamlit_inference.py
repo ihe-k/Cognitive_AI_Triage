@@ -1597,7 +1597,7 @@ def run_app():
                # shap_values = explainer_shap(features_array)
                 fig = shap.force_plot(
                     base_value=ev,
-                    shap_values=sv
+                    shap_values=sv,
                     features=fv,
                     feature_names=fn,
                 
