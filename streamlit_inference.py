@@ -24,19 +24,16 @@ with open("artifacts/severity_model.pkl", "rb") as f:
     model_artifact = pickle.load(f)
 
 feat_names = model_artifact["feature_names"]  # List of feature names
-features = np.array([...])  # your features, e.g., shape=(n,)
-print(f"feat_names length: {len(feat_names)}")
-print(f"features length: {len(features)}")
-min_len = min(len(feat_names), len(features))
-
+features = np.array([0.123456, -0.987654, 0.564738, 0.000012])
 dp = pd.DataFrame({
-    'feature_value': features[:min_len]
+    'feature_value': features
 })
-
-dp['feature_name'] = feat_names[:min_len]
-dp['feature_value_2dp'] = dp['feature_value'].map(lambda x: f"{x:.2f}")
+dp['feature_name'] = feat_names[:len(dp)]  # truncate or pad as needed
+dp['feature_value'] = pd.to_numeric(dp['feature_value'], errors='coerce')
+dp['feature_value_2dp'] = dp['feature_value'].map(
+    lambda x: f"{x:.2f}" if pd.notna(x) else "NaN"
+)
 print(dp)
-
 
 # Conditional OpenCV import for cloud compatibility
 try:
