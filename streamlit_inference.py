@@ -1586,7 +1586,7 @@ def run_app():
                 }
 
                 expl = arts["explainer_shap"]
-                shap_expl = explainer_shap(features_array)
+                shap_expl = expl(features_array)
                 sv = shap_expl.values[0] 
                 fv = shap_expl.data[0]  
                 fn = shap_expl.feature_names
