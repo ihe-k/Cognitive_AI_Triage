@@ -1586,7 +1586,7 @@ def run_app():
                 else:
                     shap_values_local = shap_values_all
 
-                if shap_values_local.shape[1] == len(feat_names):
+                if shap_values_local is not None and len(shap_values_local) > 0:
                     shap_values_rounded = np.round(shap_values_local, 2)
                     features_rounded = np.round(x_input, 2)
                     
@@ -1629,7 +1629,7 @@ def run_app():
                 st.pyplot(fig_local, use_container_width=True)
                 plt.close(fig_local)
             else: #new
-                st.error("Mismatch between SHAP values and feature names length.")
+                st.error("SHAP values are missing or cannot be computed.")
                 
         # Misinformation Spread Over Time
         st.subheader("Misinformation Spread Over Time")
