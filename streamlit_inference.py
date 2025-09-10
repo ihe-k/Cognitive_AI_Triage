@@ -1594,17 +1594,17 @@ def run_app():
                     shap_values_rounded = np.round(shap_values_local, 2)
                     features_rounded = np.round(x_input, 2)
                    
-                    if len(shap_values_rounded[0]) == len(feat_names):
+                    if len(shap_values_rounded[0]) !== len(feat_names):
                         st.error(f"Mismatch between number of SHAP values ({len(shap_values_rounded[0])}) and feature names ({len(feat_names)})")
                         return
 
                     shap_value_display = {
                         feat_names[i]: f"{shap_values_rounded[0][i]:.2f}"
-                        for i in range(len(shap_values_rounded[0]))  # Adjust this if feat_names is smaller than the SHAP values
+                        for i in range(min(len(shap_values_rounded[0]), len(feat_names)))
                     }
 
                     relevant_feature_indices = [0, 1, 2, 3, 4, 5, 6]
-                    relevant_shap_values = shap_values_local[0, relevant_feature_indices]
+                    relevant_shap_values = shap_values_local[relevant_feature_indices]
                     relevant_features = x_input[0, relevant_feature_indices]
       
                 #explainer_shap = shap.Explainer(model, feature_names=feat_names)
