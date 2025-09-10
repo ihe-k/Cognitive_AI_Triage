@@ -1502,10 +1502,10 @@ def run_app():
                     "pose_conf_stf_f444", "pose_conf_mean_f555",
                     "gaze_conf_std_f666", "gaze_conf_mean_f777"
                 ]
-                X_sample = np.random.rand(len(arts_feat_names))  # Replace with your actual sample row
-                if len(X_sample) != len(arts["feat_names"]):
-                    raise ValueError(f"Length of X_sample ({len(X_sample)}) does not match the length of arts['feat_names'] ({len(arts['feat_names'])}).")
+                if len(arts_feat_names) != len(arts["feat_names"]):
+                    raise ValueError(f"Length of arts_feat_names ({len(arts_feat_names)}) does not match the length of arts['feat_names'] ({len(arts['feat_names'])}).")
 
+                X_sample = np.random.rand(len(arts_feat_names))  # Use random values for X_sample
                 exclude_keywords = ['std', 'stf']
                  
                 keep_prefixes = ['fkps', 'text', 'gaze', 'pose', 'audio']
@@ -1521,13 +1521,7 @@ def run_app():
                 if not filtered_indices:
                     raise ValueError("No valid features remain after filtering.")
 
-                print(f"Filtered indices: {filtered_indices}")
-                print(f"Length of X_sample: {len(X_sample)}")
-
-                filtered_indices = [i for i in filtered_indices if i < len(X_sample)]
-                if not filtered_indices:
-                    raise ValueError("No valid features remain after filtering.")
-
+    
                 X_sample_filtered = X_sample[filtered_indices]
                 filtered_feat_names = [arts["feat_names"][i] for i in filtered_indices]
 
@@ -1548,6 +1542,9 @@ def run_app():
 
                 print("Filtered feature names:", final_feat_names)
                 print("Filtered feature values:", X_sample_final)
+
+                # DEBUG: Check the shape of X_sample_final before passing it to explain_instance
+                print("Shape of X_sample_final:", X_sample_final.shape)
 
                 print("Shape of X_sample_final:", X_sample_final.shape)
                 if X_sample_final.ndim == 1:
