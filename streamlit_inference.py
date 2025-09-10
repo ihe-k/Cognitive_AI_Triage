@@ -1556,7 +1556,7 @@ def run_app():
                     f"Feature {i}": f"{shap_values_rounded[0][i]:.2f}"  # Accessing the individual value within the inner array
                     for i in range(len(shap_values_rounded[0]))
                 }
-                plt.figure(figsize=(12, 10)) 
+                plt.figure(figsize=(14, 12)) 
                 shap.force_plot(
                     arts["explainer_shap"].expected_value,  # Expected value
                     shap_values_rounded[0], 
