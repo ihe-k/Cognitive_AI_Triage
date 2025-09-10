@@ -1572,6 +1572,7 @@ def run_app():
                     
                 
                 }
+                print("Filtered features to be used in LIME explanation:")
                 print(arts["feat_names"][:10]) 
                 yticklabels = ax.get_yticklabels()
                 new_labels = []
