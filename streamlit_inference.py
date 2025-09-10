@@ -1497,7 +1497,7 @@ def run_app():
                # Explanation block (LIME default like your sketch; SHAP optional)
             if method == "LIME":
                 st.subheader("LIME Explanation")
-                exclude_keywords = ['_std_', 'stf',"std","_std_"] 
+                exclude_keywords = ['_std_', 'stf','std',"std"] 
                 
                 keep_prefixes = ['PHQ']
                 
