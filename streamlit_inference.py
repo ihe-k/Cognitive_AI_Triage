@@ -1566,7 +1566,7 @@ def run_app():
                 
                 shap.force_plot(
                     arts["explainer_shap"].expected_value,
-                    shap_values_rounded_[0],  
+                    #shap_values_rounded_[0],  
                     features=features_rounded,  
                     feature_names=feature_labels,
                     matplotlib=True, 
