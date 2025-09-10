@@ -1522,8 +1522,7 @@ def run_app():
                 lime_exp = arts["explainer_lime"].explain_instance(
                     arts["X_sample_s"][patient_idx],
                     arts["model"].predict,
-                    num_features=min(10, len(final_feat_names)),
-                    feature_selection='none'
+                    num_features=min(10, len(final_feat_names))
                 )
                 
                 fig = lime_exp.as_pyplot_figure()
