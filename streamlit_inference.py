@@ -1496,16 +1496,9 @@ def run_app():
             # Explanation block (LIME default like your sketch; SHAP optional)
             if method == "LIME":
                 st.subheader("LIME Explanation")
-                arts_feat_names = [
-                    "fkps_std_f123", "fkps_mean_f456", "fkps_mean_f789",
-                    "audio_std_f111", "audio_mean_f222", "audio_mean_f333",
-                    "pose_conf_stf_f444", "pose_conf_mean_f555",
-                    "gaze_conf_std_f666", "gaze_conf_mean_f777"
-                ]
-                if len(arts_feat_names) != len(arts["feat_names"]):
-                    raise ValueError(f"Length of arts_feat_names ({len(arts_feat_names)}) does not match the length of arts['feat_names'] ({len(arts['feat_names'])}).")
-
-                X_sample = np.random.rand(len(arts_feat_names))  # Use random values for X_sample
+                arts_feat_names = arts['feat_names'] 
+                
+                X_sample = np.random.rand(len(arts_feat_names))
                 exclude_keywords = ['std', 'stf']
                  
                 keep_prefixes = ['fkps', 'text', 'gaze', 'pose', 'audio']
