@@ -1611,11 +1611,17 @@ def run_app():
                 st.pyplot(fig_local, use_container_width=True)
                 plt.close(fig_local)
 
-                st.table(pd.DataFrame({
+                num_features = len(feat_names)
+                feature_values_display = features_rounded[0][:num_features]
+                shap_values_display = shap_values_rounded[0][:num_features]
+
+                df_display = pd.DataFrame({
                     "Feature": feat_names,
-                    "Value": features_rounded[0],
-                    "SHAP": shap_values_rounded[0]
-                }))
+                    "Value": feature_values_display,
+                    "SHAP": shap_values_display
+                })
+
+                st.table(df_display)
         
         # Misinformation Spread Over Time
         st.subheader("Misinformation Spread Over Time")
