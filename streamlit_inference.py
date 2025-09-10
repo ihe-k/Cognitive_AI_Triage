@@ -1556,7 +1556,7 @@ def run_app():
                     f"Feature {i}": f"{shap_values_rounded[0][i]:.2f}"  # Accessing the individual value within the inner array
                     for i in range(len(shap_values_rounded[0]))
                 }
-
+                plt.figure(figsize=(10, 8)) 
                 shap.force_plot(
                     arts["explainer_shap"].expected_value,  # Expected value
                     shap_values_rounded[0], 
@@ -1567,8 +1567,7 @@ def run_app():
                 )
         
                 #fig_local = plt.gcf()
-                plt.figure(figsize=(10, 8))  # Increase the size of the plot (10x8 inches)
-
+                
                 ax = plt.gca()
 
                 ax.xaxis.set_major_formatter(mtick.FuncFormatter(lambda x, pos: f"{x:.2f}"))
@@ -1581,7 +1580,7 @@ def run_app():
                     tick.set_rotation(0)
                     tick.set_fontsize(10)
         
-              #  st.pyplot(fig_local, use_container_width=True)
+                st.pyplot(plt.gcf(), use_container_width=True)
                 plt.close(fig_local)
                                           
         
