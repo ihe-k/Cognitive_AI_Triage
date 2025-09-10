@@ -1595,13 +1595,14 @@ def run_app():
                     features_rounded = np.round(x_input, 2)
                    
                     if len(shap_values_rounded[0]) == len(feat_names):
-                        shap_value_display = {
-                            feat_names[i]: f"{shap_values_rounded[0][i]:.2f}"
-                            for i in range(len(shap_values_rounded[0]))
-                        }
-                    else:
                         st.error(f"Mismatch between number of SHAP values ({len(shap_values_rounded[0])}) and feature names ({len(feat_names)})")
                         return
+
+                    shap_value_display = {
+                        feat_names[i]: f"{shap_values_rounded[0][i]:.2f}"
+                        for i in range(len(shap_values_rounded[0]))  # Adjust this if feat_names is smaller than the SHAP values
+                    }
+
                     relevant_feature_indices = [0, 1, 2, 3, 4, 5, 6]
                     relevant_shap_values = shap_values_local[0, relevant_feature_indices]
                     relevant_features = x_input[0, relevant_feature_indices]
@@ -1609,34 +1610,34 @@ def run_app():
                 #explainer_shap = shap.Explainer(model, feature_names=feat_names)
                # features_array = explainer_shap(features_array)
                # shap_values = explainer_shap(features_array)
-                    fig = shap.force_plot(
-                        base_value=expl.expected_value,
-                        shap_values=relevant_shap_values,
-                        features=relevant_features,
-                        feature_names=feat_names,
+                        fig = shap.force_plot(
+                            base_value=expl.expected_value,
+                            shap_values=relevant_shap_values,
+                            features=relevant_features,
+                            feature_names=feat_names,
                 
-                        matplotlib=True,  # Using Matplotlib for plotting
-                        show=False  # Don't show the plot immediately, we'll customize it
-                    )
+                            matplotlib=True,  # Using Matplotlib for plotting
+                            show=False  # Don't show the plot immediately, we'll customize it
+                        )
                 
                
-                    fig_local = plt.gcf()
-                    ax = plt.gca()
+                        fig_local = plt.gcf()
+                        ax = plt.gca()
 
-                    ax.xaxis.set_major_formatter(mtick.FuncFormatter(lambda x, pos: f"{x:.2f}"))
-                    ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda y, pos: f"{y:.2f}"))
+                        ax.xaxis.set_major_formatter(mtick.FuncFormatter(lambda x, pos: f"{x:.2f}"))
+                        ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda y, pos: f"{y:.2f}"))
 
-                    for tick in ax.get_xticklabels():
-                        tick.set_rotation(0)
-                        tick.set_fontsize(10)
-                    for tick in ax.get_yticklabels():
-                        tick.set_rotation(0)
-                        tick.set_fontsize(10)
+                        for tick in ax.get_xticklabels():
+                            tick.set_rotation(0)
+                            tick.set_fontsize(10)
+                        for tick in ax.get_yticklabels():
+                            tick.set_rotation(0)
+                            tick.set_fontsize(10)
         
-                    st.pyplot(fig_local, use_container_width=True)
-                    plt.close(fig_local)
-                else: 
-                    st.error("SHAP values are missing or cannot be computed.")
+                        st.pyplot(fig_local, use_container_width=True)
+                        plt.close(fig_local)
+                    else: 
+                        st.error("SHAP values are missing or cannot be computed.")
                 
         # Misinformation Spread Over Time
         st.subheader("Misinformation Spread Over Time")
