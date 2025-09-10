@@ -1579,7 +1579,12 @@ def run_app():
                 for label in yticklabels:
                     original_text = label.get_text()
                     new_name = custom_feature_names.get(original_text, original_text)  # Direct mapping
+                    if new_name:
+                        new_label = new_name
+                    else:
+                        new_label = original_text  # If None, fallback to original feature name
 
+                    new_labels.append(new_label)
                    # parts = original_text.split("<")
                    # if len(parts) == 3:
                    #     feature_part = parts[1].strip().split(" ")[0]
@@ -1593,7 +1598,7 @@ def run_app():
                   #  else:
                   #      new_label = new_name
 
-                    new_labels.append(new_label)
+                  #  new_labels.append(new_label)
 
 
 
