@@ -1500,6 +1500,7 @@ def run_app():
                 exclude_keywords = ['std', 'stf'] 
                 
                 keep_prefixes = ['PHQ_']
+                print("Original feature names:", arts["feat_names"])
 
                 filtered_feat_names = [
                     feat for feat in arts["feat_names"]
