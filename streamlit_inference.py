@@ -1504,10 +1504,9 @@ def run_app():
 
                 filtered_feat_names = [
                     feat for feat in arts["feat_names"]
-                    if feat.startswith('PHQ_') and not any(keyword in feat for keyword in exclude_keywords)
+                    if not any(keyword in feat for keyword in exclude_keywords) and any(feat.startswith(prefix) for prefix in keep_prefixes)
                 ]
-                print("Filtered feature names (only PHQ_ features):", filtered_feat_names)
-
+                
                 def get_base_name(feature):
                 # Remove any numeric suffix after the first underscore
                     return re.sub(r'_\d+', '', feature)
@@ -1519,19 +1518,20 @@ def run_app():
                         unique_feat_names[base_name] = feat  # Store the first occurrence of each base name
                 final_feat_names = list(unique_feat_names.values())
 
-                print("Final feature names after removing duplicates:", final_feat_names)
                 
+                X_sample_s = np.array(arts["X_sample_s"]).reshape(1, -1)
                 explainer_lime = lime.lime_tabular.LimeTabularExplainer(
                     training_data=arts["X_sample_s"],
                     feature_names=final_feat_names,
                     class_names=['Class 1', 'Class 2'],
-                    mode='classification',  
+                    mode='classification'
                 )
 
                 lime_exp = explainer_lime.explain_instance(
-                    arts["X_sample_s"][patient_idx],  # Use the appropriate sample
+                    X_sample_s[0],   
                     arts["model"].predict,            # Model's prediction function
-                    num_features=min(10, len(final_feat_names))  # Limit the number of features to 10
+                    num_features=10,
+                    feature_selection='none'
                 )
                 
                 fig = lime_exp.as_pyplot_figure()
