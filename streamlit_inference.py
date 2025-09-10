@@ -1496,6 +1496,9 @@ def run_app():
             # Explanation block (LIME default like your sketch; SHAP optional)
             if method == "LIME":
                 st.subheader("LIME Explanation")
+                selected_features = ["pose_conf_mean_fxxxx", "gaze_conf_mean_fxxxx", fkps_mean,text_mean,audio_mean]  # Update the second feature name with the correct one.
+                selected_data = arts["X_sample_s"][:, [arts["feat_names"].index(f) for f in selected_features]]
+    
                 lime_exp = arts["explainer_lime"].explain_instance(
                     arts["X_sample_s"][patient_idx],
                     arts["model"].predict,
@@ -1540,17 +1543,17 @@ def run_app():
 
                 # Rename y-axis labels using a custom mapping
                 custom_feature_names = {
-                    "PHQ8_NoInterest": "PHQ8: Lack of Interest",
-                    "PHQ8_Depressed": "PHQ8: Depressed",
-                    "PHQ8_Appetite": "PHQ8: Appetite",
+                    "PHQ8_NoInterest": "PHQ8 Lack of Interest",
+                    "PHQ8_Depressed": "PHQ8 Depressed",
+                    "PHQ8_Appetite": "PHQ8 Appetite",
                     "PHQ8_Concentrating": "PHQ8: Poor Concentration",
                     "PHQ8_Failure": "PHQ8: Failure",
-                    "audio_std_f124864": "PHQ8: Speech Variability",
-                    "audio_std_f47342": "PHQ8: Stress",
-                    "fkps_mean_f956": "PHQ: Facial Key Points",
-                    "pose_conf_stf_f13554": "PHQ8: Pose",
-                    "pose_conf_mean_f8947": "PHQ8: Confidence",
-                    "gaze_conf_std_f1673": "PHQ8: Gaze",
+                    "audio_std_f124864": "PHQ8 Speech Variability",
+                    "audio_std_f47342": "PHQ8 Stress",
+                    "fkps_mean_f956": "PHQ Facial Key Points",
+                    "pose_conf_stf_f13554": "PHQ8 Pose Confidence",
+                    "pose_conf_mean_f8947": "PHQ8 Confidence",
+                    "gaze_conf_std_f1673": "PHQ8 Gaze confidence",
                     
     # Add more mappings as needed
                 }
