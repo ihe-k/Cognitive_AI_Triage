@@ -1503,6 +1503,8 @@ def run_app():
                     "gaze_conf_std_f666", "gaze_conf_mean_f777"
                 ]
                 X_sample = np.random.rand(len(arts_feat_names))  # Replace with your actual sample row
+                print("Length of X_sample:", len(X_sample))  
+                print("Length of arts['feat_names']:", len(arts["feat_names"]))  
 
                 exclude_keywords = ['std', 'stf']
                 X_sample = np.random.rand(len(arts_feat_names)) 
@@ -1513,10 +1515,11 @@ def run_app():
                     i for i, feat in enumerate(arts["feat_names"])
                     if not any(k in feat for k in exclude_keywords) and any(feat.startswith(p) for p in keep_prefixes)
                 ]
-                if max(filtered_indices) < len(X_sample):
+                if filtered_indices:
                     X_sample_filtered = X_sample[filtered_indices]
+                    filtered_feat_names = [arts_feat_names[i] for i in filtered_indices]
                 else:
-                    raise IndexError(f"Filtered indices exceed the size of X_sample. Max index: {max(filtered_indices)}, Size of X_sample: {len(X_sample)}")
+                    raise ValueError("No valid features remain after filtering.")
 
                 def get_base_name(feature):
                 # Remove any numeric suffix after the first underscore
@@ -1538,7 +1541,7 @@ def run_app():
 
                 lime_exp = arts["explainer_lime"].explain_instance(
                     X_sample_final,
-                    lambda x: arts["model"].predict(np.array(x).reshape(1, -1)),
+                    lambda x: arts["model"].predict(np.array(x)),
                     feature_names=final_feat_names,
                     num_features=min(10, len(final_feat_names)),
                     feature_selection='none'
