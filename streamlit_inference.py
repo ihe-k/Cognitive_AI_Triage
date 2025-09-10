@@ -1496,9 +1496,16 @@ def run_app():
             # Explanation block (LIME default like your sketch; SHAP optional)
             if method == "LIME":
                 st.subheader("LIME Explanation")
+                arts_feat_names = [
+                    "fkps_std_f123", "fkps_mean_f456", "fkps_mean_f789",
+                    "audio_std_f111", "audio_mean_f222", "audio_mean_f333",
+                    "pose_conf_stf_f444", "pose_conf_mean_f555",
+                    "gaze_conf_std_f666", "gaze_conf_mean_f777"
+                ]
 
                 exclude_keywords = ['std', 'stf']
-
+                X_sample = np.random.rand(len(arts_feat_names)) 
+                
                 keep_prefixes = ['fkps', 'text', 'gaze', 'pose', 'audio']
 
                 filtered_indices = [
@@ -1524,6 +1531,9 @@ def run_app():
 
                 X_sample_final = X_sample_filtered[unique_indices]
                 final_feat_names = [filtered_feat_names[i] for i in unique_indices]
+
+                print("Filtered feature names:", final_feat_names)
+                print("Filtered feature values:", X_sample_final)
 
                 lime_exp = arts["explainer_lime"].explain_instance(
                     X_sample_final,
