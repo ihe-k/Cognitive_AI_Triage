@@ -1512,10 +1512,10 @@ def run_app():
                     base_name = get_base_name(feat)
                     if base_name not in unique_feat_names:
                         unique_feat_names[base_name] = feat  # Store the first occurrence of each base name
-                final_feat_names = list(unique_feat_names.values())
+                feat_names = list(unique_feat_names.values())
 
                 print("Filtered features (excluding 'std', 'stf' and duplicates):")
-                print(final_feat_names)
+                print(feat_names)
 
         
                 lime_exp = arts["explainer_lime"].explain_instance(
@@ -1572,7 +1572,7 @@ def run_app():
                     
                 
                 }
-                print(arts["final_feat_names"][:10]) 
+                print(arts["feat_names"][:10]) 
                 yticklabels = ax.get_yticklabels()
                 new_labels = []
 
