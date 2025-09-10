@@ -1605,11 +1605,7 @@ def run_app():
                     relevant_feature_indices = [0, 1, 2, 3, 4, 5, 6]
                     relevant_shap_values = shap_values_local[0, relevant_feature_indices]
                     relevant_features = x_input[0, relevant_feature_indices]
-
-                    if len(relevant_shap_values) != len(feat_names):
-                        st.error(f"Mismatch in the number of SHAP values ({len(relevant_shap_values)}) and feature names ({len(feat_names)})")
-                        return
-                    
+      
                 #explainer_shap = shap.Explainer(model, feature_names=feat_names)
                # features_array = explainer_shap(features_array)
                # shap_values = explainer_shap(features_array)
