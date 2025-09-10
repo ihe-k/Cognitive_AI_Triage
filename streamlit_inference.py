@@ -1511,13 +1511,12 @@ def run_app():
 
                 filtered_indices = [
                     i for i, feat in enumerate(arts["feat_names"])
-                    if not any(k in feat for k in exclude_keywords)
-                    and any(feat.startswith(p) for p in keep_prefixes)
+                    if not any(k in feat for k in exclude_keywords) and any(feat.startswith(p) for p in keep_prefixes)
                 ]
-                print(f"Filtered indices: {filtered_indices}")
-                X_sample_filtered = X_sample[filtered_indices]
-                filtered_feat_names = [arts_feat_names[i] for i in filtered_indices]
-
+                if max(filtered_indices) < len(X_sample):
+                    X_sample_filtered = X_sample[filtered_indices]
+                else:
+                    raise IndexError(f"Filtered indices exceed the size of X_sample. Max index: {max(filtered_indices)}, Size of X_sample: {len(X_sample)}")
 
                 def get_base_name(feature):
                 # Remove any numeric suffix after the first underscore
