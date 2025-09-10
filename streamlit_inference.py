@@ -1570,58 +1570,65 @@ def run_app():
                 plt.close(fig)
             elif method == "SHAP":
                 st.subheader("SHAP Explanation")
-                shap_values = arts["explainer_shap"].shap_values(arts["X_sample_s"][patient_idx:patient_idx+1])
-                if isinstance(shap_values, list):
-            # Assuming binary classification, use the SHAP values for the positive class (index 1)
-                    shap_values_local = shap_values[1]
-                else:
-                    shap_values_local = shap_values
+                expl = arts["explainer_shap"]
+                x_input = arts["X_sample_s"][patient_idx:patient_idx + 1]
+                expected_num_features = x_input.shape[1]
+                if expected_num_features != 10249:
+                    st.error(f"Expected 10,249 features, but input has {expected_num_features}.")
+                    st.stop()
 
-        # Round SHAP values and feature values to 2 decimals
+                shap_values_all = expl.shap_values(x_input)
+                shap_values_local = shap_values_all[1] if isinstance(shap_values_all, list) else shap_values_all
+                if shap_values_local is None or len(shap_values_local) == 0:
+                    st.error("SHAP values not found.")
+                    st.stop()
+
                 shap_values_rounded = np.round(shap_values_local, 2)
-                features_rounded = np.round(arts["X_sample_s"][patient_idx:patient_idx+1], 2)
+                features_rounded = np.round(x_input, 2)
 
-                shap_value_display = {
-                    f"Feature {i}": f"{shap_values_rounded[0][i]:.2f}"  # Accessing the individual value within the inner array
-                    for i in range(len(shap_values_rounded[0]))
-                }
+                try:
+                    full_feature_names = expl.data_feature_names
+                except AttributeError:
+                    st.error("Cannot retrieve feature names from SHAP explainer.")
+                    st.stop()
 
-                shap.force_plot(
-                    arts["explainer_shap"].expected_value,
-                    shap_values_rounded[0],  
-                    features=features_rounded[0],
-                    feature_names=feat_names,  
+                feat_names = [
+                    "PHQ8_Concentrating",
+                    "PHQ8_NoInterest",
+                    "PHQ8_Tired",
+                    "PHQ8_Failure",
+                    "PHQ8_Depressed",
+                    "PHQ8_Sleep",
+                    "PHQ8_Appetite"
+                ]
+
+                name_to_index = {name: idx for idx, name in enumerate(full_feature_names)}
+                relevant_indices = [name_to_index[name] for name in feat_names if name in name_to_index]
+
+                if len(relevant_indices) != len(feat_names):
+                    st.error("Some PHQ‑8 feature names not found in model input.")
+                    st.stop()
+
+                relevant_shap = shap_values_local[0, relevant_indices]
+                relevant_feat_vals = x_input[0, relevant_indices]
+
+                fig = shap.force_plot(
+                    base_value=expl.expected_value,
+                    shap_values=relevant_shap,
+                    features=relevant_feat_vals,
+                    feature_names=feat_names,
                     matplotlib=True,
-                    show=False 
+                    show=False
                 )
-        
-                fig_local = plt.gcf()
+                plt.gcf().set_size_inches(10, 2)
                 ax = plt.gca()
-
                 ax.xaxis.set_major_formatter(mtick.FuncFormatter(lambda x, pos: f"{x:.2f}"))
                 ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda y, pos: f"{y:.2f}"))
+                for tick in ax.get_xticklabels(): tick.set_rotation(0); tick.set_fontsize(10)
+                for tick in ax.get_yticklabels(): tick.set_rotation(0); tick.set_fontsize(10)
 
-                for tick in ax.get_xticklabels():
-                    tick.set_rotation(0)
-                    tick.set_fontsize(10)
-                for tick in ax.get_yticklabels():
-                    tick.set_rotation(0)
-                    tick.set_fontsize(10)
-        
-                st.pyplot(fig_local, use_container_width=True)
-                plt.close(fig_local)
-
-                num_features = len(feat_names)
-                feature_values_display = features_rounded[0][:num_features]
-                shap_values_display = shap_values_rounded[0][:num_features]
-
-                df_display = pd.DataFrame({
-                    "Feature": feat_names,
-                    "Value": feature_values_display,
-                    "SHAP": shap_values_display
-                })
-
-                st.table(df_display)
+                st.pyplot(plt.gcf(), use_container_width=True)
+                plt.close()
         
         # Misinformation Spread Over Time
         st.subheader("Misinformation Spread Over Time")
