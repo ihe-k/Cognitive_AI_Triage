@@ -1496,7 +1496,7 @@ def run_app():
             # Explanation block (LIME default like your sketch; SHAP optional)
             if method == "LIME":
                 st.subheader("LIME Explanation")
-                selected_features = ["pose_conf_mean_fxxxx", "gaze_conf_mean_fxxxx", fkps_mean,text_mean,audio_mean]  # Update the second feature name with the correct one.
+                selected_features = ["pose_conf_mean_fxxxx", "gaze_conf_mean_fxxxx", fkps_mean_fxxxx,text_mean,audio_mean]  # Update the second feature name with the correct one.
                 selected_data = arts["X_sample_s"][:, [arts["feat_names"].index(f) for f in selected_features]]
     
                 lime_exp = arts["explainer_lime"].explain_instance(
