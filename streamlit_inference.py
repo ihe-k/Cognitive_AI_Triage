@@ -1543,12 +1543,12 @@ def run_app():
                 st.subheader("SHAP Explanation")
                 shap_values = arts["explainer_shap"].shap_values(arts["X_sample_s"][patient_idx:patient_idx+1])
                 if isinstance(shap_values, list):
-            # Assuming binary classification, use the SHAP values for the positive class (index 1)
+                    
                     shap_values_local = shap_values[1]
                 else:
                     shap_values_local = shap_values
 
-        # Round SHAP values and feature values to 2 decimals
+                # Round SHAP values and feature values to 2 decimals
                 shap_values_rounded = np.round(shap_values_local, 2)
                 features_rounded = np.round(arts["X_sample_s"][patient_idx:patient_idx+1],2)
 
@@ -1566,7 +1566,7 @@ def run_app():
                 
                 shap.force_plot(
                     arts["explainer_shap"].expected_value,
-                    shap_values_rounded_[0],  
+                    shap_values_rounded[0],  
                     features=features_rounded[0],  
                     feature_names=feature_labels,
                     matplotlib=True, 
