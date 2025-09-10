@@ -1505,7 +1505,9 @@ def run_app():
                     feat for feat in arts["feat_names"]
                     if not any(keyword in feat for keyword in exclude_keywords) and any(feat.startswith(prefix) for prefix in keep_prefixes)
                 ]
-                
+                if not filtered_feat_names:
+                    st.error("No features found after filtering.")
+                    return
                 def get_base_name(feature):
                 # Remove any numeric suffix after the first underscore
                     return re.sub(r'_\d+', '', feature)
@@ -1519,6 +1521,9 @@ def run_app():
 
                 
                 X_sample_s = np.array(arts["X_sample_s"]).reshape(1, -1)
+                if X_sample_s.shape[0] == 0:
+                    st.error("No samples found in X_sample_s.")
+                    return
                 explainer_lime = lime.lime_tabular.LimeTabularExplainer(
                     training_data=arts["X_sample_s"],
                     feature_names=final_feat_names,
