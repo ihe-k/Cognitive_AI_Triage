@@ -1563,7 +1563,7 @@ def run_app():
                     for i in range(len(feat_names))
                 ]
 
-                plt.figure(figsize=(14, 12)) 
+                plt.figure(figsize=(18, 16)) 
                 
                 shap.force_plot(
                     arts["explainer_shap"].expected_value,
