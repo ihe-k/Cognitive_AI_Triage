@@ -1519,13 +1519,19 @@ def run_app():
 
                 print("Final feature names after removing duplicates:", final_feat_names)
                 
-                lime_exp = arts["explainer_lime"].explain_instance(
-                    arts["X_sample_s"][patient_idx],
-                    arts["model"].predict,
-                    num_features=min(10, len(final_feat_names)),
-                    feature_names=final_feat_names
+                explainer_lime = lime.lime_tabular.LimeTabularExplainer(
+                    training_data=arts["X_sample_s"],
+                    feature_names=final_feat_names,
+                    class_names=['Class 1', 'Class 2'],
+                    mode='classification',  
                 )
-        
+
+                lime_exp = explainer_lime.explain_instance(
+                    arts["X_sample_s"][patient_idx],  # Use the appropriate sample
+                    arts["model"].predict,            # Model's prediction function
+                    num_features=min(10, len(final_feat_names))  # Limit the number of features to 10
+                )
+                
                 fig = lime_exp.as_pyplot_figure()
                 ax = fig.gca()
                 feature_weights = lime_exp.as_list()
