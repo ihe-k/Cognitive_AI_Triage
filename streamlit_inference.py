@@ -1503,18 +1503,24 @@ def run_app():
                     "gaze_conf_std_f666", "gaze_conf_mean_f777"
                 ]
                 X_sample = np.random.rand(len(arts_feat_names))  # Replace with your actual sample row
-                print("Length of X_sample:", len(X_sample))  
-                print("Length of arts['feat_names']:", len(arts["feat_names"]))  
+                if len(X_sample) != len(arts["feat_names"]):
+                    raise ValueError(f"Length of X_sample ({len(X_sample)}) does not match the length of arts['feat_names'] ({len(arts['feat_names'])}).")
 
                 exclude_keywords = ['std', 'stf']
-                X_sample = np.random.rand(len(arts_feat_names)) 
-                
+                 
                 keep_prefixes = ['fkps', 'text', 'gaze', 'pose', 'audio']
 
                 filtered_indices = [
                     i for i, feat in enumerate(arts["feat_names"])
                     if not any(k in feat for k in exclude_keywords) and any(feat.startswith(p) for p in keep_prefixes)
                 ]
+                print(f"Filtered indices: {filtered_indices}")
+                print(f"Length of X_sample: {len(X_sample)}")
+
+                filtered_indices = [i for i in filtered_indices if i < len(X_sample)]
+                if not filtered_indices:
+                    raise ValueError("No valid features remain after filtering.")
+
                 print(f"Filtered indices: {filtered_indices}")
                 print(f"Length of X_sample: {len(X_sample)}")
 
@@ -1542,6 +1548,12 @@ def run_app():
 
                 print("Filtered feature names:", final_feat_names)
                 print("Filtered feature values:", X_sample_final)
+
+                print("Shape of X_sample_final:", X_sample_final.shape)
+                if X_sample_final.ndim == 1:
+                    X_sample_final = X_sample_final.reshape(1, -1)  # Reshape to (1, n_features)
+                print("Reshaped X_sample_final to 2D:", X_sample_final.shape)
+
 
                 lime_exp = arts["explainer_lime"].explain_instance(
                     X_sample_final,
