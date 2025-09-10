@@ -1556,12 +1556,18 @@ def run_app():
                     f"Feature {i}": f"{shap_values_rounded[0][i]:.2f}"  # Accessing the individual value within the inner array
                     for i in range(len(shap_values_rounded[0]))
                 }
+
+                feature_labels = [
+                    f"{feat_names[i]}: {features_rounded[0][i]:.2f}"  # Format feature name and value to 2 dp
+                    for i in range(len(feat_names))
+                ]
+                
                 plt.figure(figsize=(14, 12)) 
                 shap.force_plot(
                     arts["explainer_shap"].expected_value,  # Expected value
                     shap_values_rounded[0], 
                     features=features_rounded[0],  
-                    feature_names=feat_names,
+                    feature_names=feat_labels,
                     matplotlib=True, 
                     show=False  
                 )
