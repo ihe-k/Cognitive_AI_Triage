@@ -1503,9 +1503,19 @@ def run_app():
                     if not any(keyword in feat for keyword in exclude_keywords) and any(feat.startswith(prefix) for prefix in ['fkps', 'text', 'gaze', 'pose', 'audio'])
                 ]
 
-                # Debugging: Print the filtered features to see if 'std' and 'stf' are excluded
-                print("Filtered features (excluding 'std' and 'stf'):")
-                print(filtered_feat_names)
+                def get_base_name(feature):
+                # Remove any numeric suffix after the first underscore
+                return re.sub(r'_\d+', '', feature)
+
+                unique_feat_names = {}
+                for feat in filtered_feat_names:
+                    base_name = get_base_name(feat)
+                    if base_name not in unique_feat_names:
+                        unique_feat_names[base_name] = feat  # Store the first occurrence of each base name
+                final_feat_names = list(unique_feat_names.values())
+
+                print("Filtered features (excluding 'std', 'stf' and duplicates):")
+                print(final_feat_names)
 
         
                 lime_exp = arts["explainer_lime"].explain_instance(
@@ -1560,7 +1570,7 @@ def run_app():
                    
                     
                     
-    # Add more mappings as needed
+                
                 }
                 print(arts["feat_names"][:10]) 
                 yticklabels = ax.get_yticklabels()
