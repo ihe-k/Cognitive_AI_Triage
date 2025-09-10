@@ -1607,8 +1607,8 @@ def run_app():
                     relevant_features = x_input[:, relevant_feature_indices]
 
                     if len(relevant_shap_values[0]) != len(feat_names):
-                    st.error(f"Mismatch in relevant SHAP values and feature names. Expected {len(feat_names)} feature names.")
-                    return
+                        st.error(f"Mismatch in relevant SHAP values and feature names. Expected {len(feat_names)} feature names.")
+                        return
                     
                 #explainer_shap = shap.Explainer(model, feature_names=feat_names)
                # features_array = explainer_shap(features_array)
@@ -1639,7 +1639,7 @@ def run_app():
         
                     st.pyplot(fig_local, use_container_width=True)
                     plt.close(fig_local)
-                else: #new
+                else: 
                     st.error("SHAP values are missing or cannot be computed.")
                 
         # Misinformation Spread Over Time
