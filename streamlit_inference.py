@@ -1584,7 +1584,7 @@ def run_app():
                    # if len(parts) == 3:
                    #     feature_part = parts[1].strip().split(" ")[0]
                   #  else:
-                        feature_part = original_text
+                   #     feature_part = original_text
 
                   #  new_name = custom_feature_names.get(feature_part, feature_part)
 
