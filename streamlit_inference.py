@@ -1515,11 +1515,15 @@ def run_app():
                     i for i, feat in enumerate(arts["feat_names"])
                     if not any(k in feat for k in exclude_keywords) and any(feat.startswith(p) for p in keep_prefixes)
                 ]
-                if filtered_indices:
-                    X_sample_filtered = X_sample[filtered_indices]
-                    filtered_feat_names = [arts_feat_names[i] for i in filtered_indices]
-                else:
+                print(f"Filtered indices: {filtered_indices}")
+                print(f"Length of X_sample: {len(X_sample)}")
+
+                filtered_indices = [i for i in filtered_indices if i < len(X_sample)]
+                if not filtered_indices:
                     raise ValueError("No valid features remain after filtering.")
+
+                X_sample_filtered = X_sample[filtered_indices]
+                filtered_feat_names = [arts["feat_names"][i] for i in filtered_indices]
 
                 def get_base_name(feature):
                 # Remove any numeric suffix after the first underscore
