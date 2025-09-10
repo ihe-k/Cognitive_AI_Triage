@@ -22,6 +22,7 @@ from streamlit_shap import st_shap
 
 with open("artifacts/severity_model.pkl", "rb") as f:
     model_artifact = pickle.load(f)
+    
 feat_names = [
     "PHQ8_Concentrating",
     "PHQ8_NoInterest",
@@ -1577,12 +1578,8 @@ def run_app():
                 
 
                 x_input = arts["X_sample_s"][patient_idx:patient_idx+1]  # shape (1, n)
-                expected_num_features = x_input.shape[1]
-                if expected_num_features != 10249:
-                        st.error(f"Expected 10249 features, but input has {expected_num_features} features.")
-                        return
+                
                 shap_values_all = expl.shap_values(x_input)
-
                 
                 if isinstance(shap_values_all, list):
             # Assuming binary classification, use the SHAP values for the positive class (index 1)
@@ -1590,34 +1587,27 @@ def run_app():
                 else:
                     shap_values_local = shap_values_all
 
-                if shap_values_local is not None and len(shap_values_local) > 0:
-                    shap_values_rounded = np.round(shap_values_local, 2)
-                    features_rounded = np.round(x_input, 2)
-                   
-                    if len(shap_values_rounded[0]) != len(feat_names):
-                        st.error(f"Mismatch between number of SHAP values ({len(shap_values_rounded[0])}) and feature names ({len(feat_names)})")
-                        return
+                
+                shap_values_rounded = np.round(shap_values_local, 2)
+                features_rounded = np.round(x_input, 2)
 
-                    shap_value_display = {
-                        feat_names[i]: f"{shap_values_rounded[0][i]:.2f}"
-                        for i in range(min(len(shap_values_rounded[0]), len(feat_names)))
-                    }
+                shap_value_display = {
+                    f"Feature {i}": f"{shap_values_rounded[0][i]:.2f}"
+                    for i in range(len(shap_values_rounded[0]))
+                }
 
-                    relevant_feature_indices = [0, 1, 2, 3, 4, 5, 6]
-                    relevant_shap_values = shap_values_local[relevant_feature_indices]
-                    relevant_features = x_input[0, relevant_feature_indices]
-      
+            
                 #explainer_shap = shap.Explainer(model, feature_names=feat_names)
                # features_array = explainer_shap(features_array)
                # shap_values = explainer_shap(features_array)
                     fig = shap.force_plot(
                         base_value=expl.expected_value,
-                        shap_values=relevant_shap_values,
-                        features=relevant_features,
+                        shap_values=shap_values_local[0],
+                        features=features_rounded[0],
                         feature_names=feat_names,
                 
-                        matplotlib=True,  # Using Matplotlib for plotting
-                        show=False  # Don't show the plot immediately, we'll customize it
+                        matplotlib=True,  
+                        show=False 
                     )
                 
                
@@ -1636,8 +1626,7 @@ def run_app():
         
                     st.pyplot(fig_local, use_container_width=True)
                     plt.close(fig_local)
-                else: 
-                    st.error("SHAP values are missing or cannot be computed.")
+                
                 
         # Misinformation Spread Over Time
         st.subheader("Misinformation Spread Over Time")
