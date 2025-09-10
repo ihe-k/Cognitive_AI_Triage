@@ -1610,34 +1610,34 @@ def run_app():
                 #explainer_shap = shap.Explainer(model, feature_names=feat_names)
                # features_array = explainer_shap(features_array)
                # shap_values = explainer_shap(features_array)
-                        fig = shap.force_plot(
-                            base_value=expl.expected_value,
-                            shap_values=relevant_shap_values,
-                            features=relevant_features,
-                            feature_names=feat_names,
+                    fig = shap.force_plot(
+                        base_value=expl.expected_value,
+                        shap_values=relevant_shap_values,
+                        features=relevant_features,
+                        feature_names=feat_names,
                 
-                            matplotlib=True,  # Using Matplotlib for plotting
-                            show=False  # Don't show the plot immediately, we'll customize it
-                        )
+                        matplotlib=True,  # Using Matplotlib for plotting
+                        show=False  # Don't show the plot immediately, we'll customize it
+                    )
                 
                
-                        fig_local = plt.gcf()
-                        ax = plt.gca()
+                    fig_local = plt.gcf()
+                    ax = plt.gca()
 
-                        ax.xaxis.set_major_formatter(mtick.FuncFormatter(lambda x, pos: f"{x:.2f}"))
-                        ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda y, pos: f"{y:.2f}"))
+                    ax.xaxis.set_major_formatter(mtick.FuncFormatter(lambda x, pos: f"{x:.2f}"))
+                    ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda y, pos: f"{y:.2f}"))
 
-                        for tick in ax.get_xticklabels():
-                            tick.set_rotation(0)
-                            tick.set_fontsize(10)
-                        for tick in ax.get_yticklabels():
-                            tick.set_rotation(0)
-                            tick.set_fontsize(10)
+                    for tick in ax.get_xticklabels():
+                        tick.set_rotation(0)
+                        tick.set_fontsize(10)
+                    for tick in ax.get_yticklabels():
+                        tick.set_rotation(0)
+                        tick.set_fontsize(10)
         
-                        st.pyplot(fig_local, use_container_width=True)
-                        plt.close(fig_local)
-                    else: 
-                        st.error("SHAP values are missing or cannot be computed.")
+                    st.pyplot(fig_local, use_container_width=True)
+                    plt.close(fig_local)
+                else: 
+                    st.error("SHAP values are missing or cannot be computed.")
                 
         # Misinformation Spread Over Time
         st.subheader("Misinformation Spread Over Time")
