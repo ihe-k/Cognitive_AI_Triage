@@ -1514,17 +1514,12 @@ def run_app():
                     i for i, feat in enumerate(arts["feat_names"])
                     if not any(k in feat for k in exclude_keywords) and any(feat.startswith(p) for p in keep_prefixes)
                 ]
-                print(f"Filtered indices: {filtered_indices}")
-                print(f"Length of X_sample: {len(X_sample)}")
+               
+                arts_feat_names_filtered = [arts_feat_names[i] for i in filtered_indices]
+                arts_feat_names = arts_feat_names_filtered  # Now arts_feat_names only contains relevant features
 
-                filtered_indices = [i for i in filtered_indices if i < len(X_sample)]
-                if not filtered_indices:
-                    raise ValueError("No valid features remain after filtering.")
-
-    
                 X_sample_filtered = X_sample[filtered_indices]
-                filtered_feat_names = [arts["feat_names"][i] for i in filtered_indices]
-
+                
                 def get_base_name(feature):
                 # Remove any numeric suffix after the first underscore
                     return re.sub(r'_\d+', '', feature)
@@ -1542,15 +1537,6 @@ def run_app():
 
                 print("Filtered feature names:", final_feat_names)
                 print("Filtered feature values:", X_sample_final)
-
-                # DEBUG: Check the shape of X_sample_final before passing it to explain_instance
-                print("Shape of X_sample_final:", X_sample_final.shape)
-
-                print("Shape of X_sample_final:", X_sample_final.shape)
-                if X_sample_final.ndim == 1:
-                    X_sample_final = X_sample_final.reshape(1, -1)  # Reshape to (1, n_features)
-                print("Reshaped X_sample_final to 2D:", X_sample_final.shape)
-
 
                 lime_exp = arts["explainer_lime"].explain_instance(
                     X_sample_final,
