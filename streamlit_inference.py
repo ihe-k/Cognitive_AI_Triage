@@ -1512,16 +1512,12 @@ def run_app():
                     base_name = get_base_name(feat)
                     if base_name not in unique_feat_names:
                         unique_feat_names[base_name] = feat  # Store the first occurrence of each base name
-                feat_names = list(unique_feat_names.values())
+                final_feat_names = list(unique_feat_names.values())
 
-                print("Filtered features (excluding 'std', 'stf' and duplicates):")
-                print(feat_names)
-
-        
                 lime_exp = arts["explainer_lime"].explain_instance(
                     arts["X_sample_s"][patient_idx],
                     arts["model"].predict,
-                    num_features=min(10, len(filtered_feat_names))
+                    num_features=min(10, len(final_feat_names))
                 )
         
                 fig = lime_exp.as_pyplot_figure()
