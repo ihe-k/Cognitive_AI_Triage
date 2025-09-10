@@ -1567,7 +1567,7 @@ def run_app():
                     arts["explainer_shap"].expected_value,  # Expected value
                     shap_values_rounded[0], 
                     features=features_rounded[0],  
-                    feature_names=feat_labels,
+                    feature_names=feature_labels,
                     matplotlib=True, 
                     show=False  
                 )
