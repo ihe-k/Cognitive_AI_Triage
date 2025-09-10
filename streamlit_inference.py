@@ -1570,12 +1570,7 @@ def run_app():
                 plt.close(fig)
             elif method == "SHAP":
                 st.subheader("SHAP Explanation")
-
-                expl = arts["explainer_shap"] 
-                x_input = arts["X_sample_s"][patient_idx:patient_idx+1]  
-                shap_values_all = expl.shap_values(x_input)
-
-              #  shap_values = arts["explainer_shap"].shap_values(arts["X_sample_s"][patient_idx:patient_idx+1])
+                shap_values = arts["explainer_shap"].shap_values(arts["X_sample_s"][patient_idx:patient_idx+1])
                 if isinstance(shap_values, list):
             # Assuming binary classification, use the SHAP values for the positive class (index 1)
                     shap_values_local = shap_values[1]
@@ -1584,20 +1579,17 @@ def run_app():
 
         # Round SHAP values and feature values to 2 decimals
                 shap_values_rounded = np.round(shap_values_local, 2)
-                #features_rounded = np.round(arts["X_sample_s"][patient_idx:patient_idx+1], 2)
-                features_rounded = np.round(x_input, 2)
+                features_rounded = np.round(arts["X_sample_s"][patient_idx:patient_idx+1], 2)
 
                 shap_value_display = {
                     f"Feature {i}": f"{shap_values_rounded[0][i]:.2f}"  # Accessing the individual value within the inner array
                     for i in range(len(shap_values_rounded[0]))
                 }
-            
-                fig = shap.force_plot(
-                   # arts["explainer_shap"].expected_value,  # Expected value
-                    base_value=expl.expected_value,
-                    shap_values=shap_values_local[0],  # Rounded SHAP values for the selected instance (access the first instance)
+
+                shap.force_plot(
+                    arts["explainer_shap"].expected_value,  # Expected value
+                    shap_values_rounded[0],  # Rounded SHAP values for the selected instance (access the first instance)
                     features=features_rounded[0],  # Feature values for the selected instance
-                    feature_names=feat_names,
                     matplotlib=True,  # Using Matplotlib for plotting
                     show=False  # Don't show the plot immediately, we'll customize it
                 )
@@ -1617,7 +1609,6 @@ def run_app():
         
                 st.pyplot(fig_local, use_container_width=True)
                 plt.close(fig_local)
-                
                 
         # Misinformation Spread Over Time
         st.subheader("Misinformation Spread Over Time")
