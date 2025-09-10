@@ -1564,14 +1564,16 @@ def run_app():
 
                 def custom_formatter(value, decimals=2): #
                     return f"{value:.{decimals}f}" #
+                shap_values_rounded_display = [custom_formatter(val) for val in shap_values_rounded[0]]
+                features_rounded_display = [custom_formatter(val) for val in features_rounded[0]]
 
                 plt.figure(figsize=(14, 12)) 
                 shap.force_plot(
                     arts["explainer_shap"].expected_value,
-                    shap_values_rounded[0], 
-                    features=features_rounded[0],  
-                    feature_names=[custom_formatter(val) for val in features_rounded[0]],
-                    #feature_names=feature_labels,
+                    shap_values_rounded_display,  # SHAP values for the current instance (formatted to 2 dp)
+                    features=features_rounded_display,  # Feature values for the current instance (formatted to 2 dp)
+
+                    feature_names=feature_labels,
                     matplotlib=True, 
                     show=False  
                 )
