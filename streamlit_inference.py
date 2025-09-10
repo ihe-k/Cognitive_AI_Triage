@@ -1571,7 +1571,10 @@ def run_app():
             elif method == "SHAP":
                 st.subheader("SHAP Explanation")
 
-                shap_values = arts["explainer_shap"].shap_values(arts["X_sample_s"][patient_idx:patient_idx+1])
+                expl = arts["explainer_shap"] 
+                x_input = arts["X_sample_s"][patient_idx:patient_idx+1]  
+                
+              #  shap_values = arts["explainer_shap"].shap_values(arts["X_sample_s"][patient_idx:patient_idx+1])
                 if isinstance(shap_values, list):
             # Assuming binary classification, use the SHAP values for the positive class (index 1)
                     shap_values_local = shap_values[1]
@@ -1587,6 +1590,10 @@ def run_app():
                     for i in range(len(shap_values_rounded[0]))
                 }
 
+
+                explainer = shap.TreeExplainer(model, data, feature_names=feat_names)
+                shap_values = explainer(features_rounded.reshape(1, -1))
+                
                 shap.force_plot(
                     arts["explainer_shap"].expected_value,  # Expected value
                     shap_values_rounded[0],  # Rounded SHAP values for the selected instance (access the first instance)
