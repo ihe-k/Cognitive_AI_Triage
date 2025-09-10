@@ -1498,26 +1498,39 @@ def run_app():
                 st.subheader("LIME Explanation")
 
                 exclude_keywords = ['std', 'stf']
-                filtered_feat_names = [
-                    feat for feat in arts["feat_names"]
-                    if not any(keyword in feat for keyword in exclude_keywords) and any(feat.startswith(prefix) for prefix in ['fkps', 'text', 'gaze', 'pose', 'audio'])
+
+                keep_prefixes = ['fkps', 'text', 'gaze', 'pose', 'audio']
+
+                filtered_indices = [
+                    i for i, feat in enumerate(arts["feat_names"])
+                    if not any(k in feat for k in exclude_keywords)
+                    and any(feat.startswith(p) for p in keep_prefixes)
                 ]
+                X_sample_filtered = arts["X_sample_s"][patient_idx][filtered_indices]
+                filtered_feat_names = [arts["feat_names"][i] for i in filtered_indices]
+
 
                 def get_base_name(feature):
                 # Remove any numeric suffix after the first underscore
                     return re.sub(r'_\d+', '', feature)
 
                 unique_feat_names = {}
-                for feat in filtered_feat_names:
-                    base_name = get_base_name(feat)
-                    if base_name not in unique_feat_names:
-                        unique_feat_names[base_name] = feat  # Store the first occurrence of each base name
-                final_feat_names = list(unique_feat_names.values())
+                unique_indices = []
+                for i, feat in enumerate(filtered_feat_names):
+                    base = get_base_name(feat)
+                    if base not in unique_feat_names:
+                        unique_feat_names[base] = feat
+                        unique_indices.append(i)
+
+                X_sample_final = X_sample_filtered[unique_indices]
+                final_feat_names = [filtered_feat_names[i] for i in unique_indices]
 
                 lime_exp = arts["explainer_lime"].explain_instance(
-                    arts["X_sample_s"][patient_idx],
-                    arts["model"].predict,
-                    num_features=min(10, len(final_feat_names))
+                    X_sample_final,
+                    lambda x: arts["model"].predict(np.array(x)),
+                    feature_names=final_feat_names,
+                    num_features=min(10, len(final_feat_names)),
+                    feature_selection='none'
                 )
         
                 fig = lime_exp.as_pyplot_figure()
@@ -1568,18 +1581,23 @@ def run_app():
                     
                 
                 }
-                print("Filtered features to be used in LIME explanation:")
-                print(arts["feat_names"][:10]) 
+               
                 yticklabels = ax.get_yticklabels()
                 new_labels = []
 
                 for label in yticklabels:
                     original_text = label.get_text()
-                    new_name = custom_feature_names.get(original_text, original_text)  # Direct mapping
-                    if new_name:
-                        new_label = new_name
+                    parts = original_text.split("<")
+                    if len(parts) == 3:
+                        feature_part = parts[1].strip().split(" ")[0]
                     else:
-                        new_label = original_text  # If None, fallback to original feature name
+                        feature_part = original_text
+                    base_name = get_base_name(feature_part)
+                    new_name = custom_feature_names.get(base_name, base_name)
+                    if len(parts) == 3:
+                        new_label = f"{parts[0]} < {new_name} <= {parts[2]}"
+                    else:
+                        new_label = new_name
 
                     new_labels.append(new_label)
                    # parts = original_text.split("<")
