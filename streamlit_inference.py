@@ -1577,6 +1577,10 @@ def run_app():
                 
 
                 x_input = arts["X_sample_s"][patient_idx:patient_idx+1]  # shape (1, n)
+                expected_num_features = x_input.shape[1]
+                if expected_num_features != len(feat_names):
+                        st.error(f"Expected {expected_num_features} features, but {len(feat_names)} feature names are provided.")
+                        return
                 shap_values_all = expl.shap_values(x_input)
 
                 
@@ -1597,7 +1601,7 @@ def run_app():
                         }
                     else:
                         st.error(f"Mismatch between number of SHAP values ({len(shap_values_rounded[0])}) and feature names ({len(feat_names)})")
-               
+                        return
                     relevant_feature_indices = [0, 1, 2, 3, 4, 5, 6]
                     relevant_shap_values = shap_values_local[:, relevant_feature_indices]
                     relevant_features = x_input[:, relevant_feature_indices]
