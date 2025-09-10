@@ -1502,6 +1502,7 @@ def run_app():
                     "pose_conf_stf_f444", "pose_conf_mean_f555",
                     "gaze_conf_std_f666", "gaze_conf_mean_f777"
                 ]
+                X_sample = np.random.rand(len(arts_feat_names))  # Replace with your actual sample row
 
                 exclude_keywords = ['std', 'stf']
                 X_sample = np.random.rand(len(arts_feat_names)) 
@@ -1513,8 +1514,8 @@ def run_app():
                     if not any(k in feat for k in exclude_keywords)
                     and any(feat.startswith(p) for p in keep_prefixes)
                 ]
-                X_sample_filtered = arts["X_sample_s"][patient_idx][filtered_indices]
-                filtered_feat_names = [arts["feat_names"][i] for i in filtered_indices]
+                X_sample_filtered = X_sample[filtered_indices]
+                filtered_feat_names = [arts_feat_names[i] for i in filtered_indices]
 
 
                 def get_base_name(feature):
