@@ -1578,8 +1578,8 @@ def run_app():
 
                 x_input = arts["X_sample_s"][patient_idx:patient_idx+1]  # shape (1, n)
                 expected_num_features = x_input.shape[1]
-                if expected_num_features != len(feat_names):
-                        st.error(f"Expected {expected_num_features} features, but {len(feat_names)} feature names are provided.")
+                if expected_num_features != 10249:
+                        st.error(f"Expected 10249 features, but input has {expected_num_features} features.")
                         return
                 shap_values_all = expl.shap_values(x_input)
 
