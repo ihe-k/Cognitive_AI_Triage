@@ -1570,16 +1570,18 @@ def run_app():
                     
                 
                 }
+                print("Filtered features to be used in LIME explanation:")
+                print(arts["feat_names"][:10]) 
                 yticklabels = ax.get_yticklabels()
                 new_labels = []
 
                 for label in yticklabels:
                     original_text = label.get_text()
                     new_name = custom_feature_names.get(original_text, original_text)  # Direct mapping
-                   # if new_name:
-                  #      new_label = new_name
-                 #   else:
-                  #      new_label = original_text  # If None, fallback to original feature name
+                    if new_name:
+                        new_label = new_name
+                    else:
+                        new_label = original_text  # If None, fallback to original feature name
 
                     new_labels.append(new_label)
                    # parts = original_text.split("<")
