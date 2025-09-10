@@ -1581,7 +1581,7 @@ def run_app():
                     tick.set_fontsize(10)
         
                 st.pyplot(plt.gcf(), use_container_width=True)
-                plt.close(fig_local)
+                plt.close()
                                           
         
         # Misinformation Spread Over Time
