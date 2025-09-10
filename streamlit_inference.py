@@ -1566,7 +1566,9 @@ def run_app():
                     show=False  
                 )
         
-                fig_local = plt.gcf()
+                #fig_local = plt.gcf()
+                fig_local.set_size_inches(10, 8)  # Example: 10 inches wide, 8 inches tall
+
                 ax = plt.gca()
 
                 ax.xaxis.set_major_formatter(mtick.FuncFormatter(lambda x, pos: f"{x:.2f}"))
