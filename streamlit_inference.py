@@ -1567,7 +1567,7 @@ def run_app():
                 )
         
                 #fig_local = plt.gcf()
-                fig_local.set_size_inches(10, 8)  # Example: 10 inches wide, 8 inches tall
+                plt.figure(figsize=(10, 8))  # Increase the size of the plot (10x8 inches)
 
                 ax = plt.gca()
 
