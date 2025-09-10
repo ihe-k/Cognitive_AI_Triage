@@ -1500,9 +1500,14 @@ def run_app():
                 exclude_keywords = ['std', 'stf']
                 filtered_feat_names = [
                     feat for feat in arts["feat_names"]
-                    if not any(keyword in feat for keyword in exclude_keywords) and any(feat.startswith(prefix) for prefix in ['fkps', 'gaze', 'pose', 'audio'])
+                    if not any(keyword in feat for keyword in exclude_keywords) and any(feat.startswith(prefix) for prefix in ['fkps', 'text', 'gaze', 'pose', 'audio'])
                 ]
-                
+
+                # Debugging: Print the filtered features to see if 'std' and 'stf' are excluded
+                print("Filtered features (excluding 'std' and 'stf'):")
+                print(filtered_feat_names)
+
+        
                 lime_exp = arts["explainer_lime"].explain_instance(
                     arts["X_sample_s"][patient_idx],
                     arts["model"].predict,
