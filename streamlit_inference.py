@@ -1536,7 +1536,48 @@ def run_app():
             # Update the figure style
                 fig.patch.set_facecolor('white')
                 ax.set_facecolor('#f8f9fa')  # Light background
-        
+
+
+                # Rename y-axis labels using a custom mapping
+                custom_feature_names = {
+                    "PHQ8_NoInterest": "PHQ8: Lack of Interest",
+                    "PHQ8_Depressed": "PHQ8: Depressed",
+                    "PHQ8_Appetite": "PHQ8: Appetite",
+                    "PHQ8_Concentrating": "PHQ8: Poor Concentration",
+                    "PHQ8_Failure": "PHQ8: Failure",
+                    "audio_std_f124864": "PHQ8: Speech Variability",
+                    "audio_std_f47342": "PHQ8: Stress",
+                    "fkps_mean_f956": "PHQ: Facial Key Points",
+                    "pose_conf_stf_f13554": "PHQ8: Pose",
+                    "pose_conf_mean_f8947": "PHQ8: Confidence",
+                    "gaze_conf_std_f1673": "PHQ8: Gaze",
+                    
+    # Add more mappings as needed
+                }
+                print(arts["feat_names"][:10]) 
+                yticklabels = ax.get_yticklabels()
+                new_labels = []
+
+                for label in yticklabels:
+                    original_text = label.get_text()
+                    parts = original_text.split("<")
+                    if len(parts) == 3:
+                        feature_part = parts[1].strip().split(" ")[0]
+                    else:
+                        feature_part = original_text
+
+                    new_name = custom_feature_names.get(feature_part, feature_part)
+
+                    if len(parts) == 3:
+                        new_label = f"{parts[0]} < {new_name} <= {parts[2]}"
+                    else:
+                        new_label = new_name
+
+                    new_labels.append(new_label)
+
+                ax.set_yticklabels(new_labels)
+
+                
                 st.pyplot(fig, use_container_width=True)
                 plt.close(fig)
             elif method == "SHAP":
