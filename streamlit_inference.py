@@ -1570,65 +1570,59 @@ def run_app():
                 plt.close(fig)
             elif method == "SHAP":
                 st.subheader("SHAP Explanation")
-                expl = arts["explainer_shap"]
-                x_input = arts["X_sample_s"][patient_idx:patient_idx + 1]
-                expected_num_features = x_input.shape[1]
-                if expected_num_features != 10249:
-                    st.error(f"Expected 10,249 features, but input has {expected_num_features}.")
-                    st.stop()
+                patient_idx = st.number_input("Select patient index", min_value=0, max_value=len(X_sample_s)-1, value=0)
 
-                shap_values_all = expl.shap_values(x_input)
-                shap_values_local = shap_values_all[1] if isinstance(shap_values_all, list) else shap_values_all
-                if shap_values_local is None or len(shap_values_local) == 0:
-                    st.error("SHAP values not found.")
-                    st.stop()
+                X_sample_df = pd.DataFrame(X_sample_s, columns=full_feat_names)
+                x_input = X_sample_df.iloc[[patient_idx]]
 
-                shap_values_rounded = np.round(shap_values_local, 2)
-                features_rounded = np.round(x_input, 2)
+                # Initialize SHAP explainer
+                explainer = shap.TreeExplainer(model, data=X_sample_df)
 
-                try:
-                    full_feature_names = expl.data_feature_names
-                except AttributeError:
-                    st.error("Cannot retrieve feature names from SHAP explainer.")
-                    st.stop()
+                # Compute SHAP values
+                shap_values = explainer.shap_values(x_input)
+                if isinstance(shap_values, list):  # classification
+                    shap_values = shap_values[1]
 
-                feat_names = [
-                    "PHQ8_Concentrating",
-                    "PHQ8_NoInterest",
-                    "PHQ8_Tired",
-                    "PHQ8_Failure",
-                    "PHQ8_Depressed",
-                    "PHQ8_Sleep",
-                    "PHQ8_Appetite"
-                ]
+                # Get PHQ8-related SHAP values
+                phq8_indices = [full_feat_names.index(f) for f in phq8_feat_names]
+                shap_values_phq8 = shap_values[0, phq8_indices]
+                features_phq8 = x_input.iloc[0, phq8_indices]
 
-                name_to_index = {name: idx for idx, name in enumerate(full_feature_names)}
-                relevant_indices = [name_to_index[name] for name in feat_names if name in name_to_index]
+                # Display SHAP value table
+                shap_df = pd.DataFrame({
+                    "Feature": phq8_feat_names,
+                    "Value": features_phq8.values,
+                    "SHAP": shap_values_phq8
+                })
+                st.dataframe(shap_df)
 
-                if len(relevant_indices) != len(feat_names):
-                    st.error("Some PHQ‑8 feature names not found in model input.")
-                    st.stop()
-
-                relevant_shap = shap_values_local[0, relevant_indices]
-                relevant_feat_vals = x_input[0, relevant_indices]
-
+                # Force plot
                 fig = shap.force_plot(
-                    base_value=expl.expected_value,
-                    shap_values=relevant_shap,
-                    features=relevant_feat_vals,
-                    feature_names=feat_names,
+                    base_value=explainer.expected_value,
+                    shap_values=shap_values_phq8,
+                    features=features_phq8,
+                    feature_names=phq8_feat_names,
                     matplotlib=True,
                     show=False
                 )
-                plt.gcf().set_size_inches(10, 2)
-                ax = plt.gca()
-                ax.xaxis.set_major_formatter(mtick.FuncFormatter(lambda x, pos: f"{x:.2f}"))
-                ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda y, pos: f"{y:.2f}"))
-                for tick in ax.get_xticklabels(): tick.set_rotation(0); tick.set_fontsize(10)
-                for tick in ax.get_yticklabels(): tick.set_rotation(0); tick.set_fontsize(10)
 
-                st.pyplot(plt.gcf(), use_container_width=True)
-                plt.close()
+                # Beautify plot
+                fig_local = plt.gcf()
+                ax = plt.gca()
+                ax.xaxis.set_major_formatter(mtick.FuncFormatter(lambda x, _: f"{x:.2f}"))
+                ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda y, _: f"{y:.2f}"))
+
+                for tick in ax.get_xticklabels():
+                    tick.set_rotation(0)
+                    tick.set_fontsize(10)
+                for tick in ax.get_yticklabels():
+                    tick.set_rotation(0)
+                    tick.set_fontsize(10)
+
+                # Display plot
+                st.pyplot(fig_local, use_container_width=True)
+                plt.close(fig_local)
+                                          
         
         # Misinformation Spread Over Time
         st.subheader("Misinformation Spread Over Time")
