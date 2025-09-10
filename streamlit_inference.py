@@ -1505,6 +1505,9 @@ def run_app():
                     feat for feat in arts["feat_names"]
                     if not any(keyword in feat for keyword in exclude_keywords) and any(feat.startswith(prefix) for prefix in keep_prefixes)
                 ]
+                if not filtered_feat_names:
+                    st.error("No features starting with 'PHQ' found after filtering.")
+                    return
                 def get_base_name(feature):
                 # Remove any numeric suffix after the first underscore
                     return re.sub(r'_\d+', '', feature)
@@ -1519,7 +1522,8 @@ def run_app():
                 lime_exp = arts["explainer_lime"].explain_instance(
                     arts["X_sample_s"][patient_idx],
                     arts["model"].predict,
-                    num_features=min(10, len(final_feat_names))
+                    num_features=min(10, len(final_feat_names)),
+                    feature_selection='none'
                 )
                 
                 fig = lime_exp.as_pyplot_figure()
