@@ -1587,11 +1587,12 @@ def run_app():
                 }
 
                 shap.force_plot(
-                    arts["explainer_shap"].expected_value,  # Expected value
-                    shap_values_rounded[0],  # Rounded SHAP values for the selected instance (access the first instance)
-                    features=features_rounded[0],  # Feature values for the selected instance
-                    matplotlib=True,  # Using Matplotlib for plotting
-                    show=False  # Don't show the plot immediately, we'll customize it
+                    arts["explainer_shap"].expected_value,
+                    shap_values_rounded[0],  
+                    features=features_rounded[0],
+                    feature_names=feat_names,  
+                    matplotlib=True,
+                    show=False 
                 )
         
                 fig_local = plt.gcf()
@@ -1609,7 +1610,13 @@ def run_app():
         
                 st.pyplot(fig_local, use_container_width=True)
                 plt.close(fig_local)
-                
+
+                st.table(pd.DataFrame({
+                    "Feature": feat_names,
+                    "Value": features_rounded[0],
+                    "SHAP": shap_values_rounded[0]
+                }))
+        
         # Misinformation Spread Over Time
         st.subheader("Misinformation Spread Over Time")
         fig_misinfo, ax_misinfo = plt.subplots()
