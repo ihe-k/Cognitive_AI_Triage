@@ -1509,7 +1509,7 @@ def run_app():
                 # Remove any numeric suffix after the first underscore
                     return re.sub(r'_\d+', '', feature)
 
-                 unique_feat_names = {}
+                unique_feat_names = {}
                 for feat in filtered_feat_names:
                     base_name = get_base_name(feat)
                     if base_name not in unique_feat_names:
