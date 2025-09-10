@@ -1508,11 +1508,9 @@ def run_app():
                     if not any(k in feat for k in exclude_keywords) and any(feat.startswith(p) for p in keep_prefixes)
                 ]
                
-                arts_feat_names_filtered = [arts_feat_names[i] for i in filtered_indices]
-                arts_feat_names = arts_feat_names_filtered  # Now arts_feat_names only contains relevant features
-
                 X_sample_filtered = X_sample[filtered_indices]
-                
+                filtered_feat_names = [arts_feat_names[i] for i in filtered_indices]
+
                 def get_base_name(feature):
                 # Remove any numeric suffix after the first underscore
                     return re.sub(r'_\d+', '', feature)
