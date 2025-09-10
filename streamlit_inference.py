@@ -1514,6 +1514,7 @@ def run_app():
                     if not any(k in feat for k in exclude_keywords)
                     and any(feat.startswith(p) for p in keep_prefixes)
                 ]
+                print(f"Filtered indices: {filtered_indices}")
                 X_sample_filtered = X_sample[filtered_indices]
                 filtered_feat_names = [arts_feat_names[i] for i in filtered_indices]
 
@@ -1538,7 +1539,7 @@ def run_app():
 
                 lime_exp = arts["explainer_lime"].explain_instance(
                     X_sample_final,
-                    lambda x: arts["model"].predict(np.array(x)),
+                    lambda x: arts["model"].predict(np.array(x).reshape(1, -1)),
                     feature_names=final_feat_names,
                     num_features=min(10, len(final_feat_names)),
                     feature_selection='none'
