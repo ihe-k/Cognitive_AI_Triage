@@ -1603,11 +1603,11 @@ def run_app():
                         st.error(f"Mismatch between number of SHAP values ({len(shap_values_rounded[0])}) and feature names ({len(feat_names)})")
                         return
                     relevant_feature_indices = [0, 1, 2, 3, 4, 5, 6]
-                    relevant_shap_values = shap_values_local[:, relevant_feature_indices]
-                    relevant_features = x_input[:, relevant_feature_indices]
+                    relevant_shap_values = shap_values_local[0, relevant_feature_indices]
+                    relevant_features = x_input[0, relevant_feature_indices]
 
-                    if len(relevant_shap_values[0]) != len(feat_names):
-                        st.error(f"Mismatch in relevant SHAP values and feature names. Expected {len(feat_names)} feature names.")
+                    if len(relevant_shap_values) != len(feat_names):
+                        st.error(f"Mismatch in the number of SHAP values ({len(relevant_shap_values)}) and feature names ({len(feat_names)})")
                         return
                     
                 #explainer_shap = shap.Explainer(model, feature_names=feat_names)
@@ -1615,8 +1615,8 @@ def run_app():
                # shap_values = explainer_shap(features_array)
                     fig = shap.force_plot(
                         base_value=expl.expected_value,
-                        shap_values=relevant_shap_values[0],
-                        features=relevant_features[0],
+                        shap_values=relevant_shap_values,
+                        features=relevant_features,
                         feature_names=feat_names,
                 
                         matplotlib=True,  # Using Matplotlib for plotting
