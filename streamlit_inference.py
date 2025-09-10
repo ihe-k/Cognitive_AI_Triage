@@ -1580,7 +1580,7 @@ def run_app():
                     tick.set_rotation(0)
                     tick.set_fontsize(10)
                 
-                plt.subplots_adjust(left=0.1, right=0.9, top=0.5, bottom=0.5)
+                plt.subplots_adjust(left=0.1, right=0.9, top=0.5, bottom=0.3)
                 st.pyplot(plt.gcf(), use_container_width=True)
                 plt.close()
                                           
