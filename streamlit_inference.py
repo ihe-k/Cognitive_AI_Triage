@@ -1498,12 +1498,13 @@ def run_app():
                 st.subheader("LIME Explanation")
                 exclude_keywords = ['std', 'stf'] 
                 
-                keep_prefixes = ['fkps', 'text', 'gaze', 'pose', 'text', 'audio']
+                keep_prefixes = ['PHQ_']
 
                 filtered_feat_names = [
                     feat for feat in arts["feat_names"]
-                    if not any(keyword in feat for keyword in exclude_keywords) and any(feat.startswith(prefix) for prefix in keep_prefixes)
+                    if feat.startswith('PHQ_') and not any(keyword in feat for keyword in exclude_keywords)
                 ]
+                print("Filtered feature names (only PHQ_ features):", filtered_feat_names)
 
                 def get_base_name(feature):
                 # Remove any numeric suffix after the first underscore
@@ -1516,10 +1517,13 @@ def run_app():
                         unique_feat_names[base_name] = feat  # Store the first occurrence of each base name
                 final_feat_names = list(unique_feat_names.values())
 
+                print("Final feature names after removing duplicates:", final_feat_names)
+                
                 lime_exp = arts["explainer_lime"].explain_instance(
                     arts["X_sample_s"][patient_idx],
                     arts["model"].predict,
-                    num_features=min(10, len(final_feat_names))
+                    num_features=min(10, len(final_feat_names)),
+                    feature_names=final_feat_names
                 )
         
                 fig = lime_exp.as_pyplot_figure()
@@ -1570,18 +1574,16 @@ def run_app():
                     
                 
                 }
-                print("Filtered features to be used in LIME explanation:")
-                print(arts["feat_names"][:10]) 
                 yticklabels = ax.get_yticklabels()
                 new_labels = []
 
                 for label in yticklabels:
                     original_text = label.get_text()
                     new_name = custom_feature_names.get(original_text, original_text)  # Direct mapping
-                    if new_name:
-                        new_label = new_name
-                    else:
-                        new_label = original_text  # If None, fallback to original feature name
+                   # if new_name:
+                  #      new_label = new_name
+                 #   else:
+                  #      new_label = original_text  # If None, fallback to original feature name
 
                     new_labels.append(new_label)
                    # parts = original_text.split("<")
