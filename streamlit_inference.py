@@ -1516,12 +1516,14 @@ def run_app():
                         unique_feat_names[base_name] = feat  # Store the first occurrence of each base name
                 final_feat_names = list(unique_feat_names.values())
 
-                lime_exp = arts["explainer_lime"].explain_instance(
-                    arts["X_sample_s"][patient_idx],
-                    arts["model"].predict,
-                    num_features=min(10, len(final_feat_names))
-                )
+                X_sample_s = np.array(arts["X_sample_s"]).reshape(1, -1)
 
+                explainer_lime = lime.lime_tabular.LimeTabularExplainer(
+                    training_data=arts["X_sample_s"],
+                  #  feature_names=final_feat_names,
+                    class_names=['Class 1', 'Class 2'],
+                    mode='classification'
+                )
                 lime_exp = explainer_lime.explain_instance(
                     X_sample_s[0],   
                     arts["model"].predict,            # Model's prediction function
