@@ -1600,32 +1600,32 @@ def run_app():
                 #explainer_shap = shap.Explainer(model, feature_names=feat_names)
                # features_array = explainer_shap(features_array)
                # shap_values = explainer_shap(features_array)
-                    fig = shap.force_plot(
-                        base_value=expl.expected_value,
-                        shap_values=shap_values_local[0],
-                        features=features_rounded[0],
-                        feature_names=feat_names,
+                fig = shap.force_plot(
+                    base_value=expl.expected_value,
+                    shap_values=shap_values_local[0],
+                    features=features_rounded[0],
+                    feature_names=feat_names,
                 
-                        matplotlib=True,  
-                        show=False 
-                    )
+                    matplotlib=True,  
+                    show=False 
+                )
                 
                
-                    fig_local = plt.gcf()
-                    ax = plt.gca()
+                fig_local = plt.gcf()
+                ax = plt.gca()
 
-                    ax.xaxis.set_major_formatter(mtick.FuncFormatter(lambda x, pos: f"{x:.2f}"))
-                    ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda y, pos: f"{y:.2f}"))
+                ax.xaxis.set_major_formatter(mtick.FuncFormatter(lambda x, pos: f"{x:.2f}"))
+                ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda y, pos: f"{y:.2f}"))
 
-                    for tick in ax.get_xticklabels():
-                        tick.set_rotation(0)
-                        tick.set_fontsize(10)
-                    for tick in ax.get_yticklabels():
-                        tick.set_rotation(0)
-                        tick.set_fontsize(10)
+                for tick in ax.get_xticklabels():
+                    tick.set_rotation(0)
+                    tick.set_fontsize(10)
+                for tick in ax.get_yticklabels():
+                    tick.set_rotation(0)
+                    tick.set_fontsize(10)
         
-                    st.pyplot(fig_local, use_container_width=True)
-                    plt.close(fig_local)
+                st.pyplot(fig_local, use_container_width=True)
+                plt.close(fig_local)
                 
                 
         # Misinformation Spread Over Time
