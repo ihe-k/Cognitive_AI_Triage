@@ -1496,12 +1496,13 @@ def run_app():
                # Explanation block (LIME default like your sketch; SHAP optional)
             if method == "LIME":
                 st.subheader("LIME Explanation")
-
-                keep_prefixes = ['fkps', 'text', 'gaze', 'pose', 'audio']
+                exclude_keywords = ['std', 'stf'] 
+                
+                keep_prefixes = ['fkps', 'text', 'gaze', 'pose', 'text', 'audio']
 
                 filtered_feat_names = [
                     feat for feat in arts["feat_names"]
-                    if not any(keyword in feat for keyword in exclude_keywords) and any(feat.startswith(prefix) for prefix in ['fkps', 'text', 'gaze', 'pose', 'audio'])
+                    if not any(keyword in feat for keyword in exclude_keywords) and any(feat.startswith(prefix) for prefix in keep_prefixes)
                 ]
 
                 def get_base_name(feature):
