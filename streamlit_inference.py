@@ -1496,13 +1496,17 @@ def run_app():
             # Explanation block (LIME default like your sketch; SHAP optional)
             if method == "LIME":
                 st.subheader("LIME Explanation")
-                selected_features = ["pose_conf_mean_fxxxx", "gaze_conf_mean_fxxxx", fkps_mean_fxxxx,text_mean,audio_mean]  # Update the second feature name with the correct one.
-                selected_data = arts["X_sample_s"][:, [arts["feat_names"].index(f) for f in selected_features]]
-    
+
+                exclude_keywords = ['std', 'stf']
+                filtered_feat_names = [
+                    feat for feat in arts["feat_names"]
+                    if not any(keyword in feat for keyword in exclude_keywords) and any(feat.startswith(prefix) for prefix in ['fkps', 'gaze', 'pose', 'audio'])
+                ]
+                
                 lime_exp = arts["explainer_lime"].explain_instance(
                     arts["X_sample_s"][patient_idx],
                     arts["model"].predict,
-                    num_features=min(10, len(arts["feat_names"]))
+                    num_features=min(10, len(filtered_feat_names))
                 )
         
                 fig = lime_exp.as_pyplot_figure()
@@ -1548,12 +1552,8 @@ def run_app():
                     "PHQ8_Appetite": "PHQ8 Appetite",
                     "PHQ8_Concentrating": "PHQ8: Poor Concentration",
                     "PHQ8_Failure": "PHQ8: Failure",
-                    "audio_std_f124864": "PHQ8 Speech Variability",
-                    "audio_std_f47342": "PHQ8 Stress",
-                    "fkps_mean_f956": "PHQ Facial Key Points",
-                    "pose_conf_stf_f13554": "PHQ8 Pose Confidence",
-                    "pose_conf_mean_f8947": "PHQ8 Confidence",
-                    "gaze_conf_std_f1673": "PHQ8 Gaze confidence",
+                   
+                    
                     
     # Add more mappings as needed
                 }
