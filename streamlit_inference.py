@@ -1624,8 +1624,8 @@ def run_app():
                     tick.set_rotation(0)
                     tick.set_fontsize(10)
         
-                st.pyplot(fig_local, use_container_width=True)
-                plt.close(fig_local)
+                st.pyplot(fig, use_container_width=True)
+              #  plt.close(fig_local)
                 
                 
         # Misinformation Spread Over Time
