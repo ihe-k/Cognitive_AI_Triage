@@ -1526,9 +1526,13 @@ def run_app():
                 X_sample_final = X_sample_filtered[unique_indices]
                 final_feat_names = [filtered_feat_names[i] for i in unique_indices]
 
+                X_sample_final = np.array(X_sample_final).reshape(1, -1)
                 print("Filtered feature names:", final_feat_names)
                 print("Filtered feature values:", X_sample_final)
 
+                # Ensure lengths match between X_sample_final and final_feat_names
+                print("Shape of X_sample_final:", X_sample_final.shape)
+                print("Length of final_feat_names:", len(final_feat_names))
                 lime_exp = arts["explainer_lime"].explain_instance(
                     X_sample_final,
                     lambda x: arts["model"].predict(np.array(x)),
