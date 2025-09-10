@@ -1,5 +1,3 @@
-import lime
-from lime.lime_tabular import LimeTabularExplainer
 import os
 import gzip
 import glob
@@ -21,7 +19,8 @@ import shap
 import seaborn as sns
 import librosa
 from streamlit_shap import st_shap
-
+import lime
+from lime.lime_tabular import LimeTabularExplainer
 
 with open("artifacts/severity_model.pkl", "rb") as f:
     model_artifact = pickle.load(f)
