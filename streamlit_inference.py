@@ -1499,37 +1499,27 @@ def run_app():
                 st.subheader("LIME Explanation")
                 exclude_keywords = ['std', 'stf'] 
                 
-                keep_prefixes = ['PHQ_']
-                print("Original feature names:", arts["feat_names"])
-
+                keep_prefixes = ['PHQ']
+                
                 filtered_feat_names = [
                     feat for feat in arts["feat_names"]
                     if not any(keyword in feat for keyword in exclude_keywords) and any(feat.startswith(prefix) for prefix in keep_prefixes)
                 ]
-                if not filtered_feat_names:
-                    st.error("No features found after filtering.")
-                    return
                 def get_base_name(feature):
                 # Remove any numeric suffix after the first underscore
                     return re.sub(r'_\d+', '', feature)
 
-                unique_feat_names = {}
+                 unique_feat_names = {}
                 for feat in filtered_feat_names:
                     base_name = get_base_name(feat)
                     if base_name not in unique_feat_names:
                         unique_feat_names[base_name] = feat  # Store the first occurrence of each base name
                 final_feat_names = list(unique_feat_names.values())
 
-                
-                X_sample_s = np.array(arts["X_sample_s"]).reshape(1, -1)
-                if X_sample_s.shape[0] == 0:
-                    st.error("No samples found in X_sample_s.")
-                    return
-                explainer_lime = lime.lime_tabular.LimeTabularExplainer(
-                    training_data=arts["X_sample_s"],
-                    feature_names=final_feat_names,
-                    class_names=['Class 1', 'Class 2'],
-                    mode='classification'
+                lime_exp = arts["explainer_lime"].explain_instance(
+                    arts["X_sample_s"][patient_idx],
+                    arts["model"].predict,
+                    num_features=min(10, len(final_feat_names))
                 )
 
                 lime_exp = explainer_lime.explain_instance(
