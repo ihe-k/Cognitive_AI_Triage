@@ -1,3 +1,5 @@
+import lime
+from lime.lime_tabular import LimeTabularExplainer
 import os
 import gzip
 import glob
