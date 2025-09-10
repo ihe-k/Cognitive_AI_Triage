@@ -1571,7 +1571,7 @@ def run_app():
             elif method == "SHAP":
                 st.subheader("SHAP Explanation")
 
-                 shap_values = arts["explainer_shap"].shap_values(arts["X_sample_s"][patient_idx:patient_idx+1])
+                shap_values = arts["explainer_shap"].shap_values(arts["X_sample_s"][patient_idx:patient_idx+1])
                 if isinstance(shap_values, list):
             # Assuming binary classification, use the SHAP values for the positive class (index 1)
                     shap_values_local = shap_values[1]
