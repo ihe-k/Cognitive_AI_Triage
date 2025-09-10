@@ -22,7 +22,19 @@ from streamlit_shap import st_shap
 
 with open("artifacts/severity_model.pkl", "rb") as f:
     model_artifact = pickle.load(f)
-    
+full_feat_names = model_artifact["feature_names"]
+X_sample_s = model_artifact.get("X_sample_s", np.zeros((1, len(full_feat_names))))
+
+if X_sample_s is None or len(X_sample_s) == 0:
+    st.error("No sample data available.")
+    st.stop()
+
+patient_idx = st.number_input(
+    "Select patient index",
+    min_value=0,
+    max_value=len(X_sample_s) - 1,
+    value=0
+)    
 feat_names = [
     "PHQ8_Concentrating",
     "PHQ8_NoInterest",
