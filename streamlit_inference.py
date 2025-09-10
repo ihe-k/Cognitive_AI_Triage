@@ -1542,6 +1542,7 @@ def run_app():
             elif method == "SHAP":
                 st.subheader("SHAP Explanation")
                 shap_values = arts["explainer_shap"].shap_values(arts["X_sample_s"][patient_idx:patient_idx+1])
+
                 if isinstance(shap_values, list):
                     
                     shap_values_local = shap_values[1]
@@ -1550,7 +1551,7 @@ def run_app():
 
                 # Round SHAP values and feature values to 2 decimals
                 shap_values_rounded = np.round(shap_values_local, 2)
-                features_rounded = np.round(arts["X_sample_s"][patient_idx:patient_idx+1],2)
+                features_rounded = np.round(arts["X_sample_s"][patient_idx:patient_idx+1], 2)
 
                 shap_value_display = {
                     f"Feature {i}": f"{shap_values_rounded[0][i]:.2f}"  # Accessing the individual value within the inner array
