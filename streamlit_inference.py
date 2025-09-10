@@ -1571,46 +1571,30 @@ def run_app():
             elif method == "SHAP":
                 st.subheader("SHAP Explanation")
 
-                expl = arts["explainer_shap"] 
-                
-                #shap_values = arts["explainer_shap"].shap_values(arts["X_sample_s"][patient_idx:patient_idx+1])
-
-                
-
-                x_input = arts["X_sample_s"][patient_idx:patient_idx+1]  # shape (1, n)
-                
-                shap_values_all = expl.shap_values(x_input)
-                
-                if isinstance(shap_values_all, list):
+                 shap_values = arts["explainer_shap"].shap_values(arts["X_sample_s"][patient_idx:patient_idx+1])
+                if isinstance(shap_values, list):
             # Assuming binary classification, use the SHAP values for the positive class (index 1)
-                    shap_values_local = shap_values_all[1]
+                    shap_values_local = shap_values[1]
                 else:
-                    shap_values_local = shap_values_all
+                    shap_values_local = shap_values
 
-                
+        # Round SHAP values and feature values to 2 decimals
                 shap_values_rounded = np.round(shap_values_local, 2)
-                features_rounded = np.round(x_input, 2)
+                features_rounded = np.round(arts["X_sample_s"][patient_idx:patient_idx+1], 2)
 
                 shap_value_display = {
-                    f"Feature {i}": f"{shap_values_rounded[0][i]:.2f}"
+                    f"Feature {i}": f"{shap_values_rounded[0][i]:.2f}"  # Accessing the individual value within the inner array
                     for i in range(len(shap_values_rounded[0]))
                 }
 
-            
-                #explainer_shap = shap.Explainer(model, feature_names=feat_names)
-               # features_array = explainer_shap(features_array)
-               # shap_values = explainer_shap(features_array)
-                fig = shap.force_plot(
-                    base_value=expl.expected_value,
-                    shap_values=shap_values_local[0],
-                    features=features_rounded[0],
-                    feature_names=feat_names,
-                
-                    matplotlib=True,  
-                    show=False 
+                shap.force_plot(
+                    arts["explainer_shap"].expected_value,  # Expected value
+                    shap_values_rounded[0],  # Rounded SHAP values for the selected instance (access the first instance)
+                    features=features_rounded[0],  # Feature values for the selected instance
+                    matplotlib=True,  # Using Matplotlib for plotting
+                    show=False  # Don't show the plot immediately, we'll customize it
                 )
-                
-               
+        
                 fig_local = plt.gcf()
                 ax = plt.gca()
 
@@ -1624,8 +1608,8 @@ def run_app():
                     tick.set_rotation(0)
                     tick.set_fontsize(10)
         
-                st.pyplot(fig, use_container_width=True)
-              #  plt.close(fig_local)
+                st.pyplot(fig_local, use_container_width=True)
+                plt.close(fig_local)
                 
                 
         # Misinformation Spread Over Time
