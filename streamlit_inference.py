@@ -1572,26 +1572,33 @@ def run_app():
                     
                 
                 }
-                print(arts["feat_names"][:10]) 
+                print(arts["final_feat_names"][:10]) 
                 yticklabels = ax.get_yticklabels()
                 new_labels = []
 
                 for label in yticklabels:
                     original_text = label.get_text()
-                    parts = original_text.split("<")
-                    if len(parts) == 3:
-                        feature_part = parts[1].strip().split(" ")[0]
-                    else:
+                    new_name = custom_feature_names.get(original_text, original_text)  # Direct mapping
+
+                   # parts = original_text.split("<")
+                   # if len(parts) == 3:
+                   #     feature_part = parts[1].strip().split(" ")[0]
+                  #  else:
                         feature_part = original_text
 
-                    new_name = custom_feature_names.get(feature_part, feature_part)
+                  #  new_name = custom_feature_names.get(feature_part, feature_part)
 
-                    if len(parts) == 3:
-                        new_label = f"{parts[0]} < {new_name} <= {parts[2]}"
-                    else:
-                        new_label = new_name
+                  #  if len(parts) == 3:
+                  #      new_label = f"{parts[0]} < {new_name} <= {parts[2]}"
+                  #  else:
+                  #      new_label = new_name
 
                     new_labels.append(new_label)
+
+
+
+
+
 
                 ax.set_yticklabels(new_labels)
 
