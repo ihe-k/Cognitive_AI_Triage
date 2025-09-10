@@ -1594,7 +1594,7 @@ def run_app():
                     shap_values_rounded = np.round(shap_values_local, 2)
                     features_rounded = np.round(x_input, 2)
                    
-                    if len(shap_values_rounded[0]) !== len(feat_names):
+                    if len(shap_values_rounded[0]) != len(feat_names):
                         st.error(f"Mismatch between number of SHAP values ({len(shap_values_rounded[0])}) and feature names ({len(feat_names)})")
                         return
 
