@@ -1561,13 +1561,17 @@ def run_app():
                     f"{feat_names[i]}: {features_rounded[0][i]:.2f}"  # Format feature name and value to 2 dp
                     for i in range(len(feat_names))
                 ]
-                
+
+                def custom_formatter(value, decimals=2): #
+                    return f"{value:.{decimals}f}" #
+
                 plt.figure(figsize=(14, 12)) 
                 shap.force_plot(
-                    arts["explainer_shap"].expected_value,  # Expected value
+                    arts["explainer_shap"].expected_value,
                     shap_values_rounded[0], 
                     features=features_rounded[0],  
-                    feature_names=feature_labels,
+                    feature_names=[custom_formatter(val) for val in features_rounded[0]],
+                    #feature_names=feature_labels,
                     matplotlib=True, 
                     show=False  
                 )
