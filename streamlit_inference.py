@@ -1495,162 +1495,162 @@ def run_app():
                 st.metric("Misinformation Risk", f"{misinfo_risk_:.2f}")
 
                # Explanation block (LIME default like your sketch; SHAP optional)
-            task = arts.get("task", "")
-            if method == "LIME":
-                if "depression" in task.lower():
-                    st.subheader("LIME Explanation: Depression Severity Score")
-                    if all(k in arts for k in ["X_train_s", "model", "X_sample", "feat_names"]):
-                        exclude_keywords = ['_std_', 'stf', 'std']
-                        keep_prefixes = ['PHQ'] 
+                task = arts.get("task", "")
+                if method == "LIME":
+                    if "depression" in task.lower():
+                        st.subheader("LIME Explanation: Depression Severity Score")
+                        if all(k in arts for k in ["X_train_s", "model", "X_sample", "feat_names"]):
+                            exclude_keywords = ['_std_', 'stf', 'std']
+                            keep_prefixes = ['PHQ'] 
 
-                        feat_names = arts["feat_names"]
-                        filtered_feat_names = [
-                            feat for feat in feat_names
-                            if not any(keyword in feat for keyword in exclude_keywords)
-                            and any(feat.startswith(prefix) for prefix in keep_prefixes)
-                        ]
+                            feat_names = arts["feat_names"]
+                            filtered_feat_names = [
+                                feat for feat in feat_names
+                                if not any(keyword in feat for keyword in exclude_keywords)
+                                and any(feat.startswith(prefix) for prefix in keep_prefixes)
+                            ]
                                    
-                        def remove_numeric_suffix_after_first_and_second_underscore(feature):
-                        # Remove any numeric suffix after the first underscore
-                            feature = re.sub(r'(_\d+)', '_', feature, 1)
-                            feature = re.sub(r'(_\d+)', '', feature, 1)
-                            return feature
+                            def remove_numeric_suffix_after_first_and_second_underscore(feature):
+                            # Remove any numeric suffix after the first underscore
+                                feature = re.sub(r'(_\d+)', '_', feature, 1)
+                                feature = re.sub(r'(_\d+)', '', feature, 1)
+                                return feature
 
            
                 
-                        cleaned_features = [remove_numeric_suffix_after_first_and_second_underscore(f) for f in filtered_feat_names]
+                            cleaned_features = [remove_numeric_suffix_after_first_and_second_underscore(f) for f in filtered_feat_names]
                 
                 
-                        unique_feat_names = {}
-                        for raw, clean in zip(filtered_feat_names, cleaned_features):
-                            if clean not in unique_feat_names:
-                                unique_feat_names[clean] = raw
-                        final_feat_names = list(unique_feat_names.values())
+                            unique_feat_names = {}
+                            for raw, clean in zip(filtered_feat_names, cleaned_features):
+                                if clean not in unique_feat_names:
+                                    unique_feat_names[clean] = raw
+                            final_feat_names = list(unique_feat_names.values())
                 
                 
-                        model = arts["model"]
-                        X_sample = arts["X_sample"][patient_idx]
-                        X_train = arts["X_train_s"] 
+                            model = arts["model"]
+                            X_sample = arts["X_sample"][patient_idx]
+                            X_train = arts["X_train_s"] 
                 
-                        if len(final_feat_names) != X_train.shape[1]:
-                            raise ValueError(f"Mismatch: training data has {X_train.shape[1]} features but feature_names has {len(final_feat_names)}")
+                            if len(final_feat_names) != X_train.shape[1]:
+                                raise ValueError(f"Mismatch: training data has {X_train.shape[1]} features but feature_names has {len(final_feat_names)}")
 
-                        explainer_lime = LimeTabularExplainer(
-                            training_data=X_train,
-                            feature_names=final_feat_names,
-                            class_names=["PHQ-8 Score"],
-                            mode="regression"
-                        )
-                        lime_exp = explainer_lime.explain_instance(X_sample[0], model.predict, num_features=10)
+                            explainer_lime = LimeTabularExplainer(
+                                training_data=X_train,
+                                feature_names=final_feat_names,
+                                class_names=["PHQ-8 Score"],
+                                mode="regression"
+                            )
+                            lime_exp = explainer_lime.explain_instance(X_sample[0], model.predict, num_features=10)
 
-                    #fig = lime_exp.as_pyplot_figure()
-                   # ax = fig.gca()
-                        feature_weights = lime_exp.as_list()
-                        fig = lime_exp.as_pyplot_figure()
-                        ax = fig.gca()
+                        #fig = lime_exp.as_pyplot_figure()
+                       # ax = fig.gca()
+                            feature_weights = lime_exp.as_list()
+                            fig = lime_exp.as_pyplot_figure()
+                            ax = fig.gca()
         
-                        bars = ax.patches
-                        color_increase = '#3776A1'  # Blue for positive impact
-                        color_decrease = '#6EB1D6'  # Light blue for negative impact
+                            bars = ax.patches
+                            color_increase = '#3776A1'  # Blue for positive impact
+                            color_decrease = '#6EB1D6'  # Light blue for negative impact
 
-                        for bar, (_, weight) in zip(bars, feature_weights):
-                            bar.set_color(color_increase if weight >= 0 else color_decrease)
-                            bar.set_alpha(0.8)
+                            for bar, (_, weight) in zip(bars, feature_weights):
+                                bar.set_color(color_increase if weight >= 0 else color_decrease)
+                                bar.set_alpha(0.8)
 
-                        custom_feature_names = {
-                            "PHQ8_Concentrating": "PHQ8: Poor Concentration",
-                            "PHQ8_Depressed": "PHQ8: Depressed Mood",
-                            "PHQ8_Appetite": "PHQ8: Appetite",
-                            "PHQ8_Failure": "PHQ8: Failure",
-                            "PHQ8_NoInterest": "PHQ8: Lack of Interest",
-                            "PHQ8_Sleep": "PHQ8: Sleep",
-                            "PHQ8_Energy": "PHQ8: Energy",
-                            "PHQ8_Moving": "PHQ8: Slowed/Restless",
-                            "PHQ8_SelfHarm": "PHQ8: Self-harm"
-                        }
+                            custom_feature_names = {
+                                "PHQ8_Concentrating": "PHQ8: Poor Concentration",
+                                "PHQ8_Depressed": "PHQ8: Depressed Mood",
+                                "PHQ8_Appetite": "PHQ8: Appetite",
+                                "PHQ8_Failure": "PHQ8: Failure",
+                                "PHQ8_NoInterest": "PHQ8: Lack of Interest",
+                                "PHQ8_Sleep": "PHQ8: Sleep",
+                                "PHQ8_Energy": "PHQ8: Energy",
+                                "PHQ8_Moving": "PHQ8: Slowed/Restless",
+                                "PHQ8_SelfHarm": "PHQ8: Self-harm"
+                            }
                 
-                        new_labels = []
-                        for feature_name, _ in feature_weights:
-                            base_feat = remove_numeric_suffix_after_first_and_second_underscore(feature_name.strip())
-                            display_name = custom_feature_names.get(base_feat, base_feat)
-                            new_labels.append(display_name)
+                            new_labels = []
+                            for feature_name, _ in feature_weights:
+                                base_feat = remove_numeric_suffix_after_first_and_second_underscore(feature_name.strip())
+                                display_name = custom_feature_names.get(base_feat, base_feat)
+                                new_labels.append(display_name)
 
-                        ax.set_yticklabels(new_labels)
+                            ax.set_yticklabels(new_labels)
 
-                        ax.set_title('LIME Explanation for PHQ-8 Score', fontsize=16)
+                            ax.set_title('LIME Explanation for PHQ-8 Score', fontsize=16)
 
-                        increase_patch = mpatches.Patch(color=color_increase, label='↑ Increases PHQ-8 Score')
-                        decrease_patch = mpatches.Patch(color=color_decrease, label='↓ Decreases PHQ-8 Score')
-                        ax.legend(handles=[increase_patch, decrease_patch], loc='lower left', bbox_to_anchor=(0, 0), title="Feature Effect")
+                            increase_patch = mpatches.Patch(color=color_increase, label='↑ Increases PHQ-8 Score')
+                            decrease_patch = mpatches.Patch(color=color_decrease, label='↓ Decreases PHQ-8 Score')
+                            ax.legend(handles=[increase_patch, decrease_patch], loc='lower left', bbox_to_anchor=(0, 0), title="Feature Effect")
 
-                        #Update the figure style
-                        fig.patch.set_facecolor('white')
-                        ax.set_facecolor('#f8f9fa')  # Light background
+                            #Update the figure style
+                            fig.patch.set_facecolor('white')
+                            ax.set_facecolor('#f8f9fa')  # Light background
 
-                        st.pyplot(fig, use_container_width=True)        
+                            st.pyplot(fig, use_container_width=True)        
                 
-                    else:
-                        st.warning("LIME is only available for the depression severity model.")
+                        else:
+                            st.warning("LIME is only available for the depression severity model.")
                                          
-                  #  plt.show()
+                      #  plt.show()
                                
                    
 
                 
                 
-             #       plt.close(fig)
-                elif method == "SHAP":
-                    st.subheader("SHAP Explanation")
-                    shap_values = arts["explainer_shap"].shap_values(arts["X_sample_s"][patient_idx:patient_idx+1])
+             #           plt.close(fig)
+                    elif method == "SHAP":
+                        st.subheader("SHAP Explanation")
+                        shap_values = arts["explainer_shap"].shap_values(arts["X_sample_s"][patient_idx:patient_idx+1])
 
-                    if isinstance(shap_values, list):
+                        if isinstance(shap_values, list):
                     
-                        shap_values_local = shap_values[1]
-                    else:
-                        shap_values_local = shap_values
+                            shap_values_local = shap_values[1]
+                        else:
+                            shap_values_local = shap_values
 
-                    # Round SHAP values and feature values to 2 decimals
-                    shap_values_rounded = np.round(shap_values_local, 2)
-                    features_rounded = np.round(arts["X_sample_s"][patient_idx:patient_idx+1], 2)
+                        # Round SHAP values and feature values to 2 decimals
+                        shap_values_rounded = np.round(shap_values_local, 2)
+                        features_rounded = np.round(arts["X_sample_s"][patient_idx:patient_idx+1], 2)
 
-                    shap_value_display = {
-                        f"Feature {i}": f"{shap_values_rounded[0][i]:.2f}"  # Accessing the individual value within the inner array
-                        for i in range(len(shap_values_rounded[0]))
-                    }
+                        shap_value_display = {
+                            f"Feature {i}": f"{shap_values_rounded[0][i]:.2f}"  # Accessing the individual value within the inner array
+                            for i in range(len(shap_values_rounded[0]))
+                        }
 
-                    feature_labels = [
-                        f"{feat_names[i]}: {features_rounded[0][i]:.2f}"  
-                        for i in range(len(feat_names))
-                    ]
+                        feature_labels = [
+                            f"{feat_names[i]}: {features_rounded[0][i]:.2f}"  
+                            for i in range(len(feat_names))
+                        ]
 
-                    plt.figure(figsize=(18, 16)) 
+                        plt.figure(figsize=(18, 16)) 
                 
-                    shap.force_plot(
-                        arts["explainer_shap"].expected_value,
-                        shap_values_rounded[0],  
-                        #features=features_rounded[0],  
-                        feature_names=feature_labels,
-                        matplotlib=True, 
-                        show=False  
-                    )
+                        shap.force_plot(
+                            arts["explainer_shap"].expected_value,
+                            shap_values_rounded[0],  
+                            #features=features_rounded[0],  
+                            feature_names=feature_labels,
+                            matplotlib=True, 
+                            show=False  
+                        )
                  
-                    #fig_local = plt.gcf()
+                        #fig_local = plt.gcf()
                 
-                    ax = plt.gca()
+                        ax = plt.gca()
 
-                    ax.xaxis.set_major_formatter(mtick.FuncFormatter(lambda x, pos: f"{x:.2f}"))
-                    ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda y, pos: f"{y:.2f}"))
+                        ax.xaxis.set_major_formatter(mtick.FuncFormatter(lambda x, pos: f"{x:.2f}"))
+                        ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda y, pos: f"{y:.2f}"))
 
-                    for tick in ax.get_xticklabels():
-                        tick.set_rotation(0)
-                        tick.set_fontsize(10)
-                    for tick in ax.get_yticklabels():
-                        tick.set_rotation(0)
-                        tick.set_fontsize(10)
+                        for tick in ax.get_xticklabels():
+                            tick.set_rotation(0)
+                            tick.set_fontsize(10)
+                        for tick in ax.get_yticklabels():
+                            tick.set_rotation(0)
+                            tick.set_fontsize(10)
                 
-                    plt.subplots_adjust(left=0.1, right=0.9, top=0.5, bottom=0.3)
-                    st.pyplot(plt.gcf(), use_container_width=True)
-                    plt.close()
+                        plt.subplots_adjust(left=0.1, right=0.9, top=0.5, bottom=0.3)
+                        st.pyplot(plt.gcf(), use_container_width=True)
+                        plt.close()
                                           
         
         # Misinformation Spread Over Time
