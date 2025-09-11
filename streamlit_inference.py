@@ -1605,7 +1605,7 @@ def run_app():
                     else:
                         new_label = original_text  # If None, fallback to original feature name
 
-                    new_labels.append(new_label)
+                    new_labels.append(new_name)
                    # parts = original_text.split("<")
                    # if len(parts) == 3:
                    #     feature_part = parts[1].strip().split(" ")[0]
