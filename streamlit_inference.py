@@ -1565,10 +1565,13 @@ def run_app():
                 bars = ax.patches
 
                 num_bars = len(bars)
-                num_weights = len(feature_weights)
+                #num_weights = len(feature_weights)
+                num_labels = len(final_feat_names)
 
                 if num_bars != num_weights:
-                    print(f"Warning: Number of bars ({num_bars}) does not match number of feature weights ({num_weights})")
+                    print(f"Warning: Number of bars ({num_bars}) does not match number of labels ({num_labels}). Adjusting the number of labels.")
+                    final_feat_names = final_feat_names[:num_bars]  # Trim the feature names list to match the number of bars
+
                 
                 for i, bar in enumerate(bars):
                     if i < num_weights:  # Make sure we don't go out of bounds
@@ -1600,7 +1603,7 @@ def run_app():
                     original_text = label.get_text()
                     new_name = custom_feature_names.get(original_text, original_text)
                     new_labels.append(new_name)
-                ax.set_yticklabels(new_labels)
+                ax.set_yticklabels(final_feat_names)
                 plt.show()
                 explainer_shap = shap.Explainer(model, np.random.rand(100, num_features))  # Use real training data here
                 shap_values = explainer_shap.shap_values(X_sample)
