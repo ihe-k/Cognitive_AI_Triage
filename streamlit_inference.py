@@ -1498,7 +1498,8 @@ def run_app():
             if method == "LIME":
                 st.subheader("LIME Explanation")
                 exclude_keywords = ['_std_', 'stf','std',"std"] 
-                
+
+                num_features = 10249
                 keep_prefixes = ['PHQ']
                 
                 filtered_feat_names = [
@@ -1569,10 +1570,17 @@ def run_app():
                     mode="classification"
                 )
 
-                X_sample = np.random.rand(1, len(features))  # Example input
+                X_sample = np.random.rand(1, num_features)
+                model = arts["model"]
+                explainer_lime = LimeTabularExplainer(
+                    training_data=np.random.rand(100, num_features),  # Dummy training data with 10249 features
+                    feature_names=[f"Feature {i+1}" for i in range(num_features)],  # Use a generic feature name list
+                    class_names=["Class 0", "Class 1"],  # Adjust if it's a regression model
+                    mode="regression"  # Adjust if it's classification
+                )
                 # model = DummyModel()
 
-                lime_exp = explainer.explain_instance(X_sample[0], arts["model"].predict, num_features=5)
+                lime_exp = explainer.explain_instance(X_sample[0], model.predict, num_features=5)
 
                 fig = lime_exp.as_pyplot_figure()
                 color_increase = '#3776A1'  # Blue for positive impact
@@ -1597,14 +1605,17 @@ def run_app():
                 ax.set_title('LIME Explanation for PHQ-8 Score', fontsize=16)
 
                 yticklabels = ax.get_yticklabels()
-                new_labels = []
+                new_labels = [f"Feature {i+1}" for i in range(len(yticklabels))]  # Rename y-axis labels with generic feature names
                 for label in yticklabels:
                     original_text = label.get_text()
                     new_name = custom_feature_names.get(original_text, original_text)
                     new_labels.append(new_name)
                 ax.set_yticklabels(new_labels)
                 plt.show()
-
+                explainer_shap = shap.Explainer(model, np.random.rand(100, num_features))  # Use real training data here
+                shap_values = explainer_shap.shap_values(X_sample)
+                shap.summary_plot(shap_values, X_sample)
+                
                    # parts = original_text.split("<")
                    # if len(parts) == 3:
                    #     feature_part = parts[1].strip().split(" ")[0]
