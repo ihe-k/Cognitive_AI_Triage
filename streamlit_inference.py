@@ -1555,10 +1555,10 @@ def run_app():
 
                 # Rename y-axis labels using a custom mapping
                 custom_feature_names = {
-                    "PHQ8_NoInterest": "PHQ8 Lack of Interest",
-                    "PHQ8_Depressed": "PHQ8 Depressed",
-                    "PHQ8_Appetite": "PHQ8 Appetite",
-                    "PHQ8_Concentrating": "PHQ8: Poor Concentration",
+                    "PHQ8_NoInterest_": "PHQ8 Lack of Interest",
+                    "PHQ8_Depressed_": "PHQ8 Depressed",
+                    "PHQ8_Appetite_": "PHQ8 Appetite",
+                    "PHQ8_Concentrating_": "PHQ8: Poor Concentration",
                     "PHQ8_Failure": "PHQ8: Failure",
                    
                     
@@ -1597,8 +1597,8 @@ def run_app():
                 ax.set_facecolor('#f8f9fa')  # Light background color
 
                 bars = ax.patches
-                for bar in bars:
-                    weight = bar.get_height()  # Get the weight of each bar
+                for i, bar in enumerate(bars):
+                    feature, weight = feature_weights[i]
                     if weight >= 0:
                         bar.set_color(color_increase)  # Positive impact
                     else:
@@ -1606,7 +1606,6 @@ def run_app():
                     bar.set_alpha(0.8)
                 ax.set_title('LIME Explanation for PHQ-8 Score', fontsize=16)
 
-                ax = fig.gca()
                 yticklabels = ax.get_yticklabels()
                 new_labels = []
                 for label in yticklabels:
