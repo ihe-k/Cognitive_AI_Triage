@@ -1597,7 +1597,7 @@ def run_app():
                 
                 
              #   plt.close(fig)
-            elif method == "SHAP":
+            else method == "SHAP":
                 st.subheader("SHAP Explanation")
                 shap_values = arts["explainer_shap"].shap_values(arts["X_sample_s"][patient_idx:patient_idx+1])
 
