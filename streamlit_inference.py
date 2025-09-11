@@ -1506,7 +1506,7 @@ def run_app():
                     if not any(keyword in feat for keyword in exclude_keywords) and any(feat.startswith(prefix) for prefix in keep_prefixes)
                 ]
                                    
-                def get_base_name(feature):
+                def remove_numeric_suffix_after_first_and_second_underscore(feature):
                 # Remove any numeric suffix after the first underscore
                     feature = re.sub(r'(_\d+)', '_', feature, 1)
                     feature = re.sub(r'(_\d+)', '', feature, 1)
