@@ -1513,15 +1513,15 @@ def run_app():
                     feature = re.sub(r'(_\d+)', '', feature, 1)
                     return feature
 
-              
-                cleaned_features = [remove_numeric_suffix_after_first_and_second_underscore(f) for f in features]
+           
+                
+                cleaned_features = [remove_numeric_suffix_after_first_and_second_underscore(f) for f in filtered_feat_names]
                 
                 
                 unique_feat_names = {}
-                for feat in filtered_feat_names:
-                    base_name = remove_numeric_suffix_after_first_and_second_underscore(feat)
-                    if base_name not in unique_feat_names:
-                        unique_feat_names[base_name] = feat  # Store the first occurrence of each base name
+                for raw, clean in zip(filtered_feat_names, cleaned_features):
+                    if clean not in unique_feat_names:
+                        unique_feat_names[clean] = raw
                 final_feat_names = list(unique_feat_names.values())
                 
                 
@@ -1553,7 +1553,7 @@ def run_app():
                 color_increase = '#3776A1'  # Blue for positive impact
                 color_decrease = '#6EB1D6'  # Light blue for negative impact
 
-                for bar, (feat_name, weight) in zip(bars, feature_weights):
+                for bar, (_, weight) in zip(bars, feature_weights):
                     bar.set_color(color_increase if weight >= 0 else color_decrease)
                     bar.set_alpha(0.8)
 
@@ -1569,13 +1569,12 @@ def run_app():
                     "PHQ8_SelfHarm": "PHQ8: Self-harm"
                 }
                 
-                yticklabels = ax.get_yticklabels()
                 new_labels = []
-                for label in yticklabels:
-                    original_text = label.get_text()
-                    base_feat = original_text.split(' ')[0].strip()  # e.g., "PHQ8_Concentrating"
-                    renamed = custom_feature_names.get(base_feat, base_feat)
-                    new_labels.append(renamed)
+                for feature_name, _ in feature_weights:
+                    base_feat = remove_numeric_suffix_after_first_and_second_underscore(feature_name.strip())
+                    display_name = custom_feature_names.get(base_feat, base_feat)
+                    new_labels.append(display_name)
+
                 ax.set_yticklabels(new_labels)
 
                 ax.set_title('LIME Explanation for PHQ-8 Score', fontsize=16)
