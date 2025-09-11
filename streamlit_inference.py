@@ -1583,29 +1583,36 @@ def run_app():
                     
                 
                 }
-                final_features = []
-                for feature in cleaned_features:
-                    print(f"Original feature: {feature}")  # Debugging print
-                    new_name = custom_feature_names.get(feature, feature)  # Get the custom name if it exists
-                    print(f"Mapped feature: {new_name}")  # Debugging print
-                    final_features.append(new_name)
+                final_features = [custom_feature_names.get(f, f) for f in cleaned_features]
+                from lime.lime_tabular import LimeTabularExplainer
 
-                print("Final feature names:", final_features)
-                
-               # print("Filtered features to be used in LIME explanation:")
-                print(arts["feat_names"][:10]) 
+                class DummyModel:
+                    def predict(self, X):
+                        return np.random.rand(X.shape[0], 2)  # Dummy prediction (binary classification)
+
+                explainer = LimeTabularExplainer(
+                    training_data=np.random.rand(100, len(features)),  # Dummy training data
+                    feature_names=final_features,  # Pass cleaned features here
+                    class_names=["Class 0", "Class 1"],
+                    mode="classification"
+                )
+
+                X_sample = np.random.rand(1, len(features))  # Example input
+                model = DummyModel()
+
+                lime_exp = explainer.explain_instance(X_sample[0], model.predict, num_features=4)
+
+                fig = lime_exp.as_pyplot_figure()
+                ax = fig.gca()
                 yticklabels = ax.get_yticklabels()
                 new_labels = []
-
                 for label in yticklabels:
                     original_text = label.get_text()
-                    new_name = custom_feature_names.get(original_text, original_text)  # Direct mapping
-                    if new_name:
-                        new_label = new_name
-                    else:
-                        new_label = original_text  # If None, fallback to original feature name
-
+                    new_name = custom_feature_names.get(original_text, original_text)
                     new_labels.append(new_name)
+                ax.set_yticklabels(new_labels)
+                plt.show()
+
                    # parts = original_text.split("<")
                    # if len(parts) == 3:
                    #     feature_part = parts[1].strip().split(" ")[0]
@@ -1626,11 +1633,11 @@ def run_app():
 
 
 
-                ax.set_yticklabels(new_labels)
+               # ax.set_yticklabels(new_labels)
 
                 
-                st.pyplot(fig, use_container_width=True)
-                plt.close(fig)
+            #    st.pyplot(fig, use_container_width=True)
+           #     plt.close(fig)
             elif method == "SHAP":
                 st.subheader("SHAP Explanation")
                 shap_values = arts["explainer_shap"].shap_values(arts["X_sample_s"][patient_idx:patient_idx+1])
