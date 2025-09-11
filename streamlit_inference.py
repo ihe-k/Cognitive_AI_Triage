@@ -1530,12 +1530,16 @@ def run_app():
                         unique_feat_names[base_name] = feat  # Store the first occurrence of each base name
                 final_feat_names = list(unique_feat_names.values())
 
-                lime_exp = arts["explainer_lime"].explain_instance(
-                    arts["X_sample_s"][patient_idx],
-                    arts["model"].predict,
-                    num_features=min(10, len(final_feat_names))
+                model = arts["model"]
+                X_sample = np.random.rand(1, num_features) 
+                explainer_lime = LimeTabularExplainer(
+                    training_data=np.random.rand(100, num_features),  # Dummy training data with 10249 features
+                    feature_names=[f"Feature {i+1}" for i in range(num_features)],  # Use a generic feature name list
+                    class_names=["Class 0", "Class 1"],  # Adjust if it's a regression model
+                    mode="regression"  # Adjust if it's classification
                 )
-                
+                lime_exp = explainer_lime.explain_instance(X_sample[0], model.predict, num_features=5)
+
                 fig = lime_exp.as_pyplot_figure()
                 ax = fig.gca()
                 feature_weights = lime_exp.as_list()
@@ -1557,30 +1561,16 @@ def run_app():
                 
                 }
                 final_features = [custom_feature_names.get(f, f) for f in cleaned_features]
-                from lime.lime_tabular import LimeTabularExplainer
 
-                class DummyModel:
-                    def predict(self, X):
-                        return np.random.rand(X.shape[0], 2)  # Dummy prediction (binary classification)
-
-                explainer = LimeTabularExplainer(
-                    training_data=np.random.rand(100, len(features)),  # Dummy training data
-                    feature_names=final_features,  # Pass cleaned features here
-                    class_names=["Class 0", "Class 1"],
-                    mode="classification"
-                )
-
-                X_sample = np.random.rand(1, num_features)
-                model = arts["model"]
-                explainer_lime = LimeTabularExplainer(
-                    training_data=np.random.rand(100, num_features),  # Dummy training data with 10249 features
-                    feature_names=[f"Feature {i+1}" for i in range(num_features)],  # Use a generic feature name list
-                    class_names=["Class 0", "Class 1"],  # Adjust if it's a regression model
-                    mode="regression"  # Adjust if it's classification
-                )
-                # model = DummyModel()
-
-                lime_exp = explainer.explain_instance(X_sample[0], model.predict, num_features=5)
+                bars = ax.patches
+                for i, bar in enumerate(bars):
+                    feature, weight = feature_weights[i]
+                    if weight >= 0:
+                        bar.set_color(color_increase)  # Positive impact
+                    else:
+                        bar.set_color(color_decrease)  # Negative impact
+                    bar.set_alpha(0.8)
+                ax.set_title('LIME Explanation for PHQ-8 Score', fontsize=16)
 
                 fig = lime_exp.as_pyplot_figure()
                 color_increase = '#3776A1'  # Blue for positive impact
@@ -1594,18 +1584,10 @@ def run_app():
                 ax = fig.gca()
                 ax.set_facecolor('#f8f9fa')  # Light background color
 
-                bars = ax.patches
-                for i, bar in enumerate(bars):
-                    feature, weight = feature_weights[i]
-                    if weight >= 0:
-                        bar.set_color(color_increase)  # Positive impact
-                    else:
-                        bar.set_color(color_decrease)  # Negative impact
-                    bar.set_alpha(0.8)
-                ax.set_title('LIME Explanation for PHQ-8 Score', fontsize=16)
-
+                
                 yticklabels = ax.get_yticklabels()
-                new_labels = [f"Feature {i+1}" for i in range(len(yticklabels))]  # Rename y-axis labels with generic feature names
+                new_labels = [custom_feature_names.get(label.get_text(), label.get_text()) for label in yticklabels]
+                
                 for label in yticklabels:
                     original_text = label.get_text()
                     new_name = custom_feature_names.get(original_text, original_text)
