@@ -1495,8 +1495,9 @@ def run_app():
                 st.metric("Misinformation Risk", f"{misinfo_risk_:.2f}")
 
                # Explanation block (LIME default like your sketch; SHAP optional)
+            task = arts.get("task", "")
             if method == "LIME":
-                if task.lower() == "depression":
+                if "depression" in task.lower():
                     st.subheader("LIME Explanation: Depression Severity Score")
                     if all(k in arts for k in ["X_train_s", "model", "X_sample", "feat_names"]):
                         exclude_keywords = ['_std_', 'stf', 'std']
