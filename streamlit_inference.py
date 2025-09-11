@@ -1499,77 +1499,77 @@ def run_app():
             method = st.session_state.get("method", "LIME")  # Or however 'method' is selected
         
             if method == "LIME":
-                task = arts.get("task", "")
+                #task = arts.get("task", "")
                 if "depression" in task.lower():
                     st.subheader("LIME Explanation: Depression Severity Score")
 
                     required_keys = ["X_sample", "model", "explainer_lime"]
                     if all(k in arts for k in required_keys):
-                    model = arts["model"]
-                    explainer_lime = arts["explainer_lime"]
-                    X_sample = arts["X_sample"][patient_idx]  # shape should be (1, n_features)
+                        model = arts["model"]
+                        explainer_lime = arts["explainer_lime"]
+                        X_sample = arts["X_sample"][patient_idx]  # shape should be (1, n_features)
 
-                    if len(X_sample.shape) == 1:
-                    X_sample = X_sample.reshape(1, -1)
+                        if len(X_sample.shape) == 1:
+                        X_sample = X_sample.reshape(1, -1)
 
-                    try:
-                        lime_exp = explainer_lime.explain_instance(
-                            X_sample[0],
-                            model.predict,
-                            num_features=10
-                        )
+                        try:
+                            lime_exp = explainer_lime.explain_instance(
+                                X_sample[0],
+                                model.predict,
+                                num_features=10
+                            )
 
-                        feature_weights = lime_exp.as_list()
-                        fig = lime_exp.as_pyplot_figure()
-                        ax = fig.gca()
+                            feature_weights = lime_exp.as_list()
+                            fig = lime_exp.as_pyplot_figure()
+                            ax = fig.gca()
 
-                        for bar, (_, weight) in zip(ax.patches, feature_weights):
-                            bar.set_color('#3776A1' if weight >= 0 else '#6EB1D6')
-                            bar.set_alpha(0.8)
+                            for bar, (_, weight) in zip(ax.patches, feature_weights):
+                                bar.set_color('#3776A1' if weight >= 0 else '#6EB1D6')
+                                bar.set_alpha(0.8)
 
                         
-                        custom_feature_names = {
-                            "PHQ8_Concentrating": "PHQ8: Poor Concentration",
-                            "PHQ8_Depressed": "PHQ8: Depressed Mood",
-                            "PHQ8_Appetite": "PHQ8: Appetite",
-                            "PHQ8_Failure": "PHQ8: Failure",
-                            "PHQ8_NoInterest": "PHQ8: Lack of Interest",
-                            "PHQ8_Sleep": "PHQ8: Sleep",
-                            "PHQ8_Energy": "PHQ8: Energy",
-                            "PHQ8_Moving": "PHQ8: Slowed/Restless",
-                            "PHQ8_SelfHarm": "PHQ8: Self-harm"
-                        }
+                            custom_feature_names = {
+                                "PHQ8_Concentrating": "PHQ8: Poor Concentration",
+                                "PHQ8_Depressed": "PHQ8: Depressed Mood",
+                                "PHQ8_Appetite": "PHQ8: Appetite",
+                                "PHQ8_Failure": "PHQ8: Failure",
+                                "PHQ8_NoInterest": "PHQ8: Lack of Interest",
+                                "PHQ8_Sleep": "PHQ8: Sleep",
+                                "PHQ8_Energy": "PHQ8: Energy",
+                                "PHQ8_Moving": "PHQ8: Slowed/Restless",
+                                "PHQ8_SelfHarm": "PHQ8: Self-harm"
+                            }
                         
-                        def clean_feature_name(raw_name):
+                            def clean_feature_name(raw_name):
                     
-                            # remove numeric suffix after first and second underscore
-                            raw_name = re.sub(r'(_\d+)', '_', raw_name, 1)
-                            raw_name = re.sub(r'(_\d+)', '', raw_name, 1)
-                            return raw_name.strip()
+                                # remove numeric suffix after first and second underscore
+                                raw_name = re.sub(r'(_\d+)', '_', raw_name, 1)
+                                raw_name = re.sub(r'(_\d+)', '', raw_name, 1)
+                                return raw_name.strip()
 
-                        new_labels = []
-                        for feat_name, _ in feature_weights:
-                            base_feat = clean_feature_name(feat_name)
-                            label = custom_feature_names.get(base_feat, base_feat)
-                            new_labels.append(label)
+                            new_labels = []
+                            for feat_name, _ in feature_weights:
+                                base_feat = clean_feature_name(feat_name)
+                                label = custom_feature_names.get(base_feat, base_feat)
+                                new_labels.append(label)
 
-                        ax.set_yticklabels(new_labels)
-                        ax.set_title("LIME Explanation for PHQ-8 Score", fontsize=16)
+                            ax.set_yticklabels(new_labels)
+                            ax.set_title("LIME Explanation for PHQ-8 Score", fontsize=16)
 
-                        increase_patch = mpatches.Patch(color="#3776A1", label="↑ Increases PHQ-8 Score")
-                        decrease_patch = mpatches.Patch(color="#6EB1D6", label="↓ Decreases PHQ-8 Score")
-                        ax.legend(handles=[increase_patch, decrease_patch], loc='lower left', bbox_to_anchor=(0, 0), title="Feature Effect")
+                            increase_patch = mpatches.Patch(color="#3776A1", label="↑ Increases PHQ-8 Score")
+                            decrease_patch = mpatches.Patch(color="#6EB1D6", label="↓ Decreases PHQ-8 Score")
+                            ax.legend(handles=[increase_patch, decrease_patch], loc='lower left', bbox_to_anchor=(0, 0), title="Feature Effect")
 
-                        ax.set_facecolor('#f8f9fa')
-                        fig.patch.set_facecolor('white')
+                            ax.set_facecolor('#f8f9fa')
+                            fig.patch.set_facecolor('white')
                         
-                        st.pyplot(fig, use_container_width=True)
-                    except Exception as e:
-                        st.error(f"Error generating LIME plot: {e}")
+                            st.pyplot(fig, use_container_width=True)
+                        except Exception as e:
+                            st.error(f"Error generating LIME plot: {e}")
+                    else:
+                        st.warning("Missing required LIME components in model artifacts.")
                 else:
-                    st.warning("Missing required LIME components in model artifacts.")
-            else:
-                st.warning("LIME is only available for the depression severity model.")
+                    st.warning("LIME is only available for the depression severity model.")
 
                  #           plt.close(fig)
             elif method == "SHAP":
