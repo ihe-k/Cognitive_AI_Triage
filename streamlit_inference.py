@@ -1503,7 +1503,7 @@ def run_app():
 
             # Now proceed with the rest of the app logic after ensuring the model is loaded
             task = arts.get("task", "").lower()  # Task (depression, etc.) should be in arts
-            
+            patient_idx = 0
             if "depression" in task: 
                 st.subheader("LIME Explanation: Depression Severity Score")
                 required_keys = ["X_sample", "model", "explainer_lime"]
