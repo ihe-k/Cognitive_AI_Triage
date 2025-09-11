@@ -1548,7 +1548,7 @@ def run_app():
             #    bar.set_color(custom_colors[color_idx])
             #    bar.set_alpha(0.8)  # Add some transparency for better aesthetics
 
-               Update the figure style
+                Update the figure style
                 fig.patch.set_facecolor('white')
                 ax.set_facecolor('#f8f9fa')  # Light background
 
