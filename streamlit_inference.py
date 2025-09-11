@@ -1548,16 +1548,14 @@ def run_app():
                     class_names=["Class 0", "Class 1"],
                     mode="regression"
                 )
-                lime_exp = explainer_lime.explain_instance(X_sample[0], model.predict, num_features=5)
+                lime_exp = explainer_lime.explain_instance(X_sample[0], model.predict, num_features=10)
 
-                fig = lime_exp.as_pyplot_figure()
-                ax = fig.gca()
+                #fig = lime_exp.as_pyplot_figure()
+               # ax = fig.gca()
                 feature_weights = lime_exp.as_list()
+           
         
-                #Update the figure style
-                fig.patch.set_facecolor('white')
-                ax.set_facecolor('#f8f9fa')  # Light background
-
+                
                 # Rename y-axis labels using a custom mapping
                 custom_feature_names = {
                     "PHQ8_NoInterest_": "PHQ8: Lack of Interest",
@@ -1574,6 +1572,9 @@ def run_app():
 
                 num_weights = len(feature_weights)
 
+                color_increase = '#3776A1'  # Blue for positive impact
+                color_decrease = '#6EB1D6'  # Light blue for negative impact
+
                 bars = ax.patches
 
                 num_bars = len(bars)
@@ -1586,13 +1587,15 @@ def run_app():
                     final_feat_names = final_feat_names[:num_bars]
 
                 
-                for i, bar in enumerate(bars):
-                    feature, weight = feature_weights[i]
-                    if weight >= 0:
-                        bar.set_color('#3776A1')  # Blue for positive impact
-                    else:
-                        bar.set_color('#6EB1D6')  # Light blue for negative impact
-                    bar.set_alpha(0.8)
+                if len(bars) != len(feature_weights):
+                    print(f"Warning: {len(bars)} bars but {len(feature_weights)} weights")
+                else:
+                    for bar, (feature_name, weight) in zip(bars, feature_weights):
+                        if weight >= 0:
+                            bar.set_color(color_increase)
+                        else:
+                            bar.set_color(color_decrease)
+                        bar.set_alpha(0.8)
                 
                 ax.set_title('LIME Explanation for PHQ-8 Score', fontsize=16)
 
@@ -1603,9 +1606,8 @@ def run_app():
                 ax.set_yticklabels(new_labels) 
 
                 #fig = lime_exp.as_pyplot_figure()
-                color_increase = '#3776A1'  # Blue for positive impact
-                color_decrease = '#6EB1D6'  # Light blue for negative impact
-
+                ax = fig.gca()
+                
                 increase_patch = mpatches.Patch(color=color_increase, label='↑ Increases PHQ-8 Score')
                 decrease_patch = mpatches.Patch(color=color_decrease, label='↓ Decreases PHQ-8 Score')
                 fig.gca().legend(handles=[increase_patch, decrease_patch], loc='lower left', bbox_to_anchor=(0, 0), title="Feature Effect")
@@ -1614,7 +1616,10 @@ def run_app():
                # ax = fig.gca()
                # ax.set_facecolor('#f8f9fa')  # Light background color
 
-                                
+                #Update the figure style
+                fig.patch.set_facecolor('white')
+                ax.set_facecolor('#f8f9fa')  # Light background
+                
                 plt.show()
                                
                    # parts = original_text.split("<")
