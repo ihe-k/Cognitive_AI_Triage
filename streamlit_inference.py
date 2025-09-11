@@ -1636,8 +1636,8 @@ def run_app():
                # ax.set_yticklabels(new_labels)
 
                 
-            #    st.pyplot(fig, use_container_width=True)
-           #     plt.close(fig)
+                st.pyplot(fig, use_container_width=True)
+                plt.close(fig)
             elif method == "SHAP":
                 st.subheader("SHAP Explanation")
                 shap_values = arts["explainer_shap"].shap_values(arts["X_sample_s"][patient_idx:patient_idx+1])
