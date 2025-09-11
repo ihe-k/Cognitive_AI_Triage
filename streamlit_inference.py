@@ -1524,7 +1524,7 @@ def run_app():
                 
                 unique_feat_names = {}
                 for feat in filtered_feat_names:
-                    base_name = get_base_name(feat)
+                    base_name = remove_numeric_suffix_after_first_and_second_underscore(feat)
                     if base_name not in unique_feat_names:
                         unique_feat_names[base_name] = feat  # Store the first occurrence of each base name
                 final_feat_names = list(unique_feat_names.values())
