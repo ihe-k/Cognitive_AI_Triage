@@ -1531,12 +1531,19 @@ def run_app():
                 final_feat_names = list(unique_feat_names.values())
 
                 model = arts["model"]
-                X_sample = np.random.rand(1, num_features) 
+                X_sample = np.random.rand(1, 10249)
+
+                num_features = len(final_feat_names)
+                if num_features != 10249:
+                    print(f"Warning: Adjusting number of features to match the training data. Expected {num_features} but got 10249.")
+
+                X_train = np.random.rand(100, 10249)
+                
                 explainer_lime = LimeTabularExplainer(
-                    training_data=np.random.rand(100, num_features),  # Dummy training data with 10249 features
-                    feature_names=final_feat_names,  # Use a generic feature name list
-                    class_names=["Class 0", "Class 1"],  # Adjust if it's a regression model
-                    mode="regression"  # Adjust if it's classification
+                    training_data=X_train,
+                    feature_names=final_feat_names,
+                    class_names=["Class 0", "Class 1"],
+                    mode="regression"
                 )
                 lime_exp = explainer_lime.explain_instance(X_sample[0], model.predict, num_features=5)
 
@@ -1572,7 +1579,7 @@ def run_app():
 
                 if num_bars != num_weights:
                     print(f"Warning: Number of bars ({num_bars}) does not match number of labels ({num_labels}). Adjusting the number of labels.")
-                    final_feat_names = final_feat_names[:num_bars]  # Trim the feature names list to match the number of bars
+                    final_feat_names = final_feat_names[:num_bars]
 
                 
                 for i, bar in enumerate(bars):
@@ -1585,7 +1592,13 @@ def run_app():
                 
                 ax.set_title('LIME Explanation for PHQ-8 Score', fontsize=16)
 
-                fig = lime_exp.as_pyplot_figure()
+                
+                
+                yticklabels = ax.get_yticklabels()
+                new_labels = [custom_feature_names.get(label.get_text(), label.get_text()) for label in yticklabels]
+                ax.set_yticklabels(new_labels) 
+
+                #fig = lime_exp.as_pyplot_figure()
                 color_increase = '#3776A1'  # Blue for positive impact
                 color_decrease = '#6EB1D6'  # Light blue for negative impact
 
@@ -1593,17 +1606,11 @@ def run_app():
                 decrease_patch = mpatches.Patch(color=color_decrease, label='↓ Decreases PHQ-8 Score')
                 fig.gca().legend(handles=[increase_patch, decrease_patch], loc='lower left', bbox_to_anchor=(0, 0), title="Feature Effect")
 
-                fig.patch.set_facecolor('white')
-                ax = fig.gca()
-                ax.set_facecolor('#f8f9fa')  # Light background color
+               # fig.patch.set_facecolor('white')
+               # ax = fig.gca()
+               # ax.set_facecolor('#f8f9fa')  # Light background color
 
-                
-                yticklabels = ax.get_yticklabels()
-
-                
-                new_labels = [custom_feature_names.get(label.get_text(), label.get_text()) for label in yticklabels]
-                ax.set_yticklabels(new_labels) 
-                
+                                
                 plt.show()
                                
                    # parts = original_text.split("<")
