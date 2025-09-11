@@ -1599,18 +1599,13 @@ def run_app():
 
                 
                 yticklabels = ax.get_yticklabels()
+
+                
                 new_labels = [custom_feature_names.get(label.get_text(), label.get_text()) for label in yticklabels]
+                ax.set_yticklabels(new_labels) 
                 
-                for label in yticklabels:
-                    original_text = label.get_text()
-                    new_name = custom_feature_names.get(original_text, original_text)
-                    new_labels.append(new_name)
-                ax.set_yticklabels(final_feat_names)
                 plt.show()
-                explainer_shap = shap.Explainer(model, np.random.rand(100, num_features))  # Use real training data here
-                shap_values = explainer_shap.shap_values(X_sample)
-                shap.summary_plot(shap_values, X_sample)
-                
+                               
                    # parts = original_text.split("<")
                    # if len(parts) == 3:
                    #     feature_part = parts[1].strip().split(" ")[0]
