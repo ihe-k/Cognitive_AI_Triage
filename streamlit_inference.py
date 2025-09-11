@@ -1573,8 +1573,6 @@ def run_app():
                 for i, bar in enumerate(bars):
                     if i < num_weights:  # Make sure we don't go out of bounds
                         feature, weight = feature_weights[i]
-                    if i < num_weights:
-                        feature, weight = feature_weights[i]
                         if weight >= 0:
                             bar.set_color('#3776A1')  # Blue for positive impact
                         else:
