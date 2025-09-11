@@ -1563,13 +1563,21 @@ def run_app():
                 final_features = [custom_feature_names.get(f, f) for f in cleaned_features]
 
                 bars = ax.patches
+
+                num_bars = len(bars)
+                num_weights = len(feature_weights)
+
+                if num_bars != num_weights:
+                    print(f"Warning: Number of bars ({num_bars}) does not match number of feature weights ({num_weights})")
+                
                 for i, bar in enumerate(bars):
-                    feature, weight = feature_weights[i]
-                    if weight >= 0:
-                        bar.set_color(color_increase)  # Positive impact
-                    else:
-                        bar.set_color(color_decrease)  # Negative impact
-                    bar.set_alpha(0.8)
+                    if i < num_weights:
+                        feature, weight = feature_weights[i]
+                        if weight >= 0:
+                            bar.set_color('#3776A1')  # Blue for positive impact
+                        else:
+                            bar.set_color('#6EB1D6')  # Light blue for negative impact
+                        bar.set_alpha(0.8)
                 ax.set_title('LIME Explanation for PHQ-8 Score', fontsize=16)
 
                 fig = lime_exp.as_pyplot_figure()
