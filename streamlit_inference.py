@@ -1539,25 +1539,15 @@ def run_app():
                 ax = fig.gca()
                 feature_weights = lime_exp.as_list()
         
-                # Apply custom color scheme to LIME chart
-                # custom_colors = ['#003A6B', '#1B5886', '#3776A1', '#5293BB', '#6EB1D6', '#89CFF1']
-
-                # Get feature weights directly from the LIME explanation
-       
-
-            #    bar.set_color(custom_colors[color_idx])
-            #    bar.set_alpha(0.8)  # Add some transparency for better aesthetics
-
                 #Update the figure style
                 fig.patch.set_facecolor('white')
                 ax.set_facecolor('#f8f9fa')  # Light background
 
-
                 # Rename y-axis labels using a custom mapping
                 custom_feature_names = {
-                    "PHQ8_NoInterest_": "PHQ8 Lack of Interest",
-                    "PHQ8_Depressed_": "PHQ8 Depressed",
-                    "PHQ8_Appetite_": "PHQ8 Appetite",
+                    "PHQ8_NoInterest_": "PHQ8: Lack of Interest",
+                    "PHQ8_Depressed_": "PHQ8: Depressed",
+                    "PHQ8_Appetite_": "PHQ8: Appetite",
                     "PHQ8_Concentrating_": "PHQ8: Poor Concentration",
                     "PHQ8_Failure": "PHQ8: Failure",
                    
@@ -1580,9 +1570,9 @@ def run_app():
                 )
 
                 X_sample = np.random.rand(1, len(features))  # Example input
-                model = DummyModel()
+                # model = DummyModel()
 
-                lime_exp = explainer.explain_instance(X_sample[0], model.predict, num_features=5)
+                lime_exp = explainer.explain_instance(X_sample[0], arts["model"].predict, num_features=5)
 
                 fig = lime_exp.as_pyplot_figure()
                 color_increase = '#3776A1'  # Blue for positive impact
@@ -1714,7 +1704,7 @@ def run_app():
         label_map = {'S': 'Susceptible', 'I': 'Infected', 'R': 'Recovered'}
     
         node_colors = [c_map[G_net_.nodes[n]['state']] for n in G_net_.nodes()]
-        nx.draw(G_net_, pos, node_color=node_colors, node_size=20, with_labels=False, ax=ax_net, edge_color='#414141')
+        nx.draw(G_net_, pos, node_color=node_colors, node_size=20, with_labels=False, ax=ax_net, edge_color='#6e6e6e')
     
         # Create legend patches
         legend_patches = [mpatches.Patch(color=color, label=label_map[state]) for state, color in c_map.items()]
