@@ -1534,7 +1534,7 @@ def run_app():
                 X_sample = np.random.rand(1, num_features) 
                 explainer_lime = LimeTabularExplainer(
                     training_data=np.random.rand(100, num_features),  # Dummy training data with 10249 features
-                    feature_names=[f"Feature {i+1}" for i in range(num_features)],  # Use a generic feature name list
+                    feature_names=final_feat_names,  # Use a generic feature name list
                     class_names=["Class 0", "Class 1"],  # Adjust if it's a regression model
                     mode="regression"  # Adjust if it's classification
                 )
