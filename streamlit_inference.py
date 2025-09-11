@@ -1513,15 +1513,9 @@ def run_app():
                     feature = re.sub(r'(_\d+)', '', feature, 1)
                     return feature
 
-                features = [
-                    "PHQ8_Concentrating_12_34",  # Will become "PHQ8_Concentrating"
-                    "PHQ8_Depressed_5_99",       # Will become "PHQ8_Depressed"
-                    "PHQ8_Appetite_77",          # Will become "PHQ8_Appetite"
-                    "PHQ8_Failure",              # No change
-                ]
-
+              
                 cleaned_features = [remove_numeric_suffix_after_first_and_second_underscore(f) for f in features]
-                print(cleaned_features)
+                
                 
                 unique_feat_names = {}
                 for feat in filtered_feat_names:
@@ -1529,23 +1523,19 @@ def run_app():
                     if base_name not in unique_feat_names:
                         unique_feat_names[base_name] = feat  # Store the first occurrence of each base name
                 final_feat_names = list(unique_feat_names.values())
-                print(f"Feature names length: {len(final_feat_names)}")
+                
                 
                 model = arts["model"]
-                X_sample = np.random.rand(1, 10249)
-
-                num_features = 10249
-                final_feat_names = [f"Feature {i+1}" for i in range(num_features)] 
-
-                X_train = np.random.rand(100, 10249)
-                print(f"Training data shape: {X_train.shape}")
-                if X_train.shape[1] != len(final_feat_names):
-                    raise ValueError(f"Mismatch: The number of features in the training data ({X_train.shape[1]}) does not match the length of the feature names list ({len(final_feat_names)}).")
+                X_sample = arts["X_sample_s"][patient_idx]
+                X_train = arts["X_train_s"] 
+                
+                if len(final_feat_names) != X_train.shape[1]:
+                    raise ValueError(f"Mismatch: training data has {X_train.shape[1]} features but feature_names has {len(final_feat_names)}")
 
                 explainer_lime = LimeTabularExplainer(
                     training_data=X_train,
                     feature_names=final_feat_names,
-                    class_names=["Class 0", "Class 1"],
+                    class_names=["PHQ-8 Score"],
                     mode="regression"
                 )
                 lime_exp = explainer_lime.explain_instance(X_sample[0], model.predict, num_features=10)
@@ -1553,99 +1543,61 @@ def run_app():
                 #fig = lime_exp.as_pyplot_figure()
                # ax = fig.gca()
                 feature_weights = lime_exp.as_list()
-           
+                fig = lime_exp.as_pyplot_figure()
+                ax = fig.gca()
         
-                
-                # Rename y-axis labels using a custom mapping
-                custom_feature_names = {
-                    "PHQ8_NoInterest_": "PHQ8: Lack of Interest",
-                    "PHQ8_Depressed_": "PHQ8: Depressed",
-                    "PHQ8_Appetite_": "PHQ8: Appetite",
-                    "PHQ8_Concentrating_": "PHQ8: Poor Concentration",
-                    "PHQ8_Failure": "PHQ8: Failure",
-                   
-                    
-                    
-                
-                }
-                final_features = [custom_feature_names.get(f, f) for f in cleaned_features]
-
-                num_weights = len(feature_weights)
+                bars = ax.patches
+                if len(bars) != len(feature_weights):
+                    print(f"Warning: Bar count ({len(bars)}) ≠ feature weights ({len(feature_weights)})")
 
                 color_increase = '#3776A1'  # Blue for positive impact
                 color_decrease = '#6EB1D6'  # Light blue for negative impact
 
-                bars = ax.patches
+                for bar, (feat_name, weight) in zip(bars, feature_weights):
+                    bar.set_color(color_increase if weight >= 0 else color_decrease)
+                    bar.set_alpha(0.8)
 
-                num_bars = len(bars)
-               # bars = ax.patches
-              #  num_weights = len(feature_weights)
-                #num_labels = len(final_feat_names)
-
-                if num_bars != num_weights:
-                    print(f"Warning: Number of bars ({num_bars}) does not match number of labels ({num_labels}). Adjusting the number of labels.")
-                    final_feat_names = final_feat_names[:num_bars]
-
-                
-                if len(bars) != len(feature_weights):
-                    print(f"Warning: {len(bars)} bars but {len(feature_weights)} weights")
-                else:
-                    for bar, (feature_name, weight) in zip(bars, feature_weights):
-                        if weight >= 0:
-                            bar.set_color(color_increase)
-                        else:
-                            bar.set_color(color_decrease)
-                        bar.set_alpha(0.8)
-                
-                ax.set_title('LIME Explanation for PHQ-8 Score', fontsize=16)
-
-                
+                custom_feature_names = {
+                    "PHQ8_Concentrating": "PHQ8: Poor Concentration",
+                    "PHQ8_Depressed": "PHQ8: Depressed Mood",
+                    "PHQ8_Appetite": "PHQ8: Appetite",
+                    "PHQ8_Failure": "PHQ8: Failure",
+                    "PHQ8_NoInterest": "PHQ8: Lack of Interest",
+                    "PHQ8_Sleep": "PHQ8: Sleep",
+                    "PHQ8_Energy": "PHQ8: Energy",
+                    "PHQ8_Moving": "PHQ8: Slowed/Restless",
+                    "PHQ8_SelfHarm": "PHQ8: Self-harm"
+                }
                 
                 yticklabels = ax.get_yticklabels()
-                new_labels = [custom_feature_names.get(label.get_text(), label.get_text()) for label in yticklabels]
-                ax.set_yticklabels(new_labels) 
+                new_labels = []
+                for label in yticklabels:
+                    original_text = label.get_text()
+                    base_feat = original_text.split(' ')[0].strip()  # e.g., "PHQ8_Concentrating"
+                    renamed = custom_feature_names.get(base_feat, base_feat)
+                    new_labels.append(renamed)
+                ax.set_yticklabels(new_labels)
 
-                #fig = lime_exp.as_pyplot_figure()
-                ax = fig.gca()
-                
+                ax.set_title('LIME Explanation for PHQ-8 Score', fontsize=16)
+
                 increase_patch = mpatches.Patch(color=color_increase, label='↑ Increases PHQ-8 Score')
                 decrease_patch = mpatches.Patch(color=color_decrease, label='↓ Decreases PHQ-8 Score')
-                fig.gca().legend(handles=[increase_patch, decrease_patch], loc='lower left', bbox_to_anchor=(0, 0), title="Feature Effect")
-
-               # fig.patch.set_facecolor('white')
-               # ax = fig.gca()
-               # ax.set_facecolor('#f8f9fa')  # Light background color
+                ax.legend(handles=[increase_patch, decrease_patch], loc='lower left', bbox_to_anchor=(0, 0), title="Feature Effect")
 
                 #Update the figure style
                 fig.patch.set_facecolor('white')
                 ax.set_facecolor('#f8f9fa')  # Light background
+
+                st.pyplot(fig, use_container_width=True)        
                 
-                plt.show()
+
+                                         
+              #  plt.show()
                                
-                   # parts = original_text.split("<")
-                   # if len(parts) == 3:
-                   #     feature_part = parts[1].strip().split(" ")[0]
-                  #  else:
-                   #     feature_part = original_text
-
-                  #  new_name = custom_feature_names.get(feature_part, feature_part)
-
-                  #  if len(parts) == 3:
-                  #      new_label = f"{parts[0]} < {new_name} <= {parts[2]}"
-                  #  else:
-                  #      new_label = new_name
-
-                  #  new_labels.append(new_label)
-
-
-
-
-
-
-               # ax.set_yticklabels(new_labels)
+                   
 
                 
-                st.pyplot(fig, use_container_width=True)
+                
              #   plt.close(fig)
             elif method == "SHAP":
                 st.subheader("SHAP Explanation")
