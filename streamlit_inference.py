@@ -1572,17 +1572,24 @@ def run_app():
 
 
                 # Rename y-axis labels using a custom mapping
-               # custom_feature_names = {
-                #    "PHQ8 Lack of Interest": "PHQ8_NoInterest",
-                #    "PHQ8 Depressed": "PHQ8_Depressed",
-                #    "PHQ8 Appetite": "PHQ8_Appetite",
-                #    "PHQ8: Poor Concentration": "PHQ8_Concentrating",
-                #    "PHQ8: Failure": "PHQ8_Failure",
+                custom_feature_names = {
+                    "PHQ8 Lack of Interest": "PHQ8_NoInterest",
+                    "PHQ8 Depressed": "PHQ8_Depressed",
+                    "PHQ8 Appetite": "PHQ8_Appetite",
+                    "PHQ8: Poor Concentration": "PHQ8_Concentrating",
+                    "PHQ8: Failure": "PHQ8_Failure",
                    
                     
                     
                 
-                #}
+                }
+                final_features = []
+                for feature in cleaned_features:
+                    original_text = feature
+                    new_name = custom_feature_names.get(original_text, original_text)  # Get the custom name if it exists
+                    final_features.append(new_name)
+                print(final_features)
+                
                # print("Filtered features to be used in LIME explanation:")
                 print(arts["feat_names"][:10]) 
                 yticklabels = ax.get_yticklabels()
