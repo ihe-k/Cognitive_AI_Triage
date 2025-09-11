@@ -126,7 +126,7 @@ The model adjusts predicted severity scores by accounting for the misinformation
 
 The network graph illustrates the simulated social structure where nodes represent individuals, edges represent communication links and colours indicate health information states (S/I/R).  It visualises the spread of health-related information (or misinformation); supports public health modelling, intervention targeting as well as digital epidemiology and highlights the ways network dynamics may affect mental health outreach or service delivery.
 
-## Extension
+## Future Research
 
 The code may be extended to simulate or predict:
 
