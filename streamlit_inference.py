@@ -1510,7 +1510,7 @@ def run_app():
                         X_sample = arts["X_sample"][patient_idx]  # shape should be (1, n_features)
 
                         if len(X_sample.shape) == 1:
-                        X_sample = X_sample.reshape(1, -1)
+                            X_sample = X_sample.reshape(1, -1)
 
                         try:
                             lime_exp = explainer_lime.explain_instance(
