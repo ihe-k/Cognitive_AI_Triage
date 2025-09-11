@@ -1542,31 +1542,13 @@ def run_app():
                 # Apply custom color scheme to LIME chart
                 # custom_colors = ['#003A6B', '#1B5886', '#3776A1', '#5293BB', '#6EB1D6', '#89CFF1']
 
-                color_increase = '#3776A1'
-                color_decrease = '#6EB1D6'
-
                 # Get feature weights directly from the LIME explanation
        
-                bars = ax.patches
-
-                for bar, (feature, weight) in zip(bars, feature_weights):
-                    bar.set_color(color_increase if weight >= 0 else color_decrease)
-                    bar.set_alpha(0.8)
- #                if weight >= 0:
- #                   bar.set_color(color_increase)
- #               else:
- #                   bar.set_color(color_decrease)
- #               bar.set_alpha(0.8)
-
 
             #    bar.set_color(custom_colors[color_idx])
             #    bar.set_alpha(0.8)  # Add some transparency for better aesthetics
 
-                increase_patch = mpatches.Patch(color=color_increase, label='↑ Increases PHQ-8 Score')
-                decrease_patch = mpatches.Patch(color=color_decrease, label='↓ Decreases PHQ-8 Score')
-                ax.legend(handles=[increase_patch, decrease_patch], loc='lower left', bbox_to_anchor=(0, 0), title="Feature Effect")
-        
-            # Update the figure style
+               Update the figure style
                 fig.patch.set_facecolor('white')
                 ax.set_facecolor('#f8f9fa')  # Light background
 
