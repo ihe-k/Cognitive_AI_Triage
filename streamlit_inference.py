@@ -1502,14 +1502,26 @@ def run_app():
                 keep_prefixes = ['PHQ']
                 
                 filtered_feat_names = [
-                    feat for feat in arts["feat_names"]
+                    feat for feat in feat_names
                     if not any(keyword in feat for keyword in exclude_keywords) and any(feat.startswith(prefix) for prefix in keep_prefixes)
                 ]
                                    
                 def get_base_name(feature):
                 # Remove any numeric suffix after the first underscore
-                    return re.sub(r'_\d+', '', feature)
+                    feature = re.sub(r'(_\d+)', '_', feature, 1)
+                    feature = re.sub(r'(_\d+)', '', feature, 1)
+                    return feature
 
+                features = [
+                    "PHQ8_Concentrating_12_34",  # Will become "PHQ8_Concentrating"
+                    "PHQ8_Depressed_5_99",       # Will become "PHQ8_Depressed"
+                    "PHQ8_Appetite_77",          # Will become "PHQ8_Appetite"
+                    "PHQ8_Failure",              # No change
+                ]
+
+                cleaned_features = [remove_numeric_suffix_after_first_and_second_underscore(f) for f in features]
+                print(cleaned_features)
+                
                 unique_feat_names = {}
                 for feat in filtered_feat_names:
                     base_name = get_base_name(feat)
@@ -1560,18 +1572,18 @@ def run_app():
 
 
                 # Rename y-axis labels using a custom mapping
-                custom_feature_names = {
-                    "PHQ8_NoInterest": "PHQ8 Lack of Interest",
-                    "PHQ8_Depressed": "PHQ8 Depressed",
-                    "PHQ8_Appetite": "PHQ8 Appetite",
-                    "PHQ8_Concentrating": "PHQ8: Poor Concentration",
-                    "PHQ8_Failure": "PHQ8: Failure",
+               # custom_feature_names = {
+                #    "PHQ8 Lack of Interest": "PHQ8_NoInterest",
+                #    "PHQ8 Depressed": "PHQ8_Depressed",
+                #    "PHQ8 Appetite": "PHQ8_Appetite",
+                #    "PHQ8: Poor Concentration": "PHQ8_Concentrating",
+                #    "PHQ8: Failure": "PHQ8_Failure",
                    
                     
                     
                 
-                }
-                print("Filtered features to be used in LIME explanation:")
+                #}
+               # print("Filtered features to be used in LIME explanation:")
                 print(arts["feat_names"][:10]) 
                 yticklabels = ax.get_yticklabels()
                 new_labels = []
