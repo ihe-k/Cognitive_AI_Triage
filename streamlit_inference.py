@@ -27,7 +27,6 @@ with open("artifacts/severity_model.pkl", "rb") as f:
 
 feat_names = model_artifact["feature_names"] # This loads a feature names list
 
-
 # Conditional OpenCV import for cloud compatibility
 try:
     import cv2
@@ -1494,39 +1493,38 @@ def run_app():
             with col4:
                 st.metric("Misinformation Risk", f"{misinfo_risk_:.2f}")
               
-            # Explanation block (LIME default like your sketch; SHAP optional)
-            task = arts.get("task", "").lower()
-            method = st.session_state.get("method", "LIME")  # Or however 'method' is selected
+            # Explanation block 
+            arts = joblib.load("severity_model.pkl")
+
+            # Print or log the keys to verify
+            st.write("Loaded arts keys:", arts.keys())
+            st.write("Task from arts:", arts.get("task", "Not found"))
+            st.write("X_sample from arts:", arts.get("X_sample", "Not found"))
+
+            # Now proceed with the rest of the app logic after ensuring the model is loaded
+            task = arts.get("task", "").lower()  # Task (depression, etc.) should be in arts
+            method = st.session_state.get("method", "LIME") 
 
             st.write("Task from arts:", arts.get("task", "Not found"))
             if method == "LIME":
-                #task = arts.get("task", "")
-                #st.write("Task from arts:", task)
-
-                required_keys = ["X_sample", "model", "explainer_lime"]
-                missing = [k for k in required_keys if k not in arts]
-                if missing:
-                    st.error(f"Missing from arts: {missing}")
-                elif "depression" in task.lower():
-                
+                if "depression" in task: 
                     st.subheader("LIME Explanation: Depression Severity Score")
 
+                    #st.write("Task from arts:", task)
+
                     required_keys = ["X_sample", "model", "explainer_lime"]
-                    if all(k in arts for k in required_keys):
-                        model = arts["model"]
-                        explainer_lime = arts["explainer_lime"]
-                        X_sample = arts["X_sample"][patient_idx]  # shape should be (1, n_features)
-
-                        if len(X_sample.shape) == 1:
-                            X_sample = X_sample.reshape(1, -1)
-
+                    missing = [k for k in required_keys if k not in arts]
+                    if missing:
+                        st.error(f"Missing from arts: {missing}")
+                    else:
                         try:
-                            lime_exp = explainer_lime.explain_instance(
-                                X_sample[0],
-                                model.predict,
-                                num_features=10
-                            )
+                            model = arts["model"]
+                            explainer_lime = arts["explainer_lime"]
+                            X_sample = arts["X_sample"]  
 
+                            if len(X_sample.shape) == 1:
+                                X_sample = X_sample.reshape(1, -1)
+                            lime_exp = explainer_lime.explain_instance(X_sample[0], model.predict, num_features=10)
                             feature_weights = lime_exp.as_list()
                             fig = lime_exp.as_pyplot_figure()
                             ax = fig.gca()
