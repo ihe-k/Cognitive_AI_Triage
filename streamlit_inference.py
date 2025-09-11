@@ -1573,11 +1573,11 @@ def run_app():
 
                 # Rename y-axis labels using a custom mapping
                 custom_feature_names = {
-                    "PHQ8 Lack of Interest": "PHQ8_NoInterest",
-                    "PHQ8 Depressed": "PHQ8_Depressed",
-                    "PHQ8 Appetite": "PHQ8_Appetite",
-                    "PHQ8: Poor Concentration": "PHQ8_Concentrating",
-                    "PHQ8: Failure": "PHQ8_Failure",
+                    "PHQ8_NoInterest": "PHQ8 Lack of Interest",
+                    "PHQ8_Depressed": "PHQ8 Depressed",
+                    "PHQ8_Appetite": "PHQ8 Appetite",
+                    "PHQ8_Concentrating": "PHQ8: Poor Concentration",
+                    "PHQ8_Failure": "PHQ8: Failure",
                    
                     
                     
@@ -1600,9 +1600,30 @@ def run_app():
                 X_sample = np.random.rand(1, len(features))  # Example input
                 model = DummyModel()
 
-                lime_exp = explainer.explain_instance(X_sample[0], model.predict, num_features=4)
+                lime_exp = explainer.explain_instance(X_sample[0], model.predict, num_features=5)
 
                 fig = lime_exp.as_pyplot_figure()
+                color_increase = '#3776A1'  # Blue for positive impact
+                color_decrease = '#6EB1D6'  # Light blue for negative impact
+
+                increase_patch = mpatches.Patch(color=color_increase, label='↑ Increases PHQ-8 Score')
+                decrease_patch = mpatches.Patch(color=color_decrease, label='↓ Decreases PHQ-8 Score')
+                fig.gca().legend(handles=[increase_patch, decrease_patch], loc='lower left', bbox_to_anchor=(0, 0), title="Feature Effect")
+
+                fig.patch.set_facecolor('white')
+                ax = fig.gca()
+                ax.set_facecolor('#f8f9fa')  # Light background color
+
+                bars = ax.patches
+                for bar in bars:
+                    weight = bar.get_height()  # Get the weight of each bar
+                    if weight >= 0:
+                        bar.set_color(color_increase)  # Positive impact
+                    else:
+                        bar.set_color(color_decrease)  # Negative impact
+                    bar.set_alpha(0.8)
+                ax.set_title('LIME Explanation for PHQ-8 Score', fontsize=16)
+
                 ax = fig.gca()
                 yticklabels = ax.get_yticklabels()
                 new_labels = []
