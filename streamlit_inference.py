@@ -1585,10 +1585,12 @@ def run_app():
                 }
                 final_features = []
                 for feature in cleaned_features:
-                    original_text = feature
-                    new_name = custom_feature_names.get(original_text, original_text)  # Get the custom name if it exists
+                    print(f"Original feature: {feature}")  # Debugging print
+                    new_name = custom_feature_names.get(feature, feature)  # Get the custom name if it exists
+                    print(f"Mapped feature: {new_name}")  # Debugging print
                     final_features.append(new_name)
-                print(final_features)
+
+                print("Final feature names:", final_features)
                 
                # print("Filtered features to be used in LIME explanation:")
                 print(arts["feat_names"][:10]) 
