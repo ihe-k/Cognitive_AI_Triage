@@ -1640,7 +1640,7 @@ def run_app():
                # ax.set_yticklabels(new_labels)
 
                 
-             #   st.pyplot(fig, use_container_width=True)
+                st.pyplot(fig, use_container_width=True)
              #   plt.close(fig)
             elif method == "SHAP":
                 st.subheader("SHAP Explanation")
