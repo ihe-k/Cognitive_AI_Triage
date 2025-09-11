@@ -1497,10 +1497,18 @@ def run_app():
             # Explanation block (LIME default like your sketch; SHAP optional)
             task = arts.get("task", "").lower()
             method = st.session_state.get("method", "LIME")  # Or however 'method' is selected
-        
+
+            st.write("Task from arts:", arts.get("task", "Not found"))
             if method == "LIME":
                 #task = arts.get("task", "")
-                if "depression" in task.lower():
+                #st.write("Task from arts:", task)
+
+                required_keys = ["X_sample", "model", "explainer_lime"]
+                missing = [k for k in required_keys if k not in arts]
+                if missing:
+                    st.error(f"Missing from arts: {missing}")
+                elif "depression" in task.lower():
+                
                     st.subheader("LIME Explanation: Depression Severity Score")
 
                     required_keys = ["X_sample", "model", "explainer_lime"]
