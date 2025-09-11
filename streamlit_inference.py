@@ -1538,7 +1538,10 @@ def run_app():
                     print(f"Warning: Adjusting number of features to match the training data. Expected {num_features} but got 10249.")
 
                 X_train = np.random.rand(100, 10249)
-                
+                print(f"Training data shape: {X_train.shape}")
+                if X_train.shape[1] != num_features:
+                    raise ValueError(f"Mismatch: The number of features in the training data ({X_train.shape[1]}) does not match the length of the feature names list ({num_features}).")
+
                 explainer_lime = LimeTabularExplainer(
                     training_data=X_train,
                     feature_names=final_feat_names,
@@ -1574,8 +1577,9 @@ def run_app():
                 bars = ax.patches
 
                 num_bars = len(bars)
-                #num_weights = len(feature_weights)
-                num_labels = len(final_feat_names)
+                bars = ax.patches
+                num_weights = len(feature_weights)
+                #num_labels = len(final_feat_names)
 
                 if num_bars != num_weights:
                     print(f"Warning: Number of bars ({num_bars}) does not match number of labels ({num_labels}). Adjusting the number of labels.")
