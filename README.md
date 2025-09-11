@@ -105,13 +105,36 @@ The adjusted severity for each patient is calculated using the formula:
 
 The adjusted risk is always lower than the raw score as the model simulates the risk of misinformation spread across the population.  A higher  misinformation risk will reduce the adjusted severity risk as misinformation tends to artificially inflate perceived depression severity.  When misinformation is corrected for, the severity of depressive symptoms is adjusted downward. Additionally, incorporating physiological data reflects that good physiological health buffers or moderates the psychological impacts of depressive symptoms and helps paint a more nuanced picture of patient health.  
 
-### Explanations
+### Explanation Method
 #### SHAP (SHapely Additive exPlanations)
-SHAP is an explainable AI (XAI) technique that I have used in this app to explain individual depression risk scores by showing how physiological (e.g., heart rate) and behavioural features (e.g., MFCC) contribute to the model's output (a concept borrowed from game theory).  The plot visualises the push-and-pull influence of features on the predicted depression severity score (PHQ-8) for a selected patient.  The red bar (force plot arrows) illustrate features that push the prediction higher.  In this example, the red bars indicate features pushing the predicted depression severity upward.  For instance, a high MFCC mean is associated with a higher depression risk.
+SHAP plots help explain a model's output by calculating the contribution of each feature to a prediction (a concept borrowed from game theory).  The plot visualises the push-and-pull influence of features on the predicted depression severity score (PHQ-8) for a selected patient.  The SHAP value of a feature illustrates the amount that feature contributes to the difference between the model's prediction and the expected value.  
 
+The width of each arrow describes how much that feature influences the final prediction.  The red features are risk indicators that illustrate features that positively contribute to the prediction output (e.g., raises depression risk).  For example, a PHQ-8 Failure of 0.19 indicates the presence of this feature is driving the model's prediction up by 0.19 units (increases the depression risk).  The blue features are protective indicators that decreases the prediction output (e.g., lowers depression risk).  For example, a SHAP value of -1.08 for PHQ-8 Appetite for appetite reduces the model's predicted depression risk (i.e. a higher score for this feature, indicating a healthy appetite would reduce the depression risk).
 
+SHAP visualisations allow clinicians and researchers to visually understand the direction and magnitude of each feature's influence on mental health risk (e.g., determinating the reason a patient has been flagged high risk for depression).
 
+#### LIME (Local Interpretable Model-Agnostic Explanations)
+LIME plots illustrate the features that matter most for predicting depression severity.  
 
+### Misinformation Modelling
+
+An epidemiological SIR (Susceptible-Infected-Recovered) model is used to simulate misinformation spread in a social network.  Nodes represent users and misinformation spreads like a virus.  This model reflects behavioural dynamics that impact real-world treatment uptake and awareness, simulates the impact of misinformation (e.g., stigma or fake health advice) on the risk of patients avoiding care and and integrates misinformation with resource allocation as well as severity adjustment.
+
+The model adjusts predicted severity scores by accounting for the misinformation risk factor (e.g., patients in 'infected' states have a reduced likelihood of seeking care).  This is combined with physiological risk to prioritise patients for treatment under limited capacity.  The line graph highlights S/I/R nodes over time.
+
+### Social Network Visualisation
+
+The network graph illustrates the simulated social structure where nodes represent individuals, edges represent communication links and colours indicate health information states (S/I/R).  It visualises the spread of health-related information (or misinformation); supports public health modelling, intervention targeting as well as digital epidemiology and highlights the ways network dynamics may affect mental health outreach or service delivery.
+
+## Extension
+
+The code may be extended to simulate or predict:
+
+* The spread of misinformation using network graphs and agent-based models.
+* How trust, identity or prior exposure (e.g., belief systems) influence the uptake of misinformation.
+* Use Bayesian persuasion games or repeated games to model how users update beliefs after exposure to false (or corrective) health information.
+
+A misinformation modelling layer that uses graph-based simulations of social networks or algorithms to map influence or misinformation 'hot zones' may also be investigated to gain better understanding of individuals affected, the speed of misinformation spread as well as points of intervention.  Network visualisations may be used to demonstrate the ways misinformation flows through a population or digital system; clusters of susceptible users and algorithmic amplification (e.g., recommender systems).
 
 ## Data Collection
 [Alzheimer's Disease MRI dataset from Kaggle](https://www.kaggle.com/datasets/programmer3/mripet-fusion-dataset-for-alzheimers-detection)  
