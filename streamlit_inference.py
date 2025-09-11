@@ -1496,15 +1496,16 @@ def run_app():
 
                # Explanation block (LIME default like your sketch; SHAP optional)
             if method == "LIME":
-                st.subheader("LIME Explanation")
-                exclude_keywords = ['_std_', 'stf','std',"std"] 
+                st.subheader("LIME Explanation: Depression Severity Score")
+                if all(k in arts for k in ["X_train_s", "model", "X_sample", "feat_names"]):
+                    exclude_keywords = ['_std_', 'stf', 'std']
+                    keep_prefixes = ['PHQ'] 
 
-                num_features = 10249
-                keep_prefixes = ['PHQ']
-                
+                feat_names = arts["feat_names"]
                 filtered_feat_names = [
                     feat for feat in feat_names
-                    if not any(keyword in feat for keyword in exclude_keywords) and any(feat.startswith(prefix) for prefix in keep_prefixes)
+                    if not any(keyword in feat for keyword in exclude_keywords)
+                    and any(feat.startswith(prefix) for prefix in keep_prefixes)
                 ]
                                    
                 def remove_numeric_suffix_after_first_and_second_underscore(feature):
@@ -1526,7 +1527,7 @@ def run_app():
                 
                 
                 model = arts["model"]
-                X_sample = arts["X_sample_s"][patient_idx]
+                X_sample = arts["X_sample"][patient_idx]
                 X_train = arts["X_train_s"] 
                 
                 if len(final_feat_names) != X_train.shape[1]:
@@ -1547,9 +1548,6 @@ def run_app():
                 ax = fig.gca()
         
                 bars = ax.patches
-                if len(bars) != len(feature_weights):
-                    print(f"Warning: Bar count ({len(bars)}) ≠ feature weights ({len(feature_weights)})")
-
                 color_increase = '#3776A1'  # Blue for positive impact
                 color_decrease = '#6EB1D6'  # Light blue for negative impact
 
@@ -1589,7 +1587,8 @@ def run_app():
 
                 st.pyplot(fig, use_container_width=True)        
                 
-
+            else:
+                st.warning("LIME is only available for the depression severity model.")
                                          
               #  plt.show()
                                
