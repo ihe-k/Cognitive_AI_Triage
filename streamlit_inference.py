@@ -1565,7 +1565,10 @@ def run_app():
                 model_artifact = pickle.load(f)
 
            
-            # Get the task (should be "Depression Severity" in this case)
+            # Display the loaded keys for debugging
+            st.write("Loaded arts keys:", arts.keys())
+
+            # Get the task and sample data from the artifact
             task = arts.get("task", "Unknown task")
             X_sample = arts.get("X_sample_s", None)
 
@@ -1580,6 +1583,16 @@ def run_app():
             else:
                 st.warning("No sample data found.")
 
+            # Extract model and explainer objects
+            model = arts.get("model")
+            explainer_lime = arts.get("explainer_lime")
+            explainer_shap = arts.get("explainer_shap")
+
+            # Check if model components are loaded correctly
+            if model and explainer_lime and explainer_shap and X_sample is not None:
+                st.write("Model and artifacts loaded successfully.")
+            else:
+                st.warning("Some components are missing from the model artifact.")
 
             
             # Check if required components are present
