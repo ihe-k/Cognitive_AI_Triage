@@ -1565,18 +1565,6 @@ def run_app():
                 model_artifact = pickle.load(f)
 
            
-            # Display the loaded keys for debugging
-            st.write("Loaded arts keys:", arts.keys())
-
-            # Get the task and sample data from the artifact
-            task = arts.get("task", "Unknown task")
-            X_sample_s = arts.get("X_sample_s", None)
-
-            # Display task info
-            st.title("Model Information")
-            st.subheader(f"Task: {task}")
-
-            # Display sample data or show warning if not found
             if X_sample_s is not None:
                 st.subheader("Sample Data:")
                 st.write(X_sample_s)
@@ -1593,6 +1581,8 @@ def run_app():
                 st.write("Model and artifacts loaded successfully.")
             else:
                 st.warning("Some components are missing from the model artifact.")
+
+
 
             
             # Check if required components are present
