@@ -1572,8 +1572,20 @@ def run_app():
                     for i in range(len(shap_values_rounded[0]))
                 }
 
+                custom_label_map = {
+                    "PHQ8_Concentrating": "PHQ8: Poor Concentration",
+                    "PHQ8_Depressed": "PHQ8: Depressed Mood",
+                    "PHQ8_Appetite": "PHQ8: Appetite",
+                    "PHQ8_Failure": "PHQ8: Failure",
+                    "PHQ8_NoInterest": "PHQ8: Lack of Interest",
+                    "PHQ8_Sleep": "PHQ8: Sleep",
+                    "PHQ8_Energy": "PHQ8: Energy",
+                    "PHQ8_Moving": "PHQ8: Slowed/Restless",
+                    "PHQ8_SelfHarm": "PHQ8: Self-harm"
+                }
+                
                 feature_labels = [
-                    f"{feat_names[i]}: \n{features_rounded[0][i]:.2f}"  
+                    f"{custom_label_map.get(feat_names[i], feat_names[i])}\n{features_rounded[0][i]:.2f}"  
                     for i in range(len(feat_names))
                 ]
 
