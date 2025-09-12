@@ -1587,10 +1587,10 @@ def run_app():
 
             
             # Check if required components are present
-            if model and explainer_lime and explainer_shap and X_sample_s:
-                st.write("Model and artifacts loaded successfully.")
-            else:
-                st.warning("Some components are missing from the model artifact.")
+            #if model and explainer_lime and explainer_shap and X_sample_s:
+          #      st.write("Model and artifacts loaded successfully.")
+         #   else:
+       #         st.warning("Some components are missing from the model artifact.")
 
             patient_idx = 0
             def explanation_method(arts, method="LIME"):
