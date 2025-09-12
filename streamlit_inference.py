@@ -1570,7 +1570,7 @@ def run_app():
 
             # Get the task and sample data from the artifact
             task = arts.get("task", "Unknown task")
-            X_sample = arts.get("X_sample_s", None)
+            X_sample_s = arts.get("X_sample_s", None)
 
             # Display task info
             st.title("Model Information")
