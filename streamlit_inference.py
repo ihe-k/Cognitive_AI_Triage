@@ -1494,16 +1494,7 @@ def run_app():
                 st.metric("Misinformation Risk", f"{misinfo_risk_:.2f}")
               
             # Explanation block 
-          #  arts = joblib.load("artifacts/severity_model.pkl", "rb")
-
-            # Print or log the keys to verify
-            st.write("Loaded arts keys:", arts.keys())
-            st.write("Task from arts:", arts.get("task", "Not found"))
-            st.write("X_sample from arts:", arts.get("X_sample", "Not found"))
-
-            # Now proceed with the rest of the app logic after ensuring the model is loaded
-            task = arts.get("task", "").lower()  # Task (depression, etc.) should be in arts
-            
+          
          #   if "depression" in task: 
          #       st.subheader("LIME Explanation: Depression Severity Score")
          #       required_keys = ["X_sample", "model", "explainer_lime"]
@@ -1573,38 +1564,30 @@ def run_app():
             with open("artifacts/severity_model.pkl", "rb") as f:
                 model_artifact = pickle.load(f)
 
-            #st.write("Task from arts:", arts.get("task", "Not found"))
-            st.write("Loaded model artifact keys:", model_artifact.keys())
+           
+            # Get the task (should be "Depression Severity" in this case)
+            task = arts.get("task", "Unknown task")
+            X_sample = arts.get("X_sample_s", None)
 
-            # Extract required components
-            model = model_artifact.get("model")
-            scaler = model_artifact.get("scaler")
-            feature_names = model_artifact.get("feature_names")
-            train_metrics = model_artifact.get("train_metrics")
-            valid_metrics = model_artifact.get("valid_metrics")
-            test_metrics = model_artifact.get("test_metrics")
+            # Display task info
+            st.title("Model Information")
+            st.subheader(f"Task: {task}")
 
-            with open("artifacts/severity_model.pkl", "rb") as f:
-                arts = pickle.load(f)
-
-            st.write("Loaded arts keys:", arts.keys())
-            explainer_shap = arts.get("explainer_shap")
-            explainer_lime = arts.get("explainer_lime")
-            X_sample_s = arts.get("X_sample_s")  # Use X_sample_s from arts
+            # Display sample data or show warning if not found
+            if X_sample is not None:
+                st.subheader("Sample Data:")
+                st.write(X_sample)
+            else:
+                st.warning("No sample data found.")
 
 
+            
             # Check if required components are present
             if model and explainer_lime and explainer_shap and X_sample_s:
                 st.write("Model and artifacts loaded successfully.")
             else:
                 st.warning("Some components are missing from the model artifact.")
 
-
-            task = arts.get("task", "not_found")  # Default to 'not_found' if task doesn't exist
-            if task == "not_found":
-                st.warning("Task not found in arts.")
-            else:
-                st.write("Task:", task)
             patient_idx = 0
             def explanation_method(arts, method="LIME"):
        
