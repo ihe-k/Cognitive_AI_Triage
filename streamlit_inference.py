@@ -1563,7 +1563,8 @@ def run_app():
             #method = st.session_state.get("method", "LIME") 
             with open("artifacts/severity_model.pkl", "rb") as f:
                 model_artifact = pickle.load(f)
-
+                
+            task = arts.get("task", "Unknown task")
             X_sample_s = arts.get("X_sample_s", None)
             if X_sample_s is not None:
                 st.subheader("Sample Data:")
