@@ -1584,8 +1584,9 @@ def run_app():
             valid_metrics = model_artifact.get("valid_metrics")
             test_metrics = model_artifact.get("test_metrics")
 
-            with open("artifacts/severity_model_joblib.pkl", "rb") as f:
-                arts = joblib.load(f)
+            with open("artifacts/severity_model.pkl", "rb") as f:
+                arts = pickle.load(f)
+
             st.write("Loaded arts keys:", arts.keys())
             explainer_shap = arts.get("explainer_shap")
             explainer_lime = arts.get("explainer_lime")
