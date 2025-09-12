@@ -1494,7 +1494,7 @@ def run_app():
                 st.metric("Misinformation Risk", f"{misinfo_risk_:.2f}")
               
             # Explanation block 
-            arts = joblib.load("severity_model.pkl")
+            arts = joblib.load("/artifacts/severity_model.pkl")
 
             # Print or log the keys to verify
             st.write("Loaded arts keys:", arts.keys())
