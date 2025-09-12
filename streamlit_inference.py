@@ -1579,6 +1579,7 @@ def run_app():
                     "PHQ8_Appetite": "PHQ8: Appetite",
                     "PHQ8_Failure": "PHQ8: Failure",
                     "PHQ8_NoInterest": "PHQ8: Lack of Interest",
+                    "PHQ8_Tired": "PHQ: Tired",
                     "PHQ8_Sleep": "PHQ8: Sleep",
                     "PHQ8_Energy": "PHQ8: Energy",
                     "PHQ8_Moving": "PHQ8: Slowed/Restless",
