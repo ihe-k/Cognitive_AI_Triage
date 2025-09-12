@@ -1522,12 +1522,12 @@ def run_app():
                 st.warning("No sample data found.")
 
             # User can pick a patient index
-            patient_idx = st.slider("Select patient index", 0, len(X_sample_s) - 1, 0)
-            st.session_state["patient_idx"] = patient_idx
+           # patient_idx = st.slider("Select patient index", 0, len(X_sample_s) - 1, 0)
+           # st.session_state["patient_idx"] = patient_idx
 
             # Assuming you set 'method' somewhere, for example from a selectbox:
-            method = st.selectbox("Choose explanation method", ["LIME", "SHAP"])
-            st.session_state["method"] = method
+           # method = st.selectbox("Choose explanation method", ["LIME", "SHAP"])
+           # st.session_state["method"] = method
 
             def explanation_method(arts, method="LIME"):
                 patient_idx = st.session_state.get("patient_idx", 0)
