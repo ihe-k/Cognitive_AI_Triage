@@ -759,7 +759,7 @@ def run_app():
         st.button("▶️ Run Inference", disabled=True)
         st.warning("Cannot run inference: Pretrained model not available.")
         
-    method     = st.sidebar.radio("Explanation Method", ["LIME", "SHAP"], index=0, horizontal=True)
+    method     = st.sidebar.radio("Explanation Method", ["SHAP"], index=0, horizontal=True)
    
 
 
@@ -1493,7 +1493,7 @@ def run_app():
             with col4:
                 st.metric("Misinformation Risk", f"{misinfo_risk_:.2f}")
               
-             # Explanation block (LIME default like your sketch; SHAP optional)
+             
               # Explanation block (LIME default like your sketch; SHAP optional)
             if method == "LIME":
                 st.subheader("LIME Explanation")
