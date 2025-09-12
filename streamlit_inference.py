@@ -1494,6 +1494,7 @@ def run_app():
                 st.metric("Misinformation Risk", f"{misinfo_risk_:.2f}")
               
              # Explanation block (LIME default like your sketch; SHAP optional)
+              # Explanation block (LIME default like your sketch; SHAP optional)
             if method == "LIME":
                 st.subheader("LIME Explanation")
                 lime_exp = arts["explainer_lime"].explain_instance(
