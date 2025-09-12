@@ -1612,9 +1612,9 @@ def run_app():
                                 explainer_lime = arts["explainer_lime"]
                                 X_sample_s = arts["X_sample_s"]  
 
-                                if len(X_sample_s.shape) == 1:
-                                    X_sample_s = X_sample_s.reshape(1, -1)
-                                lime_exp = explainer_lime.explain_instance(X_sample_s[0], model.predict, num_features=10)
+                                if len(X_sample.shape) == 1:
+                                    X_sample = X_sample.reshape(1, -1)
+                                lime_exp = explainer_lime.explain_instance(X_sample[0], model.predict, num_features=10)
                                 feature_weights = lime_exp.as_list()
                                 fig = lime_exp.as_pyplot_figure()
                                 ax = fig.gca()
