@@ -1493,190 +1493,105 @@ def run_app():
             with col4:
                 st.metric("Misinformation Risk", f"{misinfo_risk_:.2f}")
               
-            # Explanation block 
-           
-            with open("artifacts/severity_model.pkl", "rb") as f:
-                model_artifact = pickle.load(f)
-
-            # Extract model and explainers from your existing 'arts' dict or elsewhere
-            model = arts.get("model")
-            explainer_lime = arts.get("explainer_lime")
-            explainer_shap = arts.get("explainer_shap")
-            X_sample_s = model_artifact.get("X_sample_s")  # NumPy array
-            task = model_artifact.get("task", "depression")  # Default to 'depression'
-
-            arts = {
-                "model": model,
-                "explainer_lime": explainer_lime,
-                "explainer_shap": explainer_shap,
-                "X_sample_s": X_sample_s,
-                "task": task
-            }
-
-            st.title("Model Explanation Viewer")
-
-            if X_sample_s is not None:
-                st.subheader("Sample Input Data:")
-                st.write(pd.DataFrame(X_sample_s))
-            else:
-                st.warning("No sample data found.")
-            if X_sample_s is not None and len(X_sample_s) > 0:
-                patient_idx = st.slider("Select patient index", 0, len(X_sample_s) - 1, 0)
-            else:
-                patient_idx = 0
-            # User can pick a patient index
-           # patient_idx = st.slider("Select patient index", 0, len(X_sample_s) - 1, 0)
-           # st.session_state["patient_idx"] = patient_idx
-
-            # Assuming you set 'method' somewhere, for example from a selectbox:
-           # method = st.selectbox("Choose explanation method", ["LIME", "SHAP"])
-           # st.session_state["method"] = method
-
-            def explanation_method(arts, method="LIME"):
-                patient_idx = st.session_state.get("patient_idx", 0)
-                task = arts.get("task", "")
-
-                if method == "LIME":
-                    if "depression" in task:
-                        st.subheader("LIME Explanation: Depression Severity Score")
-
-                        required_keys = ["X_sample_s", "model", "explainer_lime"]
-                        missing = [k for k in required_keys if k not in arts]
-                        if missing:
-                            st.error(f"Missing from arts: {missing}")
-                            return
-
-                        try:
-                            model = arts["model"]
-                            explainer_lime = arts["explainer_lime"]
-                            X_sample_s = arts["X_sample_s"]
-
-                            feature_name_map = {
-                                0: "PHQ8_NoInterest",
-                                1: "PHQ8_Depressed",
-                                2: "PHQ8_Sleep",
-                                3: "PHQ8_Energy",
-                                4: "PHQ8_Appetite",
-                                5: "PHQ8_Failure",
-                                6: "PHQ8_Concentrating",
-                                7: "PHQ8_Moving",
-                                8: "PHQ8_SelfHarm",
-                                9: "Extra1",
-                                10: "Extra2"
-                            }
-
-                            # Convert to DataFrame for LIME input
-                            X_sample_df = pd.DataFrame(X_sample_s, columns=[feature_name_map[i] for i in range(X_sample_s.shape[1])])
-
-                            lime_exp = explainer_lime.explain_instance(
-                                X_sample_df.iloc[patient_idx],
-                                model.predict,
-                                num_features=10
-                            )
-                            feature_weights = lime_exp.as_list()
-                            fig = lime_exp.as_pyplot_figure()
-                            ax = fig.gca()
-
-                            for bar, (_, weight) in zip(ax.patches, feature_weights):
-                                bar.set_color('#3776A1' if weight >= 0 else '#6EB1D6')
-                                bar.set_alpha(0.8)
-
-                            custom_feature_names = {
-                                "PHQ8_Concentrating": "PHQ8: Poor Concentration",
-                                "PHQ8_Depressed": "PHQ8: Depressed Mood",
-                                "PHQ8_Appetite": "PHQ8: Appetite",
-                                "PHQ8_Failure": "PHQ8: Failure",
-                                "PHQ8_NoInterest": "PHQ8: Lack of Interest",
-                                "PHQ8_Sleep": "PHQ8: Sleep",
-                                "PHQ8_Energy": "PHQ8: Energy",
-                                "PHQ8_Moving": "PHQ8: Slowed/Restless",
-                                "PHQ8_SelfHarm": "PHQ8: Self-harm"
-                            }
-
-                            def clean_feature_name(raw_name):
-                                # remove numeric suffix after first and second underscore
-                                raw_name = re.sub(r'(_\d+)', '_', raw_name, 1)
-                                raw_name = re.sub(r'(_\d+)', '', raw_name, 1)
-                                return raw_name.strip()
-
-                            new_labels = []
-                            for feat_name, _ in feature_weights:
-                                base_feat = clean_feature_name(feat_name)
-                                label = custom_feature_names.get(base_feat, base_feat)
-                                new_labels.append(label)
-
-                            ax.set_yticklabels(new_labels)
-                            ax.set_title("LIME Explanation for PHQ-8 Score", fontsize=16)
-
-                            increase_patch = mpatches.Patch(color="#3776A1", label="↑ Increases PHQ-8 Score")
-                            decrease_patch = mpatches.Patch(color="#6EB1D6", label="↓ Decreases PHQ-8 Score")
-                            ax.legend(handles=[increase_patch, decrease_patch], loc='lower left', bbox_to_anchor=(0, 0), title="Feature Effect")
-
-                            ax.set_facecolor('#f8f9fa')
-                            fig.patch.set_facecolor('white')
-
-                            st.pyplot(fig, use_container_width=True)
-                            plt.close(fig)
-
-                        except Exception as e:
-                            st.error(f"Error generating LIME plot: {e}")
-
-                    else:
-                        st.warning("LIME is only available for the depression severity model.")
-
-                elif method == "SHAP":
-                    st.subheader("SHAP Explanation")
-                    shap_values = arts["explainer_shap"].shap_values(arts["X_sample_s"][patient_idx:patient_idx+1])
-
-                    if isinstance(shap_values, list):
-                    
-                        shap_values_local = shap_values[1]
-                    else:
-                        shap_values_local = shap_values
-
-                    # Round SHAP values and feature values to 2 decimals
-                    shap_values_rounded = np.round(shap_values_local, 2)
-                    features_rounded = np.round(arts["X_sample_s"][patient_idx:patient_idx+1], 2)
-
-                    shap_value_display = {
-                        f"Feature {i}": f"{shap_values_rounded[0][i]:.2f}"  # Accessing the individual value within the inner array
-                        for i in range(len(shap_values_rounded[0]))
-                    }
-    
-                    feature_labels = [
-                        f"{feat_names[i]}: {features_rounded[0][i]:.2f}"  
-                        for i in range(len(feat_names))
-                    ]
-
-                    plt.figure(figsize=(18, 16)) 
-                
-                    shap.force_plot(
-                        arts["explainer_shap"].expected_value,
-                        shap_values_rounded[0],  
-                        #features=features_rounded[0],  
-                        feature_names=feature_labels,
-                        matplotlib=True, 
-                        show=False  
-                    )
-                 
-                    #fig_local = plt.gcf()
-                
-                    ax = plt.gca()
-
-                    ax.xaxis.set_major_formatter(mtick.FuncFormatter(lambda x, pos: f"{x:.2f}"))
-                    ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda y, pos: f"{y:.2f}"))
-
-                    for tick in ax.get_xticklabels():
-                        tick.set_rotation(0)
-                        tick.set_fontsize(10)
-                    for tick in ax.get_yticklabels():
-                        tick.set_rotation(0)
-                        tick.set_fontsize(10)
-                
-                    plt.subplots_adjust(left=0.1, right=0.9, top=0.5, bottom=0.3)
-                    st.pyplot(plt.gcf(), use_container_width=True)
-                    plt.close()
+             # Explanation block (LIME default like your sketch; SHAP optional)
+            if method == "LIME":
+                st.subheader("LIME Explanation")
+                lime_exp = arts["explainer_lime"].explain_instance(
+                    arts["X_sample_s"][patient_idx],
+                    arts["model"].predict,
+                    num_features=min(10, len(arts["feat_names"]))
+                )
         
+                fig = lime_exp.as_pyplot_figure()
+                ax = fig.gca()
+                feature_weights = lime_exp.as_list()
+        
+                # Apply custom color scheme to LIME chart
+                # custom_colors = ['#003A6B', '#1B5886', '#3776A1', '#5293BB', '#6EB1D6', '#89CFF1']
+
+                color_increase = '#3776A1'
+                color_decrease = '#6EB1D6'
+
+                # Get feature weights directly from the LIME explanation
+       
+                bars = ax.patches
+
+                for bar, (feature, weight) in zip(bars, feature_weights):
+                    bar.set_color(color_increase if weight >= 0 else color_decrease)
+                    bar.set_alpha(0.8)
+ #                if weight >= 0:
+ #                   bar.set_color(color_increase)
+ #               else:
+ #                   bar.set_color(color_decrease)
+ #               bar.set_alpha(0.8)
+
+
+            #    bar.set_color(custom_colors[color_idx])
+            #    bar.set_alpha(0.8)  # Add some transparency for better aesthetics
+
+                increase_patch = mpatches.Patch(color=color_increase, label='↑ Increases PHQ-8 Score')
+                decrease_patch = mpatches.Patch(color=color_decrease, label='↓ Decreases PHQ-8 Score')
+                ax.legend(handles=[increase_patch, decrease_patch], loc='lower left', bbox_to_anchor=(0, 0), title="Feature Effect")
+        
+            # Update the figure style
+                fig.patch.set_facecolor('white')
+                ax.set_facecolor('#f8f9fa')  # Light background
+        
+                st.pyplot(fig, use_container_width=True)
+                plt.close(fig)
+            elif method == "SHAP":
+                st.subheader("SHAP Explanation")
+                shap_values = arts["explainer_shap"].shap_values(arts["X_sample_s"][patient_idx:patient_idx+1])
+
+                if isinstance(shap_values, list):
+                    
+                    shap_values_local = shap_values[1]
+                else:
+                    shap_values_local = shap_values
+
+                # Round SHAP values and feature values to 2 decimals
+                shap_values_rounded = np.round(shap_values_local, 2)
+                features_rounded = np.round(arts["X_sample_s"][patient_idx:patient_idx+1], 2)
+
+                shap_value_display = {
+                    f"Feature {i}": f"{shap_values_rounded[0][i]:.2f}"  # Accessing the individual value within the inner array
+                    for i in range(len(shap_values_rounded[0]))
+                }
+
+                feature_labels = [
+                    f"{feat_names[i]}: {features_rounded[0][i]:.2f}"  
+                    for i in range(len(feat_names))
+                ]
+
+                plt.figure(figsize=(14, 12)) 
+                
+                shap.force_plot(
+                    arts["explainer_shap"].expected_value,
+                    shap_values_rounded[0],  
+                    #features=features_rounded[0],  
+                    feature_names=feature_labels,
+                    matplotlib=True, 
+                    show=False  
+                )
+                 
+                #fig_local = plt.gcf()
+                
+                ax = plt.gca()
+
+                ax.xaxis.set_major_formatter(mtick.FuncFormatter(lambda x, pos: f"{x:.2f}"))
+                ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda y, pos: f"{y:.2f}"))
+
+                for tick in ax.get_xticklabels():
+                    tick.set_rotation(0)
+                    tick.set_fontsize(10)
+                for tick in ax.get_yticklabels():
+                    tick.set_rotation(0)
+                    tick.set_fontsize(10)
+                
+                plt.subplots_adjust(left=0.1, right=0.9, top=0.5, bottom=0.3)
+                st.pyplot(plt.gcf(), use_container_width=True)
+                plt.close()
+                                    
         
         # Misinformation Spread Over Time
         st.subheader("Misinformation Spread Over Time")
