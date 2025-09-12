@@ -1564,7 +1564,7 @@ def run_app():
             with open("artifacts/severity_model.pkl", "rb") as f:
                 model_artifact = pickle.load(f)
 
-           
+            X_sample_s = arts.get("X_sample_s", None)
             if X_sample_s is not None:
                 st.subheader("Sample Data:")
                 st.write(X_sample_s)
