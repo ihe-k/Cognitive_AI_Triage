@@ -1568,12 +1568,12 @@ def run_app():
                 features_rounded = np.round(arts["X_sample_s"][patient_idx:patient_idx+1], 2)
 
                 shap_value_display = {
-                    f"Feature {i}": \nf"{shap_values_rounded[0][i]:.2f}"  # Accessing the individual value within the inner array
+                    f"Feature {i}": f"{shap_values_rounded[0][i]:.2f}"  # Accessing the individual value within the inner array
                     for i in range(len(shap_values_rounded[0]))
                 }
 
                 feature_labels = [
-                    f"{feat_names[i]}: {features_rounded[0][i]:.2f}"  
+                    f"{feat_names[i]}: \n{features_rounded[0][i]:.2f}"  
                     for i in range(len(feat_names))
                 ]
 
