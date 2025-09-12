@@ -1520,7 +1520,10 @@ def run_app():
                 st.write(pd.DataFrame(X_sample_s))
             else:
                 st.warning("No sample data found.")
-
+            if X_sample_s is not None and len(X_sample_s) > 0:
+                patient_idx = st.slider("Select patient index", 0, len(X_sample_s) - 1, 0)
+            else:
+                patient_idx = 0
             # User can pick a patient index
            # patient_idx = st.slider("Select patient index", 0, len(X_sample_s) - 1, 0)
            # st.session_state["patient_idx"] = patient_idx
@@ -1673,7 +1676,7 @@ def run_app():
                     plt.subplots_adjust(left=0.1, right=0.9, top=0.5, bottom=0.3)
                     st.pyplot(plt.gcf(), use_container_width=True)
                     plt.close()
-                                          
+            explanation_method(arts, method=st.session_state["method"])                               
         
         # Misinformation Spread Over Time
         st.subheader("Misinformation Spread Over Time")
