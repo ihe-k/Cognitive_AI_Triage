@@ -1570,22 +1570,40 @@ def run_app():
            #     st.warning("LIME is only available for the depression severity model.")
             
             #method = st.session_state.get("method", "LIME") 
-            
+            with open("artifacts/severity_model.pkl", "rb") as f:
+                model_artifact = pickle.load(f)
+
             #st.write("Task from arts:", arts.get("task", "Not found"))
             st.write("Loaded model artifact keys:", model_artifact.keys())
 
             # Extract required components
             model = model_artifact.get("model")
-            explainer_lime = model_artifact.get("explainer_lime")
-            explainer_shap = model_artifact.get("explainer_shap")
-            X_sample_s = model_artifact.get("X_sample_s")
-            feat_names = model_artifact.get("feat_names")
+            scaler = model_artifact.get("scaler")
+            feature_names = model_artifact.get("feature_names")
+            train_metrics = model_artifact.get("train_metrics")
+            valid_metrics = model_artifact.get("valid_metrics")
+            test_metrics = model_artifact.get("test_metrics")
+
+            with open("artifacts/severity_model_joblib.pkl", "rb") as f:
+                arts = joblib.load(f)
+            st.write("Loaded arts keys:", arts.keys())
+            explainer_shap = arts.get("explainer_shap")
+            explainer_lime = arts.get("explainer_lime")
+            X_sample_s = arts.get("X_sample_s")  # Use X_sample_s from arts
+
 
             # Check if required components are present
             if model and explainer_lime and explainer_shap and X_sample_s:
                 st.write("Model and artifacts loaded successfully.")
             else:
                 st.warning("Some components are missing from the model artifact.")
+
+
+            task = arts.get("task", "not_found")  # Default to 'not_found' if task doesn't exist
+            if task == "not_found":
+                st.warning("Task not found in arts.")
+            else:
+                st.write("Task:", task)
             patient_idx = 0
             def explanation_method(arts, method="LIME"):
        
