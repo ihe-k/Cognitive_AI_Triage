@@ -1579,7 +1579,7 @@ def run_app():
             # Display sample data or show warning if not found
             if X_sample is not None:
                 st.subheader("Sample Data:")
-                st.write(X_sample)
+                st.write(X_sample_s)
             else:
                 st.warning("No sample data found.")
 
