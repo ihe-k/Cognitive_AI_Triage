@@ -1497,6 +1497,19 @@ def run_app():
               # Explanation block (LIME default like your sketch; SHAP optional)
             if method == "LIME":
                 st.subheader("LIME Explanation")
+
+                custom_feature_names = {
+                    "PHQ8_Concentrating": "PHQ8: Poor Concentration",
+                    "PHQ8_Depressed": "PHQ8: Depressed Mood",
+                    "PHQ8_Appetite": "PHQ8: Appetite",
+                    "PHQ8_Failure": "PHQ8: Failure",
+                    "PHQ8_NoInterest": "PHQ8: Lack of Interest",
+                    "PHQ8_Sleep": "PHQ8: Sleep",
+                    "PHQ8_Energy": "PHQ8: Energy",
+                    "PHQ8_Moving": "PHQ8: Slowed/Restless",
+                    "PHQ8_SelfHarm": "PHQ8: Self-harm"
+                }
+                
                 lime_exp = arts["explainer_lime"].explain_instance(
                     arts["X_sample_s"][patient_idx],
                     arts["model"].predict,
