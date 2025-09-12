@@ -1571,7 +1571,21 @@ def run_app():
             
             #method = st.session_state.get("method", "LIME") 
             
-            st.write("Task from arts:", arts.get("task", "Not found"))
+            #st.write("Task from arts:", arts.get("task", "Not found"))
+            st.write("Loaded model artifact keys:", model_artifact.keys())
+
+            # Extract required components
+            model = model_artifact.get("model")
+            explainer_lime = model_artifact.get("explainer_lime")
+            explainer_shap = model_artifact.get("explainer_shap")
+            X_sample_s = model_artifact.get("X_sample_s")
+            feat_names = model_artifact.get("feat_names")
+
+            # Check if required components are present
+            if model and explainer_lime and explainer_shap and X_sample_s:
+                st.write("Model and artifacts loaded successfully.")
+            else:
+                st.warning("Some components are missing from the model artifact.")
             patient_idx = 0
             def explanation_method(arts, method="LIME"):
        
