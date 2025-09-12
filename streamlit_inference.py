@@ -1625,54 +1625,54 @@ def run_app():
                     st.subheader("SHAP Explanation")
                     shap_values = arts["explainer_shap"].shap_values(arts["X_sample_s"][patient_idx:patient_idx+1])
 
-                        if isinstance(shap_values, list):
+                    if isinstance(shap_values, list):
                     
-                            shap_values_local = shap_values[1]
-                        else:
-                            shap_values_local = shap_values
+                        shap_values_local = shap_values[1]
+                    else:
+                        shap_values_local = shap_values
 
-                        # Round SHAP values and feature values to 2 decimals
-                        shap_values_rounded = np.round(shap_values_local, 2)
-                        features_rounded = np.round(arts["X_sample_s"][patient_idx:patient_idx+1], 2)
+                    # Round SHAP values and feature values to 2 decimals
+                    shap_values_rounded = np.round(shap_values_local, 2)
+                    features_rounded = np.round(arts["X_sample_s"][patient_idx:patient_idx+1], 2)
 
-                        shap_value_display = {
-                            f"Feature {i}": f"{shap_values_rounded[0][i]:.2f}"  # Accessing the individual value within the inner array
-                            for i in range(len(shap_values_rounded[0]))
-                        }
+                    shap_value_display = {
+                        f"Feature {i}": f"{shap_values_rounded[0][i]:.2f}"  # Accessing the individual value within the inner array
+                        for i in range(len(shap_values_rounded[0]))
+                    }
     
-                        feature_labels = [
-                            f"{feat_names[i]}: {features_rounded[0][i]:.2f}"  
-                            for i in range(len(feat_names))
-                        ]
+                    feature_labels = [
+                        f"{feat_names[i]}: {features_rounded[0][i]:.2f}"  
+                        for i in range(len(feat_names))
+                    ]
 
-                        plt.figure(figsize=(18, 16)) 
+                    plt.figure(figsize=(18, 16)) 
                 
-                        shap.force_plot(
-                            arts["explainer_shap"].expected_value,
-                            shap_values_rounded[0],  
-                            #features=features_rounded[0],  
-                            feature_names=feature_labels,
-                            matplotlib=True, 
-                            show=False  
-                        )
+                    shap.force_plot(
+                        arts["explainer_shap"].expected_value,
+                        shap_values_rounded[0],  
+                        #features=features_rounded[0],  
+                        feature_names=feature_labels,
+                        matplotlib=True, 
+                        show=False  
+                    )
                  
-                        #fig_local = plt.gcf()
+                    #fig_local = plt.gcf()
                 
-                        ax = plt.gca()
+                    ax = plt.gca()
 
-                        ax.xaxis.set_major_formatter(mtick.FuncFormatter(lambda x, pos: f"{x:.2f}"))
-                        ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda y, pos: f"{y:.2f}"))
+                    ax.xaxis.set_major_formatter(mtick.FuncFormatter(lambda x, pos: f"{x:.2f}"))
+                    ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda y, pos: f"{y:.2f}"))
 
-                        for tick in ax.get_xticklabels():
-                            tick.set_rotation(0)
-                            tick.set_fontsize(10)
-                        for tick in ax.get_yticklabels():
-                            tick.set_rotation(0)
-                            tick.set_fontsize(10)
+                    for tick in ax.get_xticklabels():
+                        tick.set_rotation(0)
+                        tick.set_fontsize(10)
+                    for tick in ax.get_yticklabels():
+                        tick.set_rotation(0)
+                        tick.set_fontsize(10)
                 
-                        plt.subplots_adjust(left=0.1, right=0.9, top=0.5, bottom=0.3)
-                        st.pyplot(plt.gcf(), use_container_width=True)
-                        plt.close()
+                    plt.subplots_adjust(left=0.1, right=0.9, top=0.5, bottom=0.3)
+                    st.pyplot(plt.gcf(), use_container_width=True)
+                    plt.close()
                                           
         
         # Misinformation Spread Over Time
