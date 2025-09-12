@@ -1494,15 +1494,15 @@ def run_app():
                 st.metric("Misinformation Risk", f"{misinfo_risk_:.2f}")
               
             # Explanation block 
-        #    arts = joblib.load("severity_model.pkl")
+            arts = joblib.load("severity_model.pkl")
 
             # Print or log the keys to verify
-         #   st.write("Loaded arts keys:", arts.keys())
-         #   st.write("Task from arts:", arts.get("task", "Not found"))
-         #   st.write("X_sample from arts:", arts.get("X_sample", "Not found"))
+            st.write("Loaded arts keys:", arts.keys())
+            st.write("Task from arts:", arts.get("task", "Not found"))
+            st.write("X_sample from arts:", arts.get("X_sample", "Not found"))
 
             # Now proceed with the rest of the app logic after ensuring the model is loaded
-         #   task = arts.get("task", "").lower()  # Task (depression, etc.) should be in arts
+            task = arts.get("task", "").lower()  # Task (depression, etc.) should be in arts
             
          #   if "depression" in task: 
          #       st.subheader("LIME Explanation: Depression Severity Score")
@@ -1571,7 +1571,7 @@ def run_app():
             
             #method = st.session_state.get("method", "LIME") 
             
-            #st.write("Task from arts:", arts.get("task", "Not found"))
+            st.write("Task from arts:", arts.get("task", "Not found"))
             patient_idx = 0
             def explanation_method(arts, method="LIME"):
        
