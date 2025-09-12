@@ -1577,7 +1577,7 @@ def run_app():
             st.subheader(f"Task: {task}")
 
             # Display sample data or show warning if not found
-            if X_sample is not None:
+            if X_sample_s is not None:
                 st.subheader("Sample Data:")
                 st.write(X_sample_s)
             else:
@@ -1589,7 +1589,7 @@ def run_app():
             explainer_shap = arts.get("explainer_shap")
 
             # Check if model components are loaded correctly
-            if model and explainer_lime and explainer_shap and X_sample is not None:
+            if model and explainer_lime and explainer_shap and X_sample_s is not None:
                 st.write("Model and artifacts loaded successfully.")
             else:
                 st.warning("Some components are missing from the model artifact.")
@@ -1611,7 +1611,7 @@ def run_app():
 
                         st.write("Task from arts:", task)
 
-                        required_keys = ["X_sample", "model", "explainer_lime"]
+                        required_keys = ["X_sample_s", "model", "explainer_lime"]
                         missing = [k for k in required_keys if k not in arts]
                         if missing:
                             st.error(f"Missing from arts: {missing}")
@@ -1619,11 +1619,11 @@ def run_app():
                             try:
                                 model = arts["model"]
                                 explainer_lime = arts["explainer_lime"]
-                                X_sample = arts["X_sample"]  
+                                X_sample_s = arts["X_sample_s"]  
 
-                                if len(X_sample.shape) == 1:
-                                    X_sample = X_sample.reshape(1, -1)
-                                lime_exp = explainer_lime.explain_instance(X_sample[0], model.predict, num_features=10)
+                                if len(X_sample_s.shape) == 1:
+                                    X_sample_s = X_sample_s.reshape(1, -1)
+                                lime_exp = explainer_lime.explain_instance(X_sample_s[0], model.predict, num_features=10)
                                 feature_weights = lime_exp.as_list()
                                 fig = lime_exp.as_pyplot_figure()
                                 ax = fig.gca()
