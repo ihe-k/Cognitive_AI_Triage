@@ -1676,7 +1676,7 @@ def run_app():
                     plt.subplots_adjust(left=0.1, right=0.9, top=0.5, bottom=0.3)
                     st.pyplot(plt.gcf(), use_container_width=True)
                     plt.close()
-            explanation_method(arts, method=st.session_state["method"])                               
+        explanation_method(arts, method=st.session_state["method"])                               
         
         # Misinformation Spread Over Time
         st.subheader("Misinformation Spread Over Time")
