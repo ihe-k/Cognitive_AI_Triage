@@ -9,7 +9,7 @@ This project presents a comprehensive multimodal AI framework designed to predic
 These multimodal inputs are used to train a predictive model that estimates cognitive severity, supporting early intervention and optimised care.
 Beyond the clinical prediction model, this project also simulates the spread of health misinformation via social media networks, modelling how exposure to inaccurate or harmful information can impact perception and decision-making. This simulation is used to adjust severity predictions and dynamically inform resource allocation — ensuring patients most at risk (both medically and informationally) are prioritised for treatment.
 
-The entire pipeline is visualised through a Streamlit app and includes model predictions, explainability tools (SHAP and LIME) as well as a real-time network-based misinformation simulation.
+The entire pipeline is visualised through a Streamlit app and includes model predictions, explainability tools (SHAP) as well as a real-time network-based misinformation simulation.
 
 [Link to App](https://cognitiveaitriage-upcnmprvydp5bhgfjpox8k.streamlit.app/)
 
@@ -18,7 +18,7 @@ The entire pipeline is visualised through a Streamlit app and includes model pre
 * Severity Prediction: Uses Random Forest Regression to predict PHQ severity.
 * Misinformation Spread Simulation: Network-based misinformation modelling to adjust severity scores.
 * Resource Allocation: Dynamically allocate limited treatment resources based on adjusted scores.
-* Explainability: Visual explanations using SHAP and LIME for transparent predictions.
+* Explainability: Visual explanations using SHAP for transparent predictions.
 * Web App: Interactive UI built with Streamlit for simulations, explanations, and visualisations.
 
 ## Interpreting Results
@@ -90,7 +90,7 @@ Score Range   | Interpretation
 
 Raw depression severity is a baseline measure of depression based on model predictions using features related to depressive symptoms.
 
-NB: The model achieves an R² of 0.71 and MAE of 2.43 on the validation set, showing strong ability to learn PHQ-8 severity from physiological and behavioural features.  However, generalisation to the test set suggests the need for more diverse training data or regularisation.
+NB: The model achieves an R² of 0.71 and MAE of 2.43 on the validation set, showing strong ability to learn PHQ-8 severity from behavioural features.  However, generalisation to the test set suggests the need for more diverse training data or regularisation.
 
 #### Adjusted Severity
 Patient prioritisation is based on an adjusted severity score which factors in the raw severity score (the base depression severity score based on PHQ-8 score) and adjustments of other factors such as misinformation risk and physiological risk (e.g., breathing, tapping and heart rate).  Prioritisation is done by compaaring the adjusted severity to a threshold as it is likely that this score provides a more accurate reflection of the true risk.  Those with higher adjusted severity scores are prioritised for treatment as depression is a strong risk factor for dementia, particularly when it becomes chronic or severe (indicated by the "✅ Yes" in the priority column).  Populations with high adjusted depression severity have a higher likelihood of cognitive decline as prolonged depression may impact brain function and accelerate neurodegeneration.  By prioritising early intervention to prevent the cognitive symptoms observed in the early stages of dementia (e.g., memory loss or concentration difficulties), this model can be used to help address the root causes of depression (including misinformation and physiological health), reduce dementia risk and subsequently prevent further cognitive deterioration.  Adjusting the treament capacity slider reallocates resources and the number of patients potentially treated.
@@ -112,9 +112,6 @@ SHAP plots help explain a model's output by calculating the contribution of each
 The width of each arrow describes how much that feature influences the final prediction.  The red features are risk indicators that illustrate features that positively contribute to the prediction output (e.g., raises depression risk).  For example, a PHQ-8 Failure of 0.19 indicates the presence of this feature is driving the model's prediction up by 0.19 units (increases the depression risk).  The blue features are protective indicators that decreases the prediction output (e.g., lowers depression risk).  For example, a SHAP value of -1.08 for PHQ-8 Appetite for appetite reduces the model's predicted depression risk (i.e. a higher score for this feature, indicating a healthy appetite would reduce the depression risk).
 
 SHAP visualisations allow clinicians and researchers to visually understand the direction and magnitude of each feature's influence on mental health risk (e.g., determinating the reason a patient has been flagged high risk for depression).
-
-#### LIME (Local Interpretable Model-Agnostic Explanations)
-LIME plots illustrate the features that matter most for predicting depression severity.  
 
 ### Misinformation Modelling
 
@@ -166,7 +163,7 @@ cd your-repo-name
 ### 2. Install Dependencies
 ```plaintext
 Use pip to install all required packages:
-pip install streamlit librosa torch torchvision shap lime scikit-learn matplotlib networkx pandas pillow
+pip install streamlit librosa torch torchvision shap scikit-learn matplotlib networkx pandas pillow
 ```
 ## Running the App
 Once dependencies are installed and your .npy data files are in place:
@@ -199,7 +196,6 @@ Simulates misinformation spread using a Barabási–Albert network model:
 
 ### 5. Explainability
 * SHAP: Visualises individual feature contributions for predictions
-* LIME: Explains local model behaviour for a selected patient
 
 ## Validation
 * Validation plot (validation_plot.png) shows predicted vs actual PHQ severity on the test set.
@@ -207,7 +203,7 @@ Simulates misinformation spread using a Barabási–Albert network model:
 
 ## Example Outputs
 * PHQ Score Prediction Graphs
-* SHAP & LIME Patient Explanation Visuals
+* SHAP Patient Explanation Visuals
 * Misinformation Network Evolution
 * Risk-Based Resource Allocation Charts
 
@@ -219,7 +215,7 @@ Simulates misinformation spread using a Barabási–Albert network model:
 ## Acknowledgments
 * librosa – Audio analysis
 * torchvision – Pretrained image models
-* SHAP\LIME – Model explainability
+* SHAP – Model explainability
 * Streamlit – Interactive app
 * scikit-learn – ML modelling
 
