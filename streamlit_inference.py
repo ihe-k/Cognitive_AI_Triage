@@ -1560,7 +1560,7 @@ def run_app():
            # else:
            #     st.warning("LIME is only available for the depression severity model.")
             
-            #method = st.session_state.get("method", "LIME") 
+            method = st.session_state.get("method", "LIME") 
             with open("artifacts/severity_model.pkl", "rb") as f:
                 model_artifact = pickle.load(f)
                 
