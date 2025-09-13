@@ -27,7 +27,7 @@ with open("artifacts/severity_model.pkl", "rb") as f:
 
 feat_names = model_artifact["feature_names"] # This loads a feature names list
 
-test_metrics = model_data["test_metrics"]
+test_metrics = model_artifact["test_metrics"]
 
 print("Depression Severity Model - Test Set Metrics:")
 print(f"R² Score: {test_metrics['r2']:.2f}")
