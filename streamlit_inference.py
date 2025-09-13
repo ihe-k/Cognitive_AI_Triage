@@ -25,11 +25,6 @@ from lime.lime_tabular import LimeTabularExplainer
 with open("artifacts/severity_model.pkl", "rb") as f:
     model_artifact = pickle.load(f)
 
-severity_test_metrics = model_artifact.get("test_metrics", {})
-severity_r2 = severity_test_metrics.get("r2", None)
-severity_mae = severity_test_metrics.get("mae", None)
-severity_rmse = severity_test_metrics.get("rmse", None)
-
 feat_names = model_artifact["feature_names"] # This loads a feature names list
 
 
@@ -1626,6 +1621,12 @@ def run_app():
                 st.pyplot(plt.gcf(), use_container_width=True)
                 plt.close()
                                     
+                severity_test_metrics = model_artifact.get("test_metrics", {})
+                severity_r2 = severity_test_metrics.get("r2", None)
+                severity_mae = severity_test_metrics.get("mae", None)
+                severity_rmse = severity_test_metrics.get("rmse", None)
+
+
         
         # Misinformation Spread Over Time
         st.subheader("Misinformation Spread Over Time")
