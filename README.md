@@ -3,7 +3,7 @@ This project presents a comprehensive multimodal AI framework designed to predic
 
 * Neuroimaging: Structural and functional data from MRI scans
 * Vocal Biomarkers: Audio features (e.g., MFCCs) capturing speech characteristics correlated with cognitive decline
-* Physiological & Behavioural Signals: Breathing rate, heart rate and motor tapping patterns associated with dementia risk
+* Physiological Signals: Breathing rate, heart rate and motor tapping patterns associated with dementia risk
 * Clinical Scores: PHQ scores (indicating depression and mood-related symptoms)
 
 These multimodal inputs are used to train a predictive model that estimates cognitive severity, supporting early intervention and optimised care.
