@@ -26,9 +26,9 @@ with open("artifacts/severity_model.pkl", "rb") as f:
     model_artifact = pickle.load(f)
 
 severity_test_metrics = severity_model_artifact.get("test_metrics", {})
-    severity_r2 = severity_test_metrics.get("r2", None)
-    severity_mae = severity_test_metrics.get("mae", None)
-    severity_rmse = severity_test_metrics.get("rmse", None)
+severity_r2 = severity_test_metrics.get("r2", None)
+severity_mae = severity_test_metrics.get("mae", None)
+severity_rmse = severity_test_metrics.get("rmse", None)
 
 feat_names = model_artifact["feature_names"] # This loads a feature names list
 
