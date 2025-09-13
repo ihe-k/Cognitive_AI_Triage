@@ -25,14 +25,15 @@ from lime.lime_tabular import LimeTabularExplainer
 with open("artifacts/severity_model.pkl", "rb") as f:
     model_artifact = pickle.load(f)
 
+severity_test_metrics = severity_model_artifact.get("test_metrics", {})
+    severity_r2 = severity_test_metrics.get("r2", None)
+    severity_mae = severity_test_metrics.get("mae", None)
+    severity_rmse = severity_test_metrics.get("rmse", None)
+except Exception as e:
+    st.error(f"Failed to load severity model or test metrics: {e}")
+    severity_r2 = severity_mae = severity_rmse = None
 feat_names = model_artifact["feature_names"] # This loads a feature names list
 
-test_metrics = model_artifact["test_metrics"]
-
-print("Depression Severity Model - Test Set Metrics:")
-print(f"R² Score: {test_metrics['r2']:.2f}")
-print(f"Mean Absolute Error (MAE): {test_metrics['mae']:.2f}")
-print(f"Root Mean Squared Error (RMSE): {test_metrics['rmse']:.2f}")
 
 # Conditional OpenCV import for cloud compatibility
 try:
