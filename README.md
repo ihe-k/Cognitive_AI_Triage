@@ -3,7 +3,7 @@ This project presents a comprehensive multimodal AI framework designed to predic
 
 * Neuroimaging: Structural and functional data from MRI scans
 * Vocal Biomarkers: Audio features (e.g., MFCCs) capturing speech characteristics correlated with cognitive decline
-* Physiological & Behavioural Signals: Including facial keypoints, gaze, body pose, transcribed or text features, breathing rate, heart rate and motor tapping
+* Physiological & Behavioural Signals: Breathing rate, heart rate and motor tapping patterns associated with dementia risk
 * Clinical Scores: PHQ scores (indicating depression and mood-related symptoms)
 
 These multimodal inputs are used to train a predictive model that estimates cognitive severity, supporting early intervention and optimised care.
@@ -14,7 +14,7 @@ The entire pipeline is visualised through a Streamlit app and includes model pre
 [Link to App](https://cognitiveaitriage-upcnmprvydp5bhgfjpox8k.streamlit.app/)
 
 ## Key Features
-* Multimodal Input: Combines features from audio (MFCC), image (ResNet), physiological signals, facial keypoints, transcribed or text features, gaze, pose and PHQ scores.
+* Multimodal Input: Combines features from audio (MFCC), image (ResNet), physiological signals and PHQ scores.
 * Severity Prediction: Uses Random Forest Regression to predict PHQ severity.
 * Misinformation Spread Simulation: Network-based misinformation modelling to adjust severity scores.
 * Resource Allocation: Dynamically allocate limited treatment resources based on adjusted scores.
@@ -62,8 +62,7 @@ MFCC Mean Range | Interactive Speech Profile | Possible Depression Severity |
 
 The mean of the MFCC coefficients across timeframes are calculated, representing the overall spectral features of the audio so as to classify speech patterns related to depression in order to assess the severity as well as clinical priority (for follow-ups or intervention) of a user.
 
-These thresholds are a guide and are based on existing literature that describe general trends between MFCC features and depression.  As this speech analysis is intended to be used with other data modalities such as physiological data (tapping, breathing and heart rate), imaging and text-based sentiment analysis from patient interviews, it offers a holistic approach to depression/Alzheimer's risk assessment.  However, this approach may benefit from validation or tuning with a large-scale dataset.  Additionally, as variations in speech due to language, culture or individual characteristics, model performance may not generalise well to all individuals or diverse populations.  To improve accuracy, inclusion of additional ausio samples or features, like pauses, accents, speech patterns or emotional tone may help issue a more nuanced analysis of depression through the capture of the emotional context of a user's speech.  Furthermore, cross-validating the severity thresholds by incorporating clinical professionals' feedback may also help improve data accuracy.  
-
+These thresholds are a guide and are based on existing literature that describe general trends between MFCC features and depression.  As this speech analysis is intended to be used with other data modalities such as physiological data (tapping, breathing and heart rate), imaging and text-based sentiment analysis from patient interviews, it offers a holistic approach to depression/Alzheimer's risk assessment.  However, this approach may benefit from validation or tuning with a large-scale dataset.  Additionally, as variations in speech due to language, culture or individual characteristics, model performance may not generalise well to all individuals or diverse populations.  To improve accuracy, inclusion of additional audio samples or behavioural signals, like pauses, accents, speech patterns, emotional tone, gaze, facial keypoints or body pose may help issue a more nuanced analysis of depression through the capture of the emotional context of a user's speech.  Furthermore, cross-validating the severity thresholds by incorporating clinical professionals' feedback may also help improve data accuracy.  
 
 ### Misinformation Risk Score (MRS): Mental Health Influence
 
@@ -76,7 +75,7 @@ MRS Mean Range  | Interpretation                        | Possible Impact on Men
 0.76 - 1.00     | Very high exposure/echo chamber efect | Severe                          |
 
 ### Depression Severity
-The depression severity model is a multimodal Random Forest regressor trained to predict depression severity (PHQ-8 score) using features extracted from video, audio and text.  It processes audio, facial keypoints, gaze, body pose as well as transcribed or spoken text and summarises them into statistical features.  It also incorporates demographic data (e.g., gender) amd PHQ-8 subscores.  The final vector features that are standardised to train the model outputs a continuous PHQ-8 score that indicates predicted depression severity.
+The depression severity model, a multimodal Random Forest regressor trained to predict depression severity scores, primarily uses demographic features such as age and gender along with clinical subscores derived from the PHQ-8 questionnaire.  These inputs are summarised into statistical features and standardised before being fed into the model.  The final feature vector, standardised for training, enables the model to output a continuous PHQ-8 score that indicates predicted depression severity.
 
 #### Raw Severity Score: PHQ-8 Depression Severity Score Prediction from the Model
 
@@ -107,11 +106,11 @@ The adjusted risk is always lower than the raw score as the model simulates the 
 
 ### Explanation Method
 #### SHAP (SHapely Additive exPlanations)
-SHAP plots help explain a model's output by calculating the contribution of each feature to a prediction (a concept borrowed from game theory).  The plot visualises the push-and-pull influence of features on the predicted depression severity score (PHQ-8) for a selected patient.  The SHAP value of a feature illustrates the amount that feature contributes to the difference between the model's prediction and the expected value.  
+SHAP plots help explain a model's output by calculating the contribution of each feature to a prediction (a concept borrowed from game theory).  The plot visualises the push-and-pull influence of features on the predicted depression severity score (PHQ-8) for a selected patient.  The SHAP value of a feature illustrates the amount that each PHQ-8 feature contributes to the prediction and illustrates which symptoms increased or decreased the risk score for that specific patient.  When a user selects a Patient ID, the system computes SHAP values for an individual and this provides a local interpretation of their predicted depression severity.    
 
-The width of each arrow describes how much that feature influences the final prediction.  The red features are risk indicators that illustrate features that positively contribute to the prediction output (e.g., raises depression risk).  For example, a PHQ-8 Failure of 0.19 indicates the presence of this feature is driving the model's prediction up by 0.19 units (increases the depression risk).  The blue features are protective indicators that decreases the prediction output (e.g., lowers depression risk).  For example, a SHAP value of -1.08 for PHQ-8 Appetite for appetite reduces the model's predicted depression risk (i.e. a higher score for this feature, indicating a healthy appetite would reduce the depression risk).
+The width of each arrow describes how much that feature influences the final prediction.  The red features are risk indicators that illustrate features that positively contribute to the prediction output (e.g., raises depression risk).  For example, a PHQ-8 Failure of 0.19 indicates the presence of this feature is driving the model's prediction up by 0.19 units (increases the depression risk).  The blue features are protective indicators that decreases the prediction output (e.g., lowers depression risk).  For example, a SHAP value of -1.08 for PHQ-8 Appetite for appetite reduces the model's predicted depression risk (i.e. a higher score for this feature, indicating a healthy appetite would reduce the depression risk).  
 
-SHAP visualisations allow clinicians and researchers to visually understand the direction and magnitude of each feature's influence on mental health risk (e.g., determinating the reason a patient has been flagged high risk for depression).
+SHAP visualisations support clinical decision-making by improving the trustworthiness as well as understandibility of model outputs and allowing clinicians and researchers to visually understand the direction or magnitude of each feature's influence on mental health risk (e.g., determinating the reason a patient has been flagged high risk for depression).
 
 ### Misinformation Modelling
 
@@ -129,7 +128,7 @@ The code may be extended to simulate or predict:
 
 * The spread of misinformation using network graphs and agent-based models.
 * How trust, identity or prior exposure (e.g., belief systems) influence the uptake of misinformation.
-* Use Bayesian persuasion games or repeated games to model how users update beliefs after exposure to false (or corrective) health information.
+* Use Bayesian persuasion games or repeated games to model how users update their beliefs after exposure to false (or corrective) health information.
 
 A misinformation modelling layer that uses graph-based simulations of social networks or algorithms to map influence or misinformation 'hot zones' may also be investigated to gain better understanding of individuals affected, the speed of misinformation spread as well as points of intervention.  Network visualisations may be used to demonstrate the ways misinformation flows through a population or digital system; clusters of susceptible users and algorithmic amplification (e.g., recommender systems).
 
