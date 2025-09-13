@@ -1056,8 +1056,10 @@ def run_app():
 
         summary_df = st.session_state["audio_results"]["summary_df"].copy()
 
-        summary_df["MFCC Mean"] = pd.to_numeric(summary_df["MFCC Mean"], errors='coerce').fillna(0)
-
+        #summary_df["MFCC_Mean"] = pd.to_numeric(summary_df["MFCC_Mean"], errors='coerce').fillna(0)
+        summary_df["MFCC_Mean"] = pd.to_numeric(summary_df["MFCC_Mean"], errors='coerce')
+        summary_df["MFCC_Mean"].fillna(summary_df["MFCC_Mean"].median(), inplace=True)
+        
         summary_df['Severity'], summary_df['Priority_Flag'] = zip(*summary_df['MFCC_Mean'].apply(map_severity_with_priority))
         summary_df['Priority'] = summary_df['Priority_Flag'].apply(lambda x: '✅ Yes' if x else '❌ No')
 
