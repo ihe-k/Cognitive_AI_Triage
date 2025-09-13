@@ -1620,12 +1620,6 @@ def run_app():
                 plt.subplots_adjust(left=0.1, right=0.9, top=0.5, bottom=0.3)
                 st.pyplot(plt.gcf(), use_container_width=True)
                 plt.close()
-                                    
-                severity_test_metrics = model_artifact.get("test_metrics", {})
-                severity_r2 = severity_test_metrics.get("r2", None)
-                severity_mae = severity_test_metrics.get("mae", None)
-                severity_rmse = severity_test_metrics.get("rmse", None)
-
 
         
         # Misinformation Spread Over Time
