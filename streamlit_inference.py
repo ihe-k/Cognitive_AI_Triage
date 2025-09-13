@@ -29,9 +29,7 @@ severity_test_metrics = severity_model_artifact.get("test_metrics", {})
     severity_r2 = severity_test_metrics.get("r2", None)
     severity_mae = severity_test_metrics.get("mae", None)
     severity_rmse = severity_test_metrics.get("rmse", None)
-except Exception as e:
-    st.error(f"Failed to load severity model or test metrics: {e}")
-    severity_r2 = severity_mae = severity_rmse = None
+
 feat_names = model_artifact["feature_names"] # This loads a feature names list
 
 
