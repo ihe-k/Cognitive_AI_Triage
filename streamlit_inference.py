@@ -239,11 +239,11 @@ def extract_image_features(img: np.ndarray, target_features: int = 50436) -> np.
         
         # Pad or truncate to match expected feature dimensions
         if all_features.size < target_features:
-            # Pad with zeros if we have fewer features
+            
             padding = np.zeros(target_features - all_features.size, dtype=np.float32)
             all_features = np.concatenate([all_features, padding])
         elif all_features.size > target_features:
-            # Truncate if we have more features
+            
             all_features = all_features[:target_features]
         
         return all_features.astype(np.float32)
