@@ -14,8 +14,8 @@ The entire pipeline is visualised through a Streamlit app and includes model pre
 [Link to App](https://cognitiveaitriage-upcnmprvydp5bhgfjpox8k.streamlit.app/)
 
 ## Key Features
-* Multimodal Input: Combines features from audio (MFCC), image (ResNet), physiological signals and PHQ scores.
-* Severity Prediction: Uses Random Forest Regression to predict PHQ severity.
+* Multimodal Input: Combines features from audio (MFCC), image (ResNet), physiological signals and PHQ-8 scores.
+* Severity Prediction: Uses Random Forest Regression to predict PHQ-8 severity.
 * Misinformation Spread Simulation: Network-based misinformation modelling to adjust severity scores.
 * Resource Allocation: Dynamically allocate limited treatment resources based on adjusted scores.
 * Explainability: Visual explanations using SHAP for transparent predictions.
@@ -179,7 +179,7 @@ Then open the local Streamlit URL (usually http://localhost:8501) in your browse
 
 ### 2. Model Training
 * All features are concatenated and standardised
-* Random Forest Regressor trained to predict PHQ scores
+* Random Forest Regressor trained to predict PHQ-8 scores
 * Model performance validated using MAE, RMSE and R²
 
 ### 3. Misinformation Simulation
@@ -197,11 +197,11 @@ Simulates misinformation spread using a Barabási–Albert network model:
 * SHAP: Visualises individual feature contributions for predictions
 
 ## Validation
-* Validation plot (validation_plot.png) shows predicted vs actual PHQ severity on the test set.
+* Validation plot (validation_plot.png) shows predicted vs actual PHQ-8 severity on the test set.
 * Automatically displayed in the Streamlit app.
 
 ## Example Outputs
-* PHQ Score Prediction Graphs
+* PHQ-8 Score Prediction Graphs
 * SHAP Patient Explanation Visuals
 * Misinformation Network Evolution
 * Risk-Based Resource Allocation Charts
