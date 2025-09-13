@@ -27,6 +27,13 @@ with open("artifacts/severity_model.pkl", "rb") as f:
 
 feat_names = model_artifact["feature_names"] # This loads a feature names list
 
+test_metrics = model_data["test_metrics"]
+
+print("Depression Severity Model - Test Set Metrics:")
+print(f"R² Score: {test_metrics['r2']:.2f}")
+print(f"Mean Absolute Error (MAE): {test_metrics['mae']:.2f}")
+print(f"Root Mean Squared Error (RMSE): {test_metrics['rmse']:.2f}")
+
 # Conditional OpenCV import for cloud compatibility
 try:
     import cv2
