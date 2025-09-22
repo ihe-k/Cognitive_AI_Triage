@@ -137,7 +137,7 @@ A misinformation modelling layer that uses graph-based simulations of social net
 [Depression severity dataset from Kaggle](https://www.kaggle.com/datasets/trilism/tramcam-daic-woz-e?resource=download)
 
 ## Testing
-I have included MRI images of patients diagnosed with mild dementia, moderate dementia, very mild dementia and non-dementia that may be used to test the app.
+I have included MRI images of patients diagnosed with mild dementia, moderate dementia, very mild dementia and non-dementia that may be used to test the app in the folder, 'Practice_Files'.
 
 ## Project Structure
 ```plaintext
