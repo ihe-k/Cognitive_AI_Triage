@@ -156,8 +156,9 @@ project/
 ## Installation
 ### 1. Clone the Repository
 ```plaintext
-git clone https://github.com/yourusername/your-repo-name.git
-cd your-repo-name
+git clone https://github.com/yourusername/Cognitive_AI_Triage
+.git
+cd Cognitive_AI_Triage
 ```
 ### 2. Install Dependencies
 ```plaintext
@@ -167,7 +168,7 @@ pip install streamlit librosa torch torchvision shap scikit-learn matplotlib net
 ## Running the App
 Once dependencies are installed and your .npy data files are in place:
 ```plaintext
-streamlit run your_script_name.py
+streamlit run streamlit_inference.py
 ```
 Then open the local Streamlit URL (usually http://localhost:8501) in your browser.
 
