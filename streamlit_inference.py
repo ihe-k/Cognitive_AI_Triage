@@ -777,37 +777,14 @@ def run_app():
         
         st.session_state["audio_results"]["summary_df"] = summary_df
 
-        def apply_severity_color(row):
-            severity = row['Severity']
-            if severity == "None/Minimal":
-                color = "background-color: #28a745; color: white;"
-            elif severity in ["Mild", "Moderate"]:
-                color = "background-color: #ffc107; color: white;"
-            else:
-                color = "background-color: #dc3545; color: white;"
-            return [color] * len(row)
-
         def render_summary_table(df):
-            df_visible = df.drop(columns=['Priority_Flag'])
-            df_visible.index = df_visible.index + 1
-
-            styled_df = df_visible.style \
-                .apply(apply_severity_color, axis=1) \
-                .format({
-                    'MFCC Mean': '{:.2f}',
-                    'MFCC SD': '{:.2f}',
-                    'MFCC Range': '{:.2f}'
-                }) \
-                .set_properties(**{
-                    'text-align': 'left'
-                }) \
-                .set_table_styles([{
-                    'selector': 'th',
-                    'props': [('text-align', 'left')]
-                }])
+            df_visible = df.copy()
+            if 'Priority_Flag' in df_visible.columns:
+                df_visible = df_visible.drop(columns=['Priority_Flag'])
+            df_visible.index = range(1, len(df_visible) + 1)
 
             st.markdown("**Audio Files Summary: Predicted Depression Severity Risk**")
-            st.dataframe(styled_df, use_container_width=True)
+            st.dataframe(df_visible, use_container_width=True)
 
         render_summary_table(summary_df)
 
