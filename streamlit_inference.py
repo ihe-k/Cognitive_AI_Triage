@@ -1014,13 +1014,13 @@ def run_app():
         fig_misinfo, ax_misinfo = plt.subplots()
         ax_misinfo.plot(S_list_, label="Susceptible", color='#003A6B', linewidth=2)
         ax_misinfo.plot(I_list_, label="Infected", color='#3776A1', linewidth=2)
-        ax_misinfo.plot(R_list_, label="Recovered', color='#89CFF1', linewidth=2)
+        ax_misinfo.plot(R_list_, label="Recovered", color='#89CFF1', linewidth=2)
         ax_misinfo.legend()
         ax_misinfo.set_xlabel("Step")
         ax_misinfo.set_ylabel("Nodes")
         st.pyplot(fig_misinfo, use_container_width=True)
         plt.close(fig_misinfo)
-
+        
         st.subheader("🌐 Social Network Visualisation: Final Network State")
         fig_net, ax_net = plt.subplots(figsize=(7, 5))
         pos = nx.spring_layout(G_net_, seed=42)
