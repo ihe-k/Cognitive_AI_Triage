@@ -1,3 +1,5 @@
+
+import os
 import gzip
 import glob
 import joblib
@@ -164,7 +166,7 @@ MODALITIES = [
 ]
 
 # =============================================================================
-# ALZHEIMER'S DISEASE IMAGE PROCESSING
+# ALZHEIMER'S DISEASE IMAGE PROCESSING (MOBILE-OPTIMIZED PURE-PIL PIPELINE)
 # =============================================================================
 def load_and_preprocess_image(image_input, target_size: Tuple[int, int] = (224, 224)) -> Optional[np.ndarray]:
     """Universal pure-PIL image preprocessor with EXIF rotation, transparency flattening, percentile contrast normalization, and safe temp cleanup."""
@@ -1045,3 +1047,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
