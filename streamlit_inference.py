@@ -1,4 +1,3 @@
-
 import os
 import gzip
 import glob
@@ -703,8 +702,9 @@ def run_app():
                 with st.container(border=True):
                     col1, col2 = st.columns([1, 2])
                     with col1:
-                        st.write(f"**Image {i+1}:** {uploaded_file.name}")
-                        st.image(uploaded_file, caption=f"Uploaded: {uploaded_file.name}", use_container_width=True)
+                        file_name = uploaded_file.name if hasattr(uploaded_file, "name") else os.path.basename(str(uploaded_file))
+                        st.write(f"**Image {i+1}:** {file_name}")
+                        st.image(uploaded_file, caption=f"Uploaded: {file_name}", use_container_width=True)
                     with col2:
                         if st.button(f"🔍 Classify Image {i+1}", key=f"classify_{i}"):
                             with st.spinner("Classifying image..."):
@@ -1047,4 +1047,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
