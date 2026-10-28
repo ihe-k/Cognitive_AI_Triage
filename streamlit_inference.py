@@ -274,11 +274,6 @@ def classify_alzheimer_image(image_file, alzheimer_model: Dict[str, Any]) -> Tup
         target_features = getattr(scaler, 'n_features_in_', 50436)
         features = extract_image_features(img, target_features=target_features)
         
-        # CRITICAL FIX: L2 Normalize feature vector to neutralize mobile compression shifts
-        feat_norm = np.linalg.norm(features)
-        if feat_norm > 0:
-            features = features / feat_norm
-        
         features_scaled = scaler.transform(features.reshape(1, -1))
         
         prediction = classifier.predict(features_scaled)[0]
@@ -1020,7 +1015,7 @@ def run_app():
         ax_misinfo.set_ylabel("Nodes")
         st.pyplot(fig_misinfo, use_container_width=True)
         plt.close(fig_misinfo)
-        
+
         st.subheader("🌐 Social Network Visualisation: Final Network State")
         fig_net, ax_net = plt.subplots(figsize=(7, 5))
         pos = nx.spring_layout(G_net_, seed=42)
