@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 import networkx as nx
 import matplotlib.pyplot as plt
-from PIL import Image
+from PIL import Image, ImageOps
 import re
 import matplotlib.ticker as mtick
 import shap
@@ -23,6 +23,13 @@ import librosa
 from streamlit_shap import st_shap
 import lime
 from lime.lime_tabular import LimeTabularExplainer
+
+# Enable iPhone HEIC/HEIF image support if installed
+try:
+    import pillow_heif
+    pillow_heif.register_heif_opener()
+except ImportError:
+    pass
 
 # =============================================================================
 # MODEL LOADING FROM GITHUB RELEASES
@@ -158,50 +165,40 @@ MODALITIES = [
 ]
 
 # =============================================================================
-# ALZHEIMER'S DISEASE IMAGE PROCESSING
+# ALZHEIMER'S DISEASE IMAGE PROCESSING (MOBILE-OPTIMIZED PURE-PIL PIPELINE)
 # =============================================================================
 def load_and_preprocess_image(image_path: str, target_size: Tuple[int, int] = (224, 224)) -> Optional[np.ndarray]:
-    """Load and preprocess an image for Alzheimer's disease classification."""
+    """Universal pure-PIL image preprocessor with EXIF rotation, transparency flattening, and percentile contrast normalization."""
     try:
-        if OPENCV_AVAILABLE:
-            img = cv2.imread(image_path)
-            if img is None:
-                pil_img = Image.open(image_path)
-                img = np.array(pil_img)
-                if len(img.shape) == 3 and img.shape[2] == 3:
-                    img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-                elif len(img.shape) == 2:
-                    img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+        pil_img = Image.open(image_path)
+        
+        # 1. Auto-correct mobile orientation metadata (EXIF transpose)
+        pil_img = ImageOps.exif_transpose(pil_img)
+        
+        # 2. Flatten mobile RGBA / transparency / palette profiles onto a solid white background
+        if pil_img.mode in ('RGBA', 'LA') or (pil_img.mode == 'P' and 'transparency' in pil_img.info):
+            background = Image.new("RGB", pil_img.size, (255, 255, 255))
+            if pil_img.mode == 'P':
+                pil_img = pil_img.convert('RGBA')
+            background.paste(pil_img, mask=pil_img.split()[3])
+            pil_img = background
+        elif pil_img.mode != 'RGB':
+            pil_img = pil_img.convert('RGB')
+            
+        # 3. Convert to grayscale numpy array
+        pil_img = pil_img.convert('L')
+        img_np = np.array(pil_img, dtype=np.float32)
+        
+        # 4. Percentile contrast normalization (eliminates mobile vs. desktop brightness bias)
+        p2, p98 = np.percentile(img_np, (2, 98))
+        if p98 > p2:
+            img_np = np.clip((img_np - p2) / (p98 - p2), 0, 1)
         else:
-            pil_img = Image.open(image_path)
-            img = np.array(pil_img)
-            if len(img.shape) == 3 and img.shape[2] == 3:
-                img = img[:, :, ::-1]
-            elif len(img.shape) == 2:
-                img = np.stack([img] * 3, axis=-1)
-
-        if img is None:
-            return None
-
-        if OPENCV_AVAILABLE:
-            img = cv2.resize(img, target_size)
-        else:
-            pil_img = Image.fromarray(img)
-            pil_img = pil_img.resize(target_size, Image.Resampling.LANCZOS)
-            img = np.array(pil_img)
-
-        # Convert to grayscale for MRI/PET consistency
-        if len(img.shape) == 3:
-            if OPENCV_AVAILABLE:
-                img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            else:
-                pil_img = Image.fromarray(img.astype(np.uint8))
-                pil_img = pil_img.convert('L')
-                img = np.array(pil_img)
-
-        # Normalize to [0, 1]
-        img = img.astype(np.float32) / 255.0
-        return img
+            img_np = img_np / 255.0
+            
+        # 5. High-quality resize back to target size using Lanczos resampling
+        resized_pil = Image.fromarray((img_np * 255).astype(np.uint8)).resize(target_size, Image.Resampling.LANCZOS)
+        return np.array(resized_pil, dtype=np.float32) / 255.0
 
     except Exception as e:
         print(f"Error processing image {image_path}: {e}")
@@ -276,6 +273,11 @@ def classify_alzheimer_image(image_file, alzheimer_model: Dict[str, Any]) -> Tup
         
         target_features = getattr(scaler, 'n_features_in_', 50436)
         features = extract_image_features(img, target_features=target_features)
+        
+        # CRITICAL FIX: L2 Normalize feature vector to neutralize mobile compression shifts
+        feat_norm = np.linalg.norm(features)
+        if feat_norm > 0:
+            features = features / feat_norm
         
         features_scaled = scaler.transform(features.reshape(1, -1))
         
@@ -750,7 +752,7 @@ def run_app():
                 st.session_state["mfcc_features"] = np.array(mfcc_features_list)
                 st.success("MFCC features extracted successfully!")
 
-    # Display Summary Table with Predicted Severity (Fixed inplace/deprecation issues)
+    # Display Summary Table with Predicted Severity
     if "audio_results" in st.session_state and "summary_df" in st.session_state["audio_results"]:
         summary_df = st.session_state["audio_results"]["summary_df"].copy()
 
@@ -1012,7 +1014,7 @@ def run_app():
         fig_misinfo, ax_misinfo = plt.subplots()
         ax_misinfo.plot(S_list_, label="Susceptible", color='#003A6B', linewidth=2)
         ax_misinfo.plot(I_list_, label="Infected", color='#3776A1', linewidth=2)
-        ax_misinfo.plot(R_list_, label="Recovered", color='#89CFF1', linewidth=2)
+        ax_misinfo.plot(R_list_, label="Recovered', color='#89CFF1', linewidth=2)
         ax_misinfo.legend()
         ax_misinfo.set_xlabel("Step")
         ax_misinfo.set_ylabel("Nodes")
