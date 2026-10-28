@@ -1,4 +1,3 @@
-import os
 import gzip
 import glob
 import joblib
@@ -165,10 +164,10 @@ MODALITIES = [
 ]
 
 # =============================================================================
-# ALZHEIMER'S DISEASE IMAGE PROCESSING & OPTIMIZED FEATURE EXTRACTION
+# ALZHEIMER'S DISEASE IMAGE PROCESSING
 # =============================================================================
 def load_and_preprocess_image(image_input, target_size: Tuple[int, int] = (224, 224)) -> Optional[np.ndarray]:
-    """Universal pure-PIL image preprocessor optimized to handle mobile JPEG color spaces and exposure shifts."""
+    """Universal pure-PIL image preprocessor with EXIF rotation, transparency flattening, percentile contrast normalization, and safe temp cleanup."""
     temp_path = None
     try:
         if hasattr(image_input, "getbuffer"):
@@ -198,10 +197,10 @@ def load_and_preprocess_image(image_input, target_size: Tuple[int, int] = (224, 
         pil_img = pil_img.convert('L')
         img_np = np.array(pil_img, dtype=np.float32)
         
-        # 4. Adjusted percentile contrast normalization (using 1st and 99th percentiles to preserve fine grayscale gradients)
-        p1, p99 = np.percentile(img_np, (1, 99))
-        if p99 > p1:
-            img_np = np.clip((img_np - p1) / (p99 - p1), 0, 1)
+        # 4. Percentile contrast normalization (eliminates mobile vs. desktop brightness bias)
+        p2, p98 = np.percentile(img_np, (2, 98))
+        if p98 > p2:
+            img_np = np.clip((img_np - p2) / (p98 - p2), 0, 1)
         else:
             img_np = img_np / 255.0
             
@@ -1046,4 +1045,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
