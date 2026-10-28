@@ -1,3 +1,4 @@
+Here is the complete, fully integrated Streamlit script. It includes the updated feature extraction function with Sobel edge gradients to help capture anatomical boundaries and tissue changes more reliably, alongside the mobile-optimized image preprocessor and secure temporary file cleanup.
 import os
 import gzip
 import glob
@@ -165,7 +166,7 @@ MODALITIES = [
 ]
 
 # =============================================================================
-# ALZHEIMER'S DISEASE IMAGE PROCESSING (MOBILE-OPTIMIZED PURE-PIL PIPELINE)
+# ALZHEIMER'S DISEASE IMAGE PROCESSING & ENHANCED FEATURE EXTRACTION
 # =============================================================================
 def load_and_preprocess_image(image_input, target_size: Tuple[int, int] = (224, 224)) -> Optional[np.ndarray]:
     """Universal pure-PIL image preprocessor with EXIF rotation, transparency flattening, percentile contrast normalization, and safe temp cleanup."""
@@ -220,7 +221,7 @@ def load_and_preprocess_image(image_input, target_size: Tuple[int, int] = (224, 
                 pass
 
 def extract_image_features(img: np.ndarray, target_features: int) -> np.ndarray:
-    """Extract robust statistical and histogram features matching model expectations."""
+    """Enhanced feature extractor incorporating global statistics, histograms, quadrant stats, and edge gradients."""
     try:
         mean_val = np.mean(img)
         std_val = np.std(img)
@@ -239,9 +240,15 @@ def extract_image_features(img: np.ndarray, target_features: int) -> np.ndarray:
         quad_stats = []
         for q in quadrants:
             quad_stats.extend([np.mean(q), np.std(q)])
+            
+        # Edge density / gradient features (captures anatomical boundaries & structural atrophy)
+        gy, gx = np.gradient(img)
+        gradient_magnitude = np.sqrt(gx**2 + gy**2)
+        edge_mean = np.mean(gradient_magnitude)
+        edge_std = np.std(gradient_magnitude)
         
         base_features = np.concatenate([
-            [mean_val, std_val, min_val, max_val],
+            [mean_val, std_val, min_val, max_val, edge_mean, edge_std],
             hist,
             np.array(quad_stats, dtype=np.float32)
         ])
