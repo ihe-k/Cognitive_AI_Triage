@@ -8,7 +8,7 @@ import argparse
 import sys
 from typing import Dict, List, Tuple, Optional, Any
 import requests
-import streamlit as st  # <--- Move st import up here!
+import streamlit as st
 import matplotlib.patches as mpatches
 import numpy as np
 import pandas as pd
@@ -160,41 +160,25 @@ MODALITIES = [
 # =============================================================================
 # ALZHEIMER'S DISEASE IMAGE PROCESSING
 # =============================================================================
-def load_and_preprocess_image(image_path: str, target_size: Tuple[int, int] = (224, 224)) -> np.ndarray:
+def load_and_preprocess_image(image_path: str, target_size: Tuple[int, int] = (224, 224)) -> Optional[np.ndarray]:
     """Load and preprocess an image for Alzheimer's disease classification."""
     try:
-        if image_path.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.tiff')):
-            if OPENCV_AVAILABLE:
-                img = cv2.imread(image_path)
-                if img is None:
-                    pil_img = Image.open(image_path)
-                    img = np.array(pil_img)
-                    if len(img.shape) == 3 and img.shape[2] == 3:
-                        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-                    elif len(img.shape) == 2:
-                        img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
-            else:
+        if OPENCV_AVAILABLE:
+            img = cv2.imread(image_path)
+            if img is None:
                 pil_img = Image.open(image_path)
                 img = np.array(pil_img)
                 if len(img.shape) == 3 and img.shape[2] == 3:
-                    img = img[:, :, ::-1]
+                    img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
                 elif len(img.shape) == 2:
-                    img = np.stack([img] * 3, axis=-1)
+                    img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
         else:
-            if OPENCV_AVAILABLE:
-                img = cv2.imread(image_path)
-                if img is None:
-                    return None
-            else:
-                try:
-                    pil_img = Image.open(image_path)
-                    img = np.array(pil_img)
-                    if len(img.shape) == 3 and img.shape[2] == 3:
-                        img = img[:, :, ::-1]
-                    elif len(img.shape) == 2:
-                        img = np.stack([img] * 3, axis=-1)
-                except Exception:
-                    return None
+            pil_img = Image.open(image_path)
+            img = np.array(pil_img)
+            if len(img.shape) == 3 and img.shape[2] == 3:
+                img = img[:, :, ::-1]
+            elif len(img.shape) == 2:
+                img = np.stack([img] * 3, axis=-1)
 
         if img is None:
             return None
@@ -206,50 +190,62 @@ def load_and_preprocess_image(image_path: str, target_size: Tuple[int, int] = (2
             pil_img = pil_img.resize(target_size, Image.Resampling.LANCZOS)
             img = np.array(pil_img)
 
-        img = img.astype(np.float32) / 255.0
-
+        # Convert to grayscale for MRI/PET consistency
         if len(img.shape) == 3:
             if OPENCV_AVAILABLE:
                 img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             else:
-                pil_img = Image.fromarray((img * 255).astype(np.uint8))
+                pil_img = Image.fromarray(img.astype(np.uint8))
                 pil_img = pil_img.convert('L')
-                img = np.array(pil_img) / 255.0
-            img = np.expand_dims(img, axis=-1)
+                img = np.array(pil_img)
 
+        # Normalize to [0, 1]
+        img = img.astype(np.float32) / 255.0
         return img
 
     except Exception as e:
         print(f"Error processing image {image_path}: {e}")
         return None
 
-def extract_image_features(img: np.ndarray, target_features: int = 50436) -> np.ndarray:
+def extract_image_features(img: np.ndarray, target_features: int) -> np.ndarray:
+    """Extract robust statistical and histogram features matching model expectations."""
     try:
-        flattened = img.flatten()
         mean_val = np.mean(img)
         std_val = np.std(img)
         min_val = np.min(img)
         max_val = np.max(img)
         
-        hist, _ = np.histogram(img.flatten(), bins=10, range=(0, 1))
-        hist = hist / np.sum(hist)
+        hist, _ = np.histogram(img.flatten(), bins=32, range=(0, 1))
+        hist = hist.astype(np.float32) / (np.sum(hist) + 1e-6)
         
-        all_features = np.concatenate([
-            flattened,
+        h, w = img.shape
+        h2, w2 = h // 2, w // 2
+        quadrants = [
+            img[:h2, :w2], img[:h2, w2:],
+            img[h2:, :w2], img[h2:, w2:]
+        ]
+        quad_stats = []
+        for q in quadrants:
+            quad_stats.extend([np.mean(q), np.std(q)])
+        
+        base_features = np.concatenate([
             [mean_val, std_val, min_val, max_val],
-            hist
+            hist,
+            np.array(quad_stats, dtype=np.float32)
         ])
         
-        if all_features.size < target_features:
-            padding = np.zeros(target_features - all_features.size, dtype=np.float32)
-            all_features = np.concatenate([all_features, padding])
-        elif all_features.size > target_features:
-            all_features = all_features[:target_features]
-        
-        return all_features.astype(np.float32)
+        if base_features.size < target_features:
+            repeats = int(np.ceil(target_features / base_features.size))
+            features = np.tile(base_features, repeats)[:target_features]
+        elif base_features.size > target_features:
+            features = base_features[:target_features]
+        else:
+            features = base_features
+            
+        return features.astype(np.float32)
     except Exception as e:
         print(f"Error extracting features: {e}")
-        return np.array([])
+        return np.zeros(target_features, dtype=np.float32)
 
 def check_alzheimer_model() -> bool:
     try:
@@ -270,30 +266,33 @@ def classify_alzheimer_image(image_file, alzheimer_model: Dict[str, Any]) -> Tup
         
         img = load_and_preprocess_image(temp_path)
         if img is None:
-            os.remove(temp_path)
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
             return "Error: Could not load image", 0.0, np.array([])
         
-        target_features = alzheimer_model["scaler"].n_features_in_
-        features = extract_image_features(img, target_features=target_features)
-        if features.size == 0:
-            os.remove(temp_path)
-            return "Error: Could not extract features", 0.0, np.array([])
-        
         scaler = alzheimer_model["scaler"]
+        classifier = alzheimer_model["classifier"]
+        label_encoder = alzheimer_model["label_encoder"]
+        
+        target_features = getattr(scaler, 'n_features_in_', 50436)
+        features = extract_image_features(img, target_features=target_features)
+        
         features_scaled = scaler.transform(features.reshape(1, -1))
         
-        classifier = alzheimer_model["classifier"]
         prediction = classifier.predict(features_scaled)[0]
         probabilities = classifier.predict_proba(features_scaled)[0]
         
-        label_encoder = alzheimer_model["label_encoder"]
         class_name = label_encoder.inverse_transform([prediction])[0]
-        confidence = np.max(probabilities)
+        confidence = float(np.max(probabilities) * 100)
         
-        os.remove(temp_path)
-        return class_name, confidence, img
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
+        
+        return str(class_name), confidence, img
         
     except Exception as e:
+        if 'temp_path' in locals() and os.path.exists(temp_path):
+            os.remove(temp_path)
         return f"Error: {str(e)}", 0.0, np.array([])
 
 # =============================================================================
@@ -569,13 +568,16 @@ def run_app():
             test_acc = alzheimer_model.get("test_accuracy")
             cm = alzheimer_model.get("confusion_matrix")
 
-            class_labels = [
-                "Non-Demented",
-                "Very Mild Dementia",
-                "Mild Dementia",
-                "Moderate Dementia",
-                "Severe Dementia"
-            ]
+            if "label_encoder" in alzheimer_model:
+                class_labels = list(alzheimer_model["label_encoder"].classes_)
+            else:
+                class_labels = [
+                    "Non-Demented",
+                    "Very Mild Dementia",
+                    "Mild Dementia",
+                    "Moderate Dementia",
+                    "Severe Dementia"
+                ]
 
             st.subheader("Alzheimer's Classifier Performance")
 
@@ -706,7 +708,8 @@ def run_app():
                                 if prediction.startswith("Error"):
                                     st.error(prediction)
                                 else:
-                                    st.success(f"**Prediction:** {prediction}")
+                                    st.success(f"**Predicted Stage:** {prediction}")
+                                    st.caption(f"Confidence: {confidence:.1f}%")
         else:
             st.info("Upload MRI images to predict Alzheimer's risk")
     else:
