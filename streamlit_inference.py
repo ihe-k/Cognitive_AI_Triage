@@ -168,7 +168,7 @@ MODALITIES = [
 # ALZHEIMER'S DISEASE IMAGE PROCESSING (MOBILE-OPTIMIZED PURE-PIL PIPELINE)
 # =============================================================================
 def load_and_preprocess_image(image_path: str, target_size: Tuple[int, int] = (224, 224)) -> Optional[np.ndarray]:
-    """Universal pure-PIL image preprocessor with EXIF rotation, transparency flattening, and mobile background noise clipping."""
+    """Universal pure-PIL image preprocessor with EXIF rotation, transparency flattening, brain auto-crop, and noise clipping."""
     try:
         pil_img = Image.open(image_path)
         
@@ -185,17 +185,29 @@ def load_and_preprocess_image(image_path: str, target_size: Tuple[int, int] = (2
         elif pil_img.mode != 'RGB':
             pil_img = pil_img.convert('RGB')
             
-        # 3. Convert to grayscale and resize cleanly using high-quality Lanczos resampling
+        # 3. Convert to grayscale and normalize to [0, 1]
         pil_img = pil_img.convert('L')
-        resized_pil = pil_img.resize(target_size, Image.Resampling.LANCZOS)
+        img_np = np.array(pil_img, dtype=np.float32) / 255.0
         
-        # 4. Standard normalization to [0, 1] preserving true tissue intensity
-        img_np = np.array(resized_pil, dtype=np.float32) / 255.0
+        # 4. CRITICAL MOBILE FIX: Bounding Box Auto-Crop (removes variable mobile black borders/padding)
+        non_empty_rows = np.where(img_np > 0.05)[0]
+        non_empty_cols = np.where(img_np > 0.05)[1]
+        if len(non_empty_rows) > 0 and len(non_empty_cols) > 0:
+            ymin, ymax = non_empty_rows[0], non_empty_rows[-1]
+            xmin, xmax = non_empty_cols[0], non_empty_cols[-1]
+            cropped = img_np[ymin:ymax+1, xmin:xmax+1]
+            pil_cropped = Image.fromarray((cropped * 255).astype(np.uint8))
+        else:
+            pil_cropped = pil_img
+            
+        # 5. Resize to target size using high-quality Lanczos resampling
+        resized_pil = pil_cropped.resize(target_size, Image.Resampling.LANCZOS)
+        img_final = np.array(resized_pil, dtype=np.float32) / 255.0
         
-        # 5. CRITICAL MOBILE FIX: Clip mobile JPEG compression noise on black backgrounds
-        img_np[img_np < 0.08] = 0.0
+        # 6. Background black-level clipping (removes mobile JPEG compression noise)
+        img_final[img_final < 0.05] = 0.0
         
-        return img_np
+        return img_final
 
     except Exception as e:
         print(f"Error processing image {image_path}: {e}")
@@ -1036,4 +1048,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
