@@ -1,3 +1,4 @@
+Here is the complete, fully integrated Streamlit script. It includes all the bug fixes: the safe mobile image filename handler, session state column deduplication, and the color-coded severity table using Pandas Styler.
 import os
 import gzip
 import glob
@@ -755,36 +756,65 @@ def run_app():
                 st.session_state["mfcc_features"] = np.array(mfcc_features_list)
                 st.success("MFCC features extracted successfully!")
 
-    # Display Summary Table with Predicted Severity
+    # Display Summary Table with Predicted Severity & Color Styling
     if "audio_results" in st.session_state and "summary_df" in st.session_state["audio_results"]:
         summary_df = st.session_state["audio_results"]["summary_df"].copy()
+
+        # Clean up any pre-existing duplicate columns from previous session states
+        summary_df = summary_df.loc[:, ~summary_df.columns.duplicated()]
 
         if "MFCC_Mean" in summary_df.columns:
             summary_df["MFCC_Mean"] = pd.to_numeric(summary_df["MFCC_Mean"], errors='coerce')
             fill_val = summary_df["MFCC_Mean"].median() if not summary_df["MFCC_Mean"].isnull().all() else 0.0
             summary_df["MFCC_Mean"] = summary_df["MFCC_Mean"].fillna(fill_val)
+        elif "MFCC Mean" in summary_df.columns:
+            summary_df["MFCC_Mean"] = pd.to_numeric(summary_df["MFCC Mean"], errors='coerce')
+            fill_val = summary_df["MFCC_Mean"].median() if not summary_df["MFCC_Mean"].isnull().all() else 0.0
+            summary_df["MFCC_Mean"] = summary_df["MFCC_Mean"].fillna(fill_val)
         else:
             summary_df["MFCC_Mean"] = 0.0
 
-        summary_df['Severity'], summary_df['Priority_Flag'] = zip(*summary_df['MFCC_Mean'].apply(map_severity_with_priority))
-        summary_df['Priority'] = summary_df['Priority_Flag'].apply(lambda x: '✅ Yes' if x else '❌ No')
+        if 'Severity' not in summary_df.columns or 'Priority_Flag' not in summary_df.columns:
+            summary_df['Severity'], summary_df['Priority_Flag'] = zip(*summary_df['MFCC_Mean'].apply(map_severity_with_priority))
+        if 'Priority' not in summary_df.columns:
+            summary_df['Priority'] = summary_df['Priority_Flag'].apply(lambda x: '✅ Yes' if x else '❌ No')
 
-        summary_df = summary_df.rename(columns={
-            'MFCC_Mean': 'MFCC Mean',
-            'MFCC_Std': 'MFCC SD',
-            'MFCC_Range': 'MFCC Range'
-        }).reset_index(drop=True)
+        rename_map = {}
+        if 'MFCC_Mean' in summary_df.columns: rename_map['MFCC_Mean'] = 'MFCC Mean'
+        if 'MFCC_Std' in summary_df.columns: rename_map['MFCC_Std'] = 'MFCC SD'
+        if 'MFCC_Range' in summary_df.columns: rename_map['MFCC_Range'] = 'MFCC Range'
+        
+        summary_df = summary_df.rename(columns=rename_map).reset_index(drop=True)
+        summary_df = summary_df.loc[:, ~summary_df.columns.duplicated()]
         
         st.session_state["audio_results"]["summary_df"] = summary_df
 
+        def apply_severity_color(row):
+            severity = row.get('Severity', '')
+            if severity == "None/Minimal":
+                color = "background-color: #28a745; color: white;"
+            elif severity in ["Mild", "Moderate"]:
+                color = "background-color: #ffc107; color: black;"
+            else:
+                color = "background-color: #dc3545; color: white;"
+            return [color] * len(row)
+
         def render_summary_table(df):
-            df_visible = df.copy()
+            df_visible = df.loc[:, ~df.columns.duplicated()].copy()
             if 'Priority_Flag' in df_visible.columns:
                 df_visible = df_visible.drop(columns=['Priority_Flag'])
             df_visible.index = range(1, len(df_visible) + 1)
 
+            styled_df = df_visible.style \
+                .apply(apply_severity_color, axis=1) \
+                .format({
+                    'MFCC Mean': '{:.2f}',
+                    'MFCC SD': '{:.2f}',
+                    'MFCC Range': '{:.2f}'
+                }, na_rep="")
+
             st.markdown("**Audio Files Summary: Predicted Depression Severity Risk**")
-            st.dataframe(df_visible, use_container_width=True)
+            st.dataframe(styled_df, use_container_width=True)
 
         render_summary_table(summary_df)
 
