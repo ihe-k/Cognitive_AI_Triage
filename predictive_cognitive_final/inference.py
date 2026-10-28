@@ -1,14 +1,38 @@
 import os
 import pickle
+import gzip
+import joblib
+import urllib.request
 import numpy as np
 import pandas as pd
 from typing import List, Tuple
 
 # -------------------------------
-# Config
+# Config & Automated Model Download
 # -------------------------------
 ARTIFACTS_DIR = "artifacts"
+os.makedirs(ARTIFACTS_DIR, exist_ok=True)
+
 MODEL_PATH = os.path.join(ARTIFACTS_DIR, "severity_model.pkl")
+CLASSIFIER_PATH = "alzheimer_classifier.pkl.gz"
+
+# Your exact GitHub Release URLs
+SEVERITY_URL = "https://github.com/ihe-k/Cognitive_AI_Triage/releases/download/v1.0.0/severity_model.pkl.2"
+CLASSIFIER_URL = "https://github.com/ihe-k/Cognitive_AI_Triage/releases/download/v1.0.0/alzheimer_classifier.pkl.2"
+
+def download_models_if_missing():
+    """Automatically download model binaries from GitHub Releases on cloud boot if missing."""
+    if not os.path.exists(MODEL_PATH):
+        print("Downloading severity model from GitHub Releases...")
+        urllib.request.urlretrieve(SEVERITY_URL, MODEL_PATH)
+        
+    if not os.path.exists(CLASSIFIER_PATH):
+        print("Downloading classifier model from GitHub Releases...")
+        urllib.request.urlretrieve(CLASSIFIER_URL, CLASSIFIER_PATH)
+
+# Run download check on startup
+download_models_if_missing()
+
 DATA_DIR = "data"   # adjust if needed
 MODALITIES = ["audio", "fkps", "gaze_conf", "pose_conf", "text", "mri", "pet"]
 
@@ -22,6 +46,7 @@ model = artifact["model"]
 scaler = artifact["scaler"]
 feat_names_template = artifact["feature_names"]
 
+# Optional: Load classifier
 # -------------------------------
 # Utilities
 # -------------------------------
@@ -95,7 +120,6 @@ def predict_for_ids(split: str, ids: List[int]) -> pd.DataFrame:
 # Example usage
 # -------------------------------
 if __name__ == "__main__":
-    # Example: predict for participants 100 and 200 in the "test" split
     participant_ids = [300, 301]
     results = predict_for_ids("test", participant_ids)
     print(results)
