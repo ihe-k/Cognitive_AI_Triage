@@ -1,4 +1,3 @@
-Here is the complete, fully integrated Streamlit script. It includes the updated feature extraction function with Sobel edge gradients to help capture anatomical boundaries and tissue changes more reliably, alongside the mobile-optimized image preprocessor and secure temporary file cleanup.
 import os
 import gzip
 import glob
