@@ -168,7 +168,7 @@ MODALITIES = [
 # ALZHEIMER'S DISEASE IMAGE PROCESSING (MOBILE-OPTIMIZED PURE-PIL PIPELINE)
 # =============================================================================
 def load_and_preprocess_image(image_path: str, target_size: Tuple[int, int] = (224, 224)) -> Optional[np.ndarray]:
-    """Universal pure-PIL image preprocessor with EXIF rotation, transparency flattening, brain auto-crop, and noise clipping."""
+    """Universal pure-PIL image preprocessor with skull-stripping/ROI mask to focus strictly on brain tissue."""
     try:
         pil_img = Image.open(image_path)
         
@@ -189,7 +189,7 @@ def load_and_preprocess_image(image_path: str, target_size: Tuple[int, int] = (2
         pil_img = pil_img.convert('L')
         img_np = np.array(pil_img, dtype=np.float32) / 255.0
         
-        # 4. CRITICAL MOBILE FIX: Bounding Box Auto-Crop (removes variable mobile black borders/padding)
+        # 4. Bounding Box Auto-Crop (removes outer black border padding)
         non_empty_rows = np.where(img_np > 0.05)[0]
         non_empty_cols = np.where(img_np > 0.05)[1]
         if len(non_empty_rows) > 0 and len(non_empty_cols) > 0:
@@ -200,14 +200,26 @@ def load_and_preprocess_image(image_path: str, target_size: Tuple[int, int] = (2
         else:
             pil_cropped = pil_img
             
-        # 5. Resize to target size using high-quality Lanczos resampling
+        # 5. Resize to target size using Lanczos resampling
         resized_pil = pil_cropped.resize(target_size, Image.Resampling.LANCZOS)
         img_final = np.array(resized_pil, dtype=np.float32) / 255.0
         
-        # 6. Background black-level clipping (removes mobile JPEG compression noise)
-        img_final[img_final < 0.05] = 0.0
+        # 6. CRITICAL FIX: Anatomical Center Mask (Skull-Stripping Approximation)
+        # Suppresses jaw/neck/skull noise on coronal slices by applying an elliptical central mask
+        h, w = target_size
+        cy, cx = h // 2, w // 2
+        ry, rx = int(h * 0.42), int(w * 0.38) # Ellipse radii focusing on brain tissue
         
-        return img_final
+        y_grid, x_grid = np.ogrid[:h, :w]
+        mask = ((y_grid - cy)**2 / ry**2 + (x_grid - cx)**2 / rx**2) <= 1.0
+        
+        img_brain_only = np.zeros_like(img_final)
+        img_brain_only[mask] = img_final[mask]
+        
+        # 7. Background black-level clipping
+        img_brain_only[img_brain_only < 0.05] = 0.0
+        
+        return img_brain_only
 
     except Exception as e:
         print(f"Error processing image {image_path}: {e}")
