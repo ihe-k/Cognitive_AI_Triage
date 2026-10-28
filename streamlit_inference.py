@@ -168,7 +168,7 @@ MODALITIES = [
 # ALZHEIMER'S DISEASE IMAGE PROCESSING (MOBILE-OPTIMIZED PURE-PIL PIPELINE)
 # =============================================================================
 def load_and_preprocess_image(image_path: str, target_size: Tuple[int, int] = (224, 224)) -> Optional[np.ndarray]:
-    """Universal pure-PIL image preprocessor with EXIF rotation, transparency flattening, and standard scaling."""
+    """Universal pure-PIL image preprocessor with EXIF rotation, transparency flattening, and mobile background noise clipping."""
     try:
         pil_img = Image.open(image_path)
         
@@ -190,7 +190,12 @@ def load_and_preprocess_image(image_path: str, target_size: Tuple[int, int] = (2
         resized_pil = pil_img.resize(target_size, Image.Resampling.LANCZOS)
         
         # 4. Standard normalization to [0, 1] preserving true tissue intensity
-        return np.array(resized_pil, dtype=np.float32) / 255.0
+        img_np = np.array(resized_pil, dtype=np.float32) / 255.0
+        
+        # 5. CRITICAL MOBILE FIX: Clip mobile JPEG compression noise on black backgrounds
+        img_np[img_np < 0.08] = 0.0
+        
+        return img_np
 
     except Exception as e:
         print(f"Error processing image {image_path}: {e}")
@@ -1031,3 +1036,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
