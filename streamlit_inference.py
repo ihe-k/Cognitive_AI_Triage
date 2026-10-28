@@ -1,4 +1,3 @@
-
 import os
 import gzip
 import glob
@@ -9,6 +8,7 @@ import argparse
 import sys
 from typing import Dict, List, Tuple, Optional, Any
 import requests
+import streamlit as st  # <--- Move st import up here!
 import matplotlib.patches as mpatches
 import numpy as np
 import pandas as pd
@@ -71,12 +71,6 @@ try:
 except ImportError:
     OPENCV_AVAILABLE = False
     print("Warning: OpenCV (cv2) not available. Using PIL for image processing.")
-
-# Optional Streamlit import for GUI mode only
-try:
-    import streamlit as st  # type: ignore
-except Exception:
-    st = None
 
 # Audio processing
 try:
