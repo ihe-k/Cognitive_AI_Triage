@@ -7,6 +7,7 @@ import random
 import argparse
 import sys
 from typing import Dict, List, Tuple, Optional, Any
+from io import BytesIO
 import requests
 import streamlit as st
 import matplotlib.patches as mpatches
@@ -167,29 +168,44 @@ MODALITIES = [
 # =============================================================================
 # ALZHEIMER'S DISEASE IMAGE PROCESSING (MOBILE-OPTIMIZED PURE-PIL PIPELINE)
 # =============================================================================
-def load_and_preprocess_image(image_path: str, target_size: Tuple[int, int] = (224, 224)) -> Optional[np.ndarray]:
-    """Universal pure-PIL image preprocessor with skull-stripping/ROI mask to focus strictly on brain tissue."""
+def load_and_preprocess_image(source, target_size: Tuple[int, int] = (224, 224)) -> Optional[np.ndarray]:
+    """
+    Universal pure-PIL preprocessor.
+    Accepts: file path (str), Streamlit UploadedFile, bytes, or already-opened PIL Image.
+    Handles EXIF orientation (critical for phones), RGBA→RGB, auto-crop, resize,
+    and brain-centered elliptical mask (skull-stripping approximation).
+    """
     try:
-        pil_img = Image.open(image_path)
-        
-        # 1. Auto-correct mobile orientation metadata (EXIF transpose)
+        # 1. Open from whatever was passed
+        if isinstance(source, (str, os.PathLike)):
+            pil_img = Image.open(source)
+        elif hasattr(source, "getvalue"):          # Streamlit UploadedFile
+            pil_img = Image.open(BytesIO(source.getvalue()))
+        elif isinstance(source, bytes):
+            pil_img = Image.open(BytesIO(source))
+        elif isinstance(source, Image.Image):
+            pil_img = source
+        else:
+            raise ValueError(f"Unsupported source type: {type(source)}")
+
+        # 2. Auto-correct mobile orientation metadata (EXIF transpose)
         pil_img = ImageOps.exif_transpose(pil_img)
-        
-        # 2. Flatten mobile RGBA / transparency / palette profiles onto a solid white background
+
+        # 3. Flatten mobile RGBA / transparency / palette profiles onto a solid white background
         if pil_img.mode in ('RGBA', 'LA') or (pil_img.mode == 'P' and 'transparency' in pil_img.info):
             background = Image.new("RGB", pil_img.size, (255, 255, 255))
             if pil_img.mode == 'P':
                 pil_img = pil_img.convert('RGBA')
-            background.paste(pil_img, mask=pil_img.split()[3])
+            background.paste(pil_img, mask=pil_img.split()[-1])
             pil_img = background
         elif pil_img.mode != 'RGB':
             pil_img = pil_img.convert('RGB')
-            
-        # 3. Convert to grayscale and normalize to [0, 1]
+
+        # 4. Convert to grayscale and normalize to [0, 1]
         pil_img = pil_img.convert('L')
         img_np = np.array(pil_img, dtype=np.float32) / 255.0
-        
-        # 4. Bounding Box Auto-Crop (removes outer black border padding)
+
+        # 5. Bounding Box Auto-Crop (removes outer black border padding)
         non_empty_rows = np.where(img_np > 0.05)[0]
         non_empty_cols = np.where(img_np > 0.05)[1]
         if len(non_empty_rows) > 0 and len(non_empty_cols) > 0:
@@ -199,30 +215,30 @@ def load_and_preprocess_image(image_path: str, target_size: Tuple[int, int] = (2
             pil_cropped = Image.fromarray((cropped * 255).astype(np.uint8))
         else:
             pil_cropped = pil_img
-            
-        # 5. Resize to target size using Lanczos resampling
+
+        # 6. Resize to target size using Lanczos resampling
         resized_pil = pil_cropped.resize(target_size, Image.Resampling.LANCZOS)
         img_final = np.array(resized_pil, dtype=np.float32) / 255.0
-        
-        # 6. CRITICAL FIX: Anatomical Center Mask (Skull-Stripping Approximation)
+
+        # 7. CRITICAL FIX: Anatomical Center Mask (Skull-Stripping Approximation)
         # Suppresses jaw/neck/skull noise on coronal slices by applying an elliptical central mask
         h, w = target_size
         cy, cx = h // 2, w // 2
-        ry, rx = int(h * 0.42), int(w * 0.38) # Ellipse radii focusing on brain tissue
-        
+        ry, rx = int(h * 0.42), int(w * 0.38)  # Ellipse radii focusing on brain tissue
+
         y_grid, x_grid = np.ogrid[:h, :w]
         mask = ((y_grid - cy)**2 / ry**2 + (x_grid - cx)**2 / rx**2) <= 1.0
-        
+
         img_brain_only = np.zeros_like(img_final)
         img_brain_only[mask] = img_final[mask]
-        
-        # 7. Background black-level clipping
+
+        # 8. Background black-level clipping
         img_brain_only[img_brain_only < 0.05] = 0.0
-        
+
         return img_brain_only
 
     except Exception as e:
-        print(f"Error processing image {image_path}: {e}")
+        print(f"Error processing image: {e}")
         return None
 
 def extract_image_features(img: np.ndarray, target_features: int) -> np.ndarray:
@@ -232,10 +248,10 @@ def extract_image_features(img: np.ndarray, target_features: int) -> np.ndarray:
         std_val = np.std(img)
         min_val = np.min(img)
         max_val = np.max(img)
-        
+
         hist, _ = np.histogram(img.flatten(), bins=32, range=(0, 1))
         hist = hist.astype(np.float32) / (np.sum(hist) + 1e-6)
-        
+
         h, w = img.shape
         h2, w2 = h // 2, w // 2
         quadrants = [
@@ -245,13 +261,13 @@ def extract_image_features(img: np.ndarray, target_features: int) -> np.ndarray:
         quad_stats = []
         for q in quadrants:
             quad_stats.extend([np.mean(q), np.std(q)])
-        
+
         base_features = np.concatenate([
             [mean_val, std_val, min_val, max_val],
             hist,
             np.array(quad_stats, dtype=np.float32)
         ])
-        
+
         if base_features.size < target_features:
             repeats = int(np.ceil(target_features / base_features.size))
             features = np.tile(base_features, repeats)[:target_features]
@@ -259,7 +275,7 @@ def extract_image_features(img: np.ndarray, target_features: int) -> np.ndarray:
             features = base_features[:target_features]
         else:
             features = base_features
-            
+
         return features.astype(np.float32)
     except Exception as e:
         print(f"Error extracting features: {e}")
@@ -275,42 +291,35 @@ def check_alzheimer_model() -> bool:
     except Exception as e:
         print(f"Model load error: {e}")
         return False
-    
+
 def classify_alzheimer_image(image_file, alzheimer_model: Dict[str, Any]) -> Tuple[str, float, np.ndarray]:
+    """
+    Mobile-safe version: never writes to disk.
+    Works directly with Streamlit UploadedFile, bytes, or path.
+    """
     try:
-        temp_path = f"temp_upload_{random.randint(1000, 9999)}.png"
-        with open(temp_path, "wb") as f:
-            f.write(image_file.getbuffer())
-        
-        img = load_and_preprocess_image(temp_path)
+        img = load_and_preprocess_image(image_file)
         if img is None:
-            if os.path.exists(temp_path):
-                os.remove(temp_path)
-            return "Error: Could not load image", 0.0, np.array([])
-        
+            return "Error: Could not load / preprocess image", 0.0, np.array([])
+
         scaler = alzheimer_model["scaler"]
         classifier = alzheimer_model["classifier"]
         label_encoder = alzheimer_model["label_encoder"]
-        
+
         target_features = getattr(scaler, 'n_features_in_', 50436)
         features = extract_image_features(img, target_features=target_features)
-        
+
         features_scaled = scaler.transform(features.reshape(1, -1))
-        
+
         prediction = classifier.predict(features_scaled)[0]
         probabilities = classifier.predict_proba(features_scaled)[0]
-        
+
         class_name = label_encoder.inverse_transform([prediction])[0]
         confidence = float(np.max(probabilities) * 100)
-        
-        if os.path.exists(temp_path):
-            os.remove(temp_path)
-        
+
         return str(class_name), confidence, img
-        
+
     except Exception as e:
-        if 'temp_path' in locals() and os.path.exists(temp_path):
-            os.remove(temp_path)
         return f"Error: {str(e)}", 0.0, np.array([])
 
 # =============================================================================
@@ -668,7 +677,7 @@ def run_app():
                 st.markdown('<div class="cell-header">Upload Audio Files</div>', unsafe_allow_html=True)
                 audio_files = st.file_uploader(
                     "Upload Audio Files",
-                    type=["wav", "mp3", "flac","aac"],
+                    type=["wav", "mp3", "flac", "aac"],
                     accept_multiple_files=True,
                     key="audio_uploads",
                     label_visibility="collapsed",
@@ -696,11 +705,12 @@ def run_app():
             with st.container(border=True):
                 st.markdown('<div class="cell-header">Upload Image Files</div>', unsafe_allow_html=True)
                 st.file_uploader(
-                    "Upload Image Files",
-                    type=["jpg", "jpeg", "png", "bmp", "tif", "tiff"],
+                    "Upload Image Files (phone photos & HEIC supported)",
+                    type=["jpg", "jpeg", "png", "bmp", "tif", "tiff", "heic", "heif", "webp"],
                     accept_multiple_files=True,
                     key="image_uploads",
                     label_visibility="collapsed",
+                    help="On iPhone you can take a photo or choose from Photos. HEIC is supported."
                 )
 
     if check_alzheimer_model():
@@ -720,14 +730,24 @@ def run_app():
                         st.image(uploaded_file, caption=f"Uploaded: {uploaded_file.name}", use_container_width=True)
                     with col2:
                         if st.button(f"🔍 Classify Image {i+1}", key=f"classify_{i}"):
-                            with st.spinner("Classifying image..."):
+                            with st.spinner("Classifying image (mobile-safe pipeline)..."):
                                 alzheimer_model = st.session_state["alzheimer_model"]
-                                prediction, confidence, processed_img = classify_alzheimer_image(uploaded_file, alzheimer_model)
+                                prediction, confidence, processed_img = classify_alzheimer_image(
+                                    uploaded_file, alzheimer_model
+                                )
                                 if prediction.startswith("Error"):
                                     st.error(prediction)
                                 else:
                                     st.success(f"**Predicted Stage:** {prediction}")
                                     st.caption(f"Confidence: {confidence:.1f}%")
+                                    # Optional: show the preprocessed brain-only view
+                                    if processed_img is not None and processed_img.size > 0:
+                                        st.image(
+                                            processed_img,
+                                            caption="Preprocessed (brain mask applied)",
+                                            clamp=True,
+                                            use_container_width=True
+                                        )
         else:
             st.info("Upload MRI images to predict Alzheimer's risk")
     else:
