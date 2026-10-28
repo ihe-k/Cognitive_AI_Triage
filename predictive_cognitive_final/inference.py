@@ -16,7 +16,6 @@ os.makedirs(ARTIFACTS_DIR, exist_ok=True)
 MODEL_PATH = os.path.join(ARTIFACTS_DIR, "severity_model.pkl")
 CLASSIFIER_PATH = "alzheimer_classifier.pkl.gz"
 
-# Your exact GitHub Release URLs
 SEVERITY_URL = "https://github.com/ihe-k/Cognitive_AI_Triage/releases/download/v1.0.0/severity_model.pkl.2"
 CLASSIFIER_URL = "https://github.com/ihe-k/Cognitive_AI_Triage/releases/download/v1.0.0/alzheimer_classifier.pkl.2"
 
