@@ -166,21 +166,25 @@ MODALITIES = [
 ]
 
 # =============================================================================
-# ALZHEIMER'S DISEASE IMAGE PROCESSING (MOBILE-OPTIMIZED PURE-PIL PIPELINE)
+# ALZHEIMER'S DISEASE IMAGE PROCESSING - ULTRA SIMPLE (matches desktop best)
 # =============================================================================
 def load_and_preprocess_image(source, target_size: Tuple[int, int] = (224, 224)) -> Optional[np.ndarray]:
     """
-    Universal pure-PIL preprocessor.
-    Accepts: file path (str), Streamlit UploadedFile, bytes, or already-opened PIL Image.
-    Handles EXIF orientation (critical for phones), RGBA→RGB, auto-crop, resize,
-    and brain-centered elliptical mask (skull-stripping approximation).
+    Ultra-simple preprocessing that matches typical desktop behaviour:
+    - EXIF orientation fix
+    - Grayscale
+    - Resize to 224×224
+    - Divide by 255
+    No auto-crop, no elliptical mask.
     """
     try:
-        # 1. Open from whatever was passed
         if isinstance(source, (str, os.PathLike)):
             pil_img = Image.open(source)
-        elif hasattr(source, "getvalue"):          # Streamlit UploadedFile
-            pil_img = Image.open(BytesIO(source.getvalue()))
+        elif hasattr(source, "getvalue"):
+            data = source.getvalue()
+            if not data or len(data) < 50:
+                raise ValueError("Empty upload received")
+            pil_img = Image.open(BytesIO(data))
         elif isinstance(source, bytes):
             pil_img = Image.open(BytesIO(source))
         elif isinstance(source, Image.Image):
@@ -188,98 +192,41 @@ def load_and_preprocess_image(source, target_size: Tuple[int, int] = (224, 224))
         else:
             raise ValueError(f"Unsupported source type: {type(source)}")
 
-        # 2. Auto-correct mobile orientation metadata (EXIF transpose)
+        # Critical for mobile photos
         pil_img = ImageOps.exif_transpose(pil_img)
 
-        # 3. Flatten mobile RGBA / transparency / palette profiles onto a solid white background
-        if pil_img.mode in ('RGBA', 'LA') or (pil_img.mode == 'P' and 'transparency' in pil_img.info):
+        # Clean conversion
+        if pil_img.mode in ("RGBA", "LA") or (pil_img.mode == "P" and "transparency" in pil_img.info):
             background = Image.new("RGB", pil_img.size, (255, 255, 255))
-            if pil_img.mode == 'P':
-                pil_img = pil_img.convert('RGBA')
+            if pil_img.mode == "P":
+                pil_img = pil_img.convert("RGBA")
             background.paste(pil_img, mask=pil_img.split()[-1])
             pil_img = background
-        elif pil_img.mode != 'RGB':
-            pil_img = pil_img.convert('RGB')
+        elif pil_img.mode != "RGB":
+            pil_img = pil_img.convert("RGB")
 
-        # 4. Convert to grayscale and normalize to [0, 1]
-        pil_img = pil_img.convert('L')
-        img_np = np.array(pil_img, dtype=np.float32) / 255.0
-
-        # 5. Bounding Box Auto-Crop (removes outer black border padding)
-        non_empty_rows = np.where(img_np > 0.05)[0]
-        non_empty_cols = np.where(img_np > 0.05)[1]
-        if len(non_empty_rows) > 0 and len(non_empty_cols) > 0:
-            ymin, ymax = non_empty_rows[0], non_empty_rows[-1]
-            xmin, xmax = non_empty_cols[0], non_empty_cols[-1]
-            cropped = img_np[ymin:ymax+1, xmin:xmax+1]
-            pil_cropped = Image.fromarray((cropped * 255).astype(np.uint8))
-        else:
-            pil_cropped = pil_img
-
-        # 6. Resize to target size using Lanczos resampling
-        resized_pil = pil_cropped.resize(target_size, Image.Resampling.LANCZOS)
-        img_final = np.array(resized_pil, dtype=np.float32) / 255.0
-
-        # 7. CRITICAL FIX: Anatomical Center Mask (Skull-Stripping Approximation)
-        # Suppresses jaw/neck/skull noise on coronal slices by applying an elliptical central mask
-        h, w = target_size
-        cy, cx = h // 2, w // 2
-        ry, rx = int(h * 0.42), int(w * 0.38)  # Ellipse radii focusing on brain tissue
-
-        y_grid, x_grid = np.ogrid[:h, :w]
-        mask = ((y_grid - cy)**2 / ry**2 + (x_grid - cx)**2 / rx**2) <= 1.0
-
-        img_brain_only = np.zeros_like(img_final)
-        img_brain_only[mask] = img_final[mask]
-
-        # 8. Background black-level clipping
-        img_brain_only[img_brain_only < 0.05] = 0.0
-
-        return img_brain_only
+        pil_img = pil_img.convert("L")
+        pil_img = pil_img.resize(target_size, Image.Resampling.LANCZOS)
+        img = np.array(pil_img, dtype=np.float32) / 255.0
+        return img
 
     except Exception as e:
-        print(f"Error processing image: {e}")
+        print(f"Image processing error: {e}")
         return None
 
-def extract_image_features(img: np.ndarray, target_features: int) -> np.ndarray:
-    """Extract robust statistical and histogram features matching model expectations."""
+
+def extract_image_features(img: np.ndarray, target_features: int = 50436) -> np.ndarray:
+    """Flatten to the exact pixel features the model expects."""
     try:
-        mean_val = np.mean(img)
-        std_val = np.std(img)
-        min_val = np.min(img)
-        max_val = np.max(img)
-
-        hist, _ = np.histogram(img.flatten(), bins=32, range=(0, 1))
-        hist = hist.astype(np.float32) / (np.sum(hist) + 1e-6)
-
-        h, w = img.shape
-        h2, w2 = h // 2, w // 2
-        quadrants = [
-            img[:h2, :w2], img[:h2, w2:],
-            img[h2:, :w2], img[h2:, w2:]
-        ]
-        quad_stats = []
-        for q in quadrants:
-            quad_stats.extend([np.mean(q), np.std(q)])
-
-        base_features = np.concatenate([
-            [mean_val, std_val, min_val, max_val],
-            hist,
-            np.array(quad_stats, dtype=np.float32)
-        ])
-
-        if base_features.size < target_features:
-            repeats = int(np.ceil(target_features / base_features.size))
-            features = np.tile(base_features, repeats)[:target_features]
-        elif base_features.size > target_features:
-            features = base_features[:target_features]
-        else:
-            features = base_features
-
-        return features.astype(np.float32)
+        flat = img.flatten().astype(np.float32)
+        features = np.zeros(target_features, dtype=np.float32)
+        n = min(flat.size, target_features)
+        features[:n] = flat[:n]
+        return features
     except Exception as e:
-        print(f"Error extracting features: {e}")
+        print(f"Feature extraction error: {e}")
         return np.zeros(target_features, dtype=np.float32)
+
 
 def check_alzheimer_model() -> bool:
     try:
@@ -292,11 +239,9 @@ def check_alzheimer_model() -> bool:
         print(f"Model load error: {e}")
         return False
 
+
 def classify_alzheimer_image(image_file, alzheimer_model: Dict[str, Any]) -> Tuple[str, float, np.ndarray]:
-    """
-    Mobile-safe version: never writes to disk.
-    Works directly with Streamlit UploadedFile, bytes, or path.
-    """
+    """Mobile-safe classification using simple pixel features."""
     try:
         img = load_and_preprocess_image(image_file)
         if img is None:
@@ -306,11 +251,10 @@ def classify_alzheimer_image(image_file, alzheimer_model: Dict[str, Any]) -> Tup
         classifier = alzheimer_model["classifier"]
         label_encoder = alzheimer_model["label_encoder"]
 
-        target_features = getattr(scaler, 'n_features_in_', 50436)
+        target_features = getattr(scaler, "n_features_in_", 50436)
         features = extract_image_features(img, target_features=target_features)
 
         features_scaled = scaler.transform(features.reshape(1, -1))
-
         prediction = classifier.predict(features_scaled)[0]
         probabilities = classifier.predict_proba(features_scaled)[0]
 
@@ -321,6 +265,7 @@ def classify_alzheimer_image(image_file, alzheimer_model: Dict[str, Any]) -> Tup
 
     except Exception as e:
         return f"Error: {str(e)}", 0.0, np.array([])
+
 
 # =============================================================================
 # File pattern helpers
@@ -598,13 +543,7 @@ def run_app():
             if "label_encoder" in alzheimer_model:
                 class_labels = list(alzheimer_model["label_encoder"].classes_)
             else:
-                class_labels = [
-                    "Non-Demented",
-                    "Very Mild Dementia",
-                    "Mild Dementia",
-                    "Moderate Dementia",
-                    "Severe Dementia"
-                ]
+                class_labels = ["Mild Dementia", "Moderate Dementia", "Non Demented"]
 
             st.subheader("Alzheimer's Classifier Performance")
 
@@ -710,7 +649,7 @@ def run_app():
                     accept_multiple_files=True,
                     key="image_uploads",
                     label_visibility="collapsed",
-                    help="On iPhone you can take a photo or choose from Photos. HEIC is supported."
+                    help="On iPhone prefer Gallery over Take Photo for best results."
                 )
 
     if check_alzheimer_model():
@@ -730,7 +669,7 @@ def run_app():
                         st.image(uploaded_file, caption=f"Uploaded: {uploaded_file.name}", use_container_width=True)
                     with col2:
                         if st.button(f"🔍 Classify Image {i+1}", key=f"classify_{i}"):
-                            with st.spinner("Classifying image (mobile-safe pipeline)..."):
+                            with st.spinner("Classifying..."):
                                 alzheimer_model = st.session_state["alzheimer_model"]
                                 prediction, confidence, processed_img = classify_alzheimer_image(
                                     uploaded_file, alzheimer_model
@@ -740,14 +679,8 @@ def run_app():
                                 else:
                                     st.success(f"**Predicted Stage:** {prediction}")
                                     st.caption(f"Confidence: {confidence:.1f}%")
-                                    # Optional: show the preprocessed brain-only view
                                     if processed_img is not None and processed_img.size > 0:
-                                        st.image(
-                                            processed_img,
-                                            caption="Preprocessed (brain mask applied)",
-                                            clamp=True,
-                                            use_container_width=True
-                                        )
+                                        st.image(processed_img, caption="Preprocessed image sent to model", clamp=True, use_container_width=True)
         else:
             st.info("Upload MRI images to predict Alzheimer's risk")
     else:
@@ -1067,16 +1000,3 @@ def run_app():
         nx.draw(G_net_, pos, node_color=node_colors, node_size=20, with_labels=False, ax=ax_net, edge_color='#6e6e6e')
     
         legend_patches = [mpatches.Patch(color=color, label=label_map[state]) for state, color in c_map.items()]
-        ax_net.legend(handles=legend_patches, title="Node State", loc='best')
-    
-        st.pyplot(fig_net, use_container_width=True)
-        plt.close(fig_net)
-
-def main():
-    if "streamlit" in sys.argv[0].lower() or os.environ.get("STREAMLIT_SERVER_PORT"):
-        run_app()
-    else:
-        pass
-
-if __name__ == "__main__":
-    main()
