@@ -168,7 +168,7 @@ MODALITIES = [
 # ALZHEIMER'S DISEASE IMAGE PROCESSING (MOBILE-OPTIMIZED PURE-PIL PIPELINE)
 # =============================================================================
 def load_and_preprocess_image(image_path: str, target_size: Tuple[int, int] = (224, 224)) -> Optional[np.ndarray]:
-    """Universal pure-PIL image preprocessor with EXIF rotation, transparency flattening, and percentile contrast normalization."""
+    """Universal pure-PIL image preprocessor with EXIF rotation, transparency flattening, and standard scaling."""
     try:
         pil_img = Image.open(image_path)
         
@@ -185,19 +185,11 @@ def load_and_preprocess_image(image_path: str, target_size: Tuple[int, int] = (2
         elif pil_img.mode != 'RGB':
             pil_img = pil_img.convert('RGB')
             
-        # 3. Convert to grayscale numpy array
+        # 3. Convert to grayscale and resize cleanly using high-quality Lanczos resampling
         pil_img = pil_img.convert('L')
-        img_np = np.array(pil_img, dtype=np.float32)
+        resized_pil = pil_img.resize(target_size, Image.Resampling.LANCZOS)
         
-        # 4. Percentile contrast normalization (eliminates mobile vs. desktop brightness bias)
-        p2, p98 = np.percentile(img_np, (2, 98))
-        if p98 > p2:
-            img_np = np.clip((img_np - p2) / (p98 - p2), 0, 1)
-        else:
-            img_np = img_np / 255.0
-            
-        # 5. High-quality resize back to target size using Lanczos resampling
-        resized_pil = Image.fromarray((img_np * 255).astype(np.uint8)).resize(target_size, Image.Resampling.LANCZOS)
+        # 4. Standard normalization to [0, 1] preserving true tissue intensity
         return np.array(resized_pil, dtype=np.float32) / 255.0
 
     except Exception as e:
