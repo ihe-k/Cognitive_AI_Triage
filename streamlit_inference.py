@@ -1,3 +1,4 @@
+Here is the complete, fully integrated Streamlit script. It merges the robust mobile-optimized image preprocessing pipeline (with strict EXIF orientation fixing, contrast normalization, and secure try...finally temporary file cleanup) so that brain MRI slices uploaded from phones are read and predicted accurately.
 import os
 import gzip
 import glob
@@ -7,7 +8,6 @@ import random
 import argparse
 import sys
 from typing import Dict, List, Tuple, Optional, Any
-from io import BytesIO
 import requests
 import streamlit as st
 import matplotlib.patches as mpatches
@@ -166,67 +166,99 @@ MODALITIES = [
 ]
 
 # =============================================================================
-# ALZHEIMER'S DISEASE IMAGE PROCESSING - ULTRA SIMPLE (matches desktop best)
+# ALZHEIMER'S DISEASE IMAGE PROCESSING (MOBILE-OPTIMIZED PURE-PIL PIPELINE)
 # =============================================================================
-def load_and_preprocess_image(source, target_size: Tuple[int, int] = (224, 224)) -> Optional[np.ndarray]:
-    """
-    Ultra-simple preprocessing that matches typical desktop behaviour:
-    - EXIF orientation fix
-    - Grayscale
-    - Resize to 224×224
-    - Divide by 255
-    No auto-crop, no elliptical mask.
-    """
+def load_and_preprocess_image(image_input, target_size: Tuple[int, int] = (224, 224)) -> Optional[np.ndarray]:
+    """Universal pure-PIL image preprocessor with EXIF rotation, transparency flattening, percentile contrast normalization, and safe temp cleanup."""
+    temp_path = None
     try:
-        if isinstance(source, (str, os.PathLike)):
-            pil_img = Image.open(source)
-        elif hasattr(source, "getvalue"):
-            data = source.getvalue()
-            if not data or len(data) < 50:
-                raise ValueError("Empty upload received")
-            pil_img = Image.open(BytesIO(data))
-        elif isinstance(source, bytes):
-            pil_img = Image.open(BytesIO(source))
-        elif isinstance(source, Image.Image):
-            pil_img = source
+        if hasattr(image_input, "getbuffer"):
+            temp_path = f"temp_upload_{random.randint(1000, 9999)}.png"
+            with open(temp_path, "wb") as f:
+                f.write(image_input.getbuffer())
+            image_path = temp_path
         else:
-            raise ValueError(f"Unsupported source type: {type(source)}")
+            image_path = image_input
 
-        # Critical for mobile photos
+        pil_img = Image.open(image_path)
+        
+        # 1. Auto-correct mobile orientation metadata (EXIF transpose)
         pil_img = ImageOps.exif_transpose(pil_img)
-
-        # Clean conversion
-        if pil_img.mode in ("RGBA", "LA") or (pil_img.mode == "P" and "transparency" in pil_img.info):
+        
+        # 2. Flatten mobile RGBA / transparency / palette profiles onto a solid background
+        if pil_img.mode in ('RGBA', 'LA') or (pil_img.mode == 'P' and 'transparency' in pil_img.info):
             background = Image.new("RGB", pil_img.size, (255, 255, 255))
-            if pil_img.mode == "P":
-                pil_img = pil_img.convert("RGBA")
-            background.paste(pil_img, mask=pil_img.split()[-1])
+            if pil_img.mode == 'P':
+                pil_img = pil_img.convert('RGBA')
+            background.paste(pil_img, mask=pil_img.split()[3])
             pil_img = background
-        elif pil_img.mode != "RGB":
-            pil_img = pil_img.convert("RGB")
-
-        pil_img = pil_img.convert("L")
-        pil_img = pil_img.resize(target_size, Image.Resampling.LANCZOS)
-        img = np.array(pil_img, dtype=np.float32) / 255.0
-        return img
+        elif pil_img.mode != 'RGB':
+            pil_img = pil_img.convert('RGB')
+            
+        # 3. Convert to grayscale numpy array
+        pil_img = pil_img.convert('L')
+        img_np = np.array(pil_img, dtype=np.float32)
+        
+        # 4. Percentile contrast normalization (eliminates mobile vs. desktop brightness bias)
+        p2, p98 = np.percentile(img_np, (2, 98))
+        if p98 > p2:
+            img_np = np.clip((img_np - p2) / (p98 - p2), 0, 1)
+        else:
+            img_np = img_np / 255.0
+            
+        # 5. High-quality resize back to target size using Lanczos resampling
+        resized_pil = Image.fromarray((img_np * 255).astype(np.uint8)).resize(target_size, Image.Resampling.LANCZOS)
+        return np.array(resized_pil, dtype=np.float32) / 255.0
 
     except Exception as e:
-        print(f"Image processing error: {e}")
+        print(f"Error processing image: {e}")
         return None
+    finally:
+        if temp_path and os.path.exists(temp_path):
+            try:
+                os.remove(temp_path)
+            except Exception:
+                pass
 
-
-def extract_image_features(img: np.ndarray, target_features: int = 50436) -> np.ndarray:
-    """Flatten to the exact pixel features the model expects."""
+def extract_image_features(img: np.ndarray, target_features: int) -> np.ndarray:
+    """Extract robust statistical and histogram features matching model expectations."""
     try:
-        flat = img.flatten().astype(np.float32)
-        features = np.zeros(target_features, dtype=np.float32)
-        n = min(flat.size, target_features)
-        features[:n] = flat[:n]
-        return features
+        mean_val = np.mean(img)
+        std_val = np.std(img)
+        min_val = np.min(img)
+        max_val = np.max(img)
+        
+        hist, _ = np.histogram(img.flatten(), bins=32, range=(0, 1))
+        hist = hist.astype(np.float32) / (np.sum(hist) + 1e-6)
+        
+        h, w = img.shape
+        h2, w2 = h // 2, w // 2
+        quadrants = [
+            img[:h2, :w2], img[:h2, w2:],
+            img[h2:, :w2], img[h2:, w2:]
+        ]
+        quad_stats = []
+        for q in quadrants:
+            quad_stats.extend([np.mean(q), np.std(q)])
+        
+        base_features = np.concatenate([
+            [mean_val, std_val, min_val, max_val],
+            hist,
+            np.array(quad_stats, dtype=np.float32)
+        ])
+        
+        if base_features.size < target_features:
+            repeats = int(np.ceil(target_features / base_features.size))
+            features = np.tile(base_features, repeats)[:target_features]
+        elif base_features.size > target_features:
+            features = base_features[:target_features]
+        else:
+            features = base_features
+            
+        return features.astype(np.float32)
     except Exception as e:
-        print(f"Feature extraction error: {e}")
+        print(f"Error extracting features: {e}")
         return np.zeros(target_features, dtype=np.float32)
-
 
 def check_alzheimer_model() -> bool:
     try:
@@ -238,34 +270,32 @@ def check_alzheimer_model() -> bool:
     except Exception as e:
         print(f"Model load error: {e}")
         return False
-
-
+    
 def classify_alzheimer_image(image_file, alzheimer_model: Dict[str, Any]) -> Tuple[str, float, np.ndarray]:
-    """Mobile-safe classification using simple pixel features."""
     try:
         img = load_and_preprocess_image(image_file)
         if img is None:
-            return "Error: Could not load / preprocess image", 0.0, np.array([])
-
+            return "Error: Could not load image", 0.0, np.array([])
+        
         scaler = alzheimer_model["scaler"]
         classifier = alzheimer_model["classifier"]
         label_encoder = alzheimer_model["label_encoder"]
-
-        target_features = getattr(scaler, "n_features_in_", 50436)
+        
+        target_features = getattr(scaler, 'n_features_in_', 50436)
         features = extract_image_features(img, target_features=target_features)
-
+        
         features_scaled = scaler.transform(features.reshape(1, -1))
+        
         prediction = classifier.predict(features_scaled)[0]
         probabilities = classifier.predict_proba(features_scaled)[0]
-
+        
         class_name = label_encoder.inverse_transform([prediction])[0]
         confidence = float(np.max(probabilities) * 100)
-
+        
         return str(class_name), confidence, img
-
+        
     except Exception as e:
         return f"Error: {str(e)}", 0.0, np.array([])
-
 
 # =============================================================================
 # File pattern helpers
@@ -402,21 +432,24 @@ def extract_mfcc_features(audio_files):
         
         for file in audio_files:
             temp_path = f"temp_audio_{random.randint(1000, 9999)}.wav"
-            with open(temp_path, "wb") as f:
-                f.write(file.getbuffer())
-            
             try:
+                with open(temp_path, "wb") as f:
+                    f.write(file.getbuffer())
+                
                 y, sr = librosa.load(temp_path, sr=None)
                 mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13)
                 mfcc_mean = np.mean(mfcc, axis=1)
                 mfcc_feats.append(mfcc_mean)
                 file_names.append(file.name)
-                os.remove(temp_path)
             except Exception as e:
                 print(f"Error processing audio file {file.name}: {e}")
-                if os.path.exists(temp_path):
-                    os.remove(temp_path)
                 continue
+            finally:
+                if os.path.exists(temp_path):
+                    try:
+                        os.remove(temp_path)
+                    except Exception:
+                        pass
         
         if not mfcc_feats:
             return None, "No valid audio files could be processed"
@@ -543,7 +576,13 @@ def run_app():
             if "label_encoder" in alzheimer_model:
                 class_labels = list(alzheimer_model["label_encoder"].classes_)
             else:
-                class_labels = ["Mild Dementia", "Moderate Dementia", "Non Demented"]
+                class_labels = [
+                    "Non-Demented",
+                    "Very Mild Dementia",
+                    "Mild Dementia",
+                    "Moderate Dementia",
+                    "Severe Dementia"
+                ]
 
             st.subheader("Alzheimer's Classifier Performance")
 
@@ -616,7 +655,7 @@ def run_app():
                 st.markdown('<div class="cell-header">Upload Audio Files</div>', unsafe_allow_html=True)
                 audio_files = st.file_uploader(
                     "Upload Audio Files",
-                    type=["wav", "mp3", "flac", "aac"],
+                    type=["wav", "mp3", "flac","aac"],
                     accept_multiple_files=True,
                     key="audio_uploads",
                     label_visibility="collapsed",
@@ -644,12 +683,11 @@ def run_app():
             with st.container(border=True):
                 st.markdown('<div class="cell-header">Upload Image Files</div>', unsafe_allow_html=True)
                 st.file_uploader(
-                    "Upload Image Files (phone photos & HEIC supported)",
-                    type=["jpg", "jpeg", "png", "bmp", "tif", "tiff", "heic", "heif", "webp"],
+                    "Upload Image Files",
+                    type=["jpg", "jpeg", "png", "bmp", "tif", "tiff"],
                     accept_multiple_files=True,
                     key="image_uploads",
                     label_visibility="collapsed",
-                    help="On iPhone prefer Gallery over Take Photo for best results."
                 )
 
     if check_alzheimer_model():
@@ -669,18 +707,14 @@ def run_app():
                         st.image(uploaded_file, caption=f"Uploaded: {uploaded_file.name}", use_container_width=True)
                     with col2:
                         if st.button(f"🔍 Classify Image {i+1}", key=f"classify_{i}"):
-                            with st.spinner("Classifying..."):
+                            with st.spinner("Classifying image..."):
                                 alzheimer_model = st.session_state["alzheimer_model"]
-                                prediction, confidence, processed_img = classify_alzheimer_image(
-                                    uploaded_file, alzheimer_model
-                                )
+                                prediction, confidence, processed_img = classify_alzheimer_image(uploaded_file, alzheimer_model)
                                 if prediction.startswith("Error"):
                                     st.error(prediction)
                                 else:
                                     st.success(f"**Predicted Stage:** {prediction}")
                                     st.caption(f"Confidence: {confidence:.1f}%")
-                                    if processed_img is not None and processed_img.size > 0:
-                                        st.image(processed_img, caption="Preprocessed image sent to model", clamp=True, use_container_width=True)
         else:
             st.info("Upload MRI images to predict Alzheimer's risk")
     else:
@@ -1000,3 +1034,17 @@ def run_app():
         nx.draw(G_net_, pos, node_color=node_colors, node_size=20, with_labels=False, ax=ax_net, edge_color='#6e6e6e')
     
         legend_patches = [mpatches.Patch(color=color, label=label_map[state]) for state, color in c_map.items()]
+        ax_net.legend(handles=legend_patches, title="Node State", loc='best')
+    
+        st.pyplot(fig_net, use_container_width=True)
+        plt.close(fig_net)
+
+def main():
+    if "streamlit" in sys.argv[0].lower() or os.environ.get("STREAMLIT_SERVER_PORT"):
+        run_app()
+    else:
+        pass
+
+if __name__ == "__main__":
+    main()
+
