@@ -1,3 +1,4 @@
+
 import os
 import gzip
 import glob
@@ -165,7 +166,7 @@ MODALITIES = [
 ]
 
 # =============================================================================
-# ALZHEIMER'S DISEASE IMAGE PROCESSING & ENHANCED FEATURE EXTRACTION
+# ALZHEIMER'S DISEASE IMAGE PROCESSING & STABILIZED FEATURE EXTRACTION
 # =============================================================================
 def load_and_preprocess_image(image_input, target_size: Tuple[int, int] = (224, 224)) -> Optional[np.ndarray]:
     """Universal pure-PIL image preprocessor with EXIF rotation, transparency flattening, percentile contrast normalization, and safe temp cleanup."""
@@ -220,7 +221,7 @@ def load_and_preprocess_image(image_input, target_size: Tuple[int, int] = (224, 
                 pass
 
 def extract_image_features(img: np.ndarray, target_features: int) -> np.ndarray:
-    """Enhanced feature extractor incorporating global statistics, histograms, quadrant stats, and edge gradients."""
+    """Robust feature extractor with stabilized edge scaling to prevent class bias."""
     try:
         mean_val = np.mean(img)
         std_val = np.std(img)
@@ -240,11 +241,11 @@ def extract_image_features(img: np.ndarray, target_features: int) -> np.ndarray:
         for q in quadrants:
             quad_stats.extend([np.mean(q), np.std(q)])
             
-        # Edge density / gradient features (captures anatomical boundaries & structural atrophy)
+        # Stabilized edge gradients scaled between 0 and 1
         gy, gx = np.gradient(img)
         gradient_magnitude = np.sqrt(gx**2 + gy**2)
-        edge_mean = np.mean(gradient_magnitude)
-        edge_std = np.std(gradient_magnitude)
+        edge_mean = np.clip(np.mean(gradient_magnitude) * 5.0, 0, 1)
+        edge_std = np.clip(np.std(gradient_magnitude) * 5.0, 0, 1)
         
         base_features = np.concatenate([
             [mean_val, std_val, min_val, max_val, edge_mean, edge_std],
