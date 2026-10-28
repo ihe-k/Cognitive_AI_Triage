@@ -1,4 +1,3 @@
-Here is the complete, fully integrated Streamlit script. It merges the robust mobile-optimized image preprocessing pipeline (with strict EXIF orientation fixing, contrast normalization, and secure try...finally temporary file cleanup) so that brain MRI slices uploaded from phones are read and predicted accurately.
 import os
 import gzip
 import glob
