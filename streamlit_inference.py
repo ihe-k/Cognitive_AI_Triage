@@ -1,4 +1,3 @@
-
 import os
 import gzip
 import glob
@@ -166,10 +165,9 @@ MODALITIES = [
 ]
 
 # =============================================================================
-# ALZHEIMER'S DISEASE IMAGE PROCESSING (MOBILE-OPTIMIZED PURE-PIL PIPELINE)
+# ALZHEIMER'S DISEASE IMAGE PROCESSING & INFERENCE WITH THRESHOLD ADJUSTMENT
 # =============================================================================
 def load_and_preprocess_image(image_input, target_size: Tuple[int, int] = (224, 224)) -> Optional[np.ndarray]:
-    """Universal pure-PIL image preprocessor with EXIF rotation, transparency flattening, percentile contrast normalization, and safe temp cleanup."""
     temp_path = None
     try:
         if hasattr(image_input, "getbuffer"):
@@ -181,11 +179,8 @@ def load_and_preprocess_image(image_input, target_size: Tuple[int, int] = (224, 
             image_path = image_input
 
         pil_img = Image.open(image_path)
-        
-        # 1. Auto-correct mobile orientation metadata (EXIF transpose)
         pil_img = ImageOps.exif_transpose(pil_img)
         
-        # 2. Flatten mobile RGBA / transparency / palette profiles onto a solid background
         if pil_img.mode in ('RGBA', 'LA') or (pil_img.mode == 'P' and 'transparency' in pil_img.info):
             background = Image.new("RGB", pil_img.size, (255, 255, 255))
             if pil_img.mode == 'P':
@@ -195,18 +190,15 @@ def load_and_preprocess_image(image_input, target_size: Tuple[int, int] = (224, 
         elif pil_img.mode != 'RGB':
             pil_img = pil_img.convert('RGB')
             
-        # 3. Convert to grayscale numpy array
         pil_img = pil_img.convert('L')
         img_np = np.array(pil_img, dtype=np.float32)
         
-        # 4. Percentile contrast normalization (eliminates mobile vs. desktop brightness bias)
         p2, p98 = np.percentile(img_np, (2, 98))
         if p98 > p2:
             img_np = np.clip((img_np - p2) / (p98 - p2), 0, 1)
         else:
             img_np = img_np / 255.0
             
-        # 5. High-quality resize back to target size using Lanczos resampling
         resized_pil = Image.fromarray((img_np * 255).astype(np.uint8)).resize(target_size, Image.Resampling.LANCZOS)
         return np.array(resized_pil, dtype=np.float32) / 255.0
 
@@ -221,7 +213,6 @@ def load_and_preprocess_image(image_input, target_size: Tuple[int, int] = (224, 
                 pass
 
 def extract_image_features(img: np.ndarray, target_features: int) -> np.ndarray:
-    """Extract robust statistical and histogram features matching model expectations."""
     try:
         mean_val = np.mean(img)
         std_val = np.std(img)
@@ -286,13 +277,29 @@ def classify_alzheimer_image(image_file, alzheimer_model: Dict[str, Any]) -> Tup
         
         features_scaled = scaler.transform(features.reshape(1, -1))
         
-        prediction = classifier.predict(features_scaled)[0]
-        probabilities = classifier.predict_proba(features_scaled)[0]
+        # 1. Get raw probabilities across all classes
+        raw_probabilities = classifier.predict_proba(features_scaled)[0]
+        classes = label_encoder.classes_
         
-        class_name = label_encoder.inverse_transform([prediction])[0]
-        confidence = float(np.max(probabilities) * 100)
+        # 2. Apply inference-time bias correction for minority classes (Moderate/Severe)
+        adjusted_probs = raw_probabilities.copy()
+        for idx, class_label in enumerate(classes):
+            label_str = str(class_label).lower()
+            if "moderate" in label_str or "severe" in label_str:
+                adjusted_probs[idx] *= 2.5  
+                
+        # Re-normalize probabilities to sum to 1.0
+        if np.sum(adjusted_probs) > 0:
+            adjusted_probs /= np.sum(adjusted_probs)
+        else:
+            adjusted_probs = raw_probabilities
+            
+        # 3. Select prediction based on adjusted probabilities
+        best_idx = np.argmax(adjusted_probs)
+        prediction_encoded = classes[best_idx]
+        confidence = float(np.max(adjusted_probs) * 100)
         
-        return str(class_name), confidence, img
+        return str(prediction_encoded), confidence, img
         
     except Exception as e:
         return f"Error: {str(e)}", 0.0, np.array([])
@@ -362,24 +369,6 @@ def load_features_for_pid(split: str, pid: int) -> np.ndarray:
         raise RuntimeError(f"No features found for PID={pid}")
     return feats
 
-def predict_for_ids(split: str, ids: List[int], model, scaler) -> pd.DataFrame:
-    X_rows = []
-    valid_ids = []
-    for pid in ids:
-        try:
-            vec = load_features_for_pid(split, pid)
-            X_rows.append(vec)
-            valid_ids.append(pid)
-        except RuntimeError as e:
-            print(f"Skipping {pid}: {e}")
-            continue
-    if not X_rows:
-        raise RuntimeError("No valid participants found for inference.")
-    X = np.vstack(X_rows)
-    X_s = scaler.transform(X)
-    preds = model.predict(X_s)
-    return pd.DataFrame({"Participant_ID": valid_ids, "Predicted_PHQ8": preds})
-
 def check_pretrained_model() -> bool:
     try:
         model_artifact = load_severity_model()
@@ -420,7 +409,7 @@ def run_simple_inference() -> Dict[str, Any]:
     }
 
 # =============================================================================
-# 4) PHYSIOLOGICAL MARKERS SIMULATION & AUDIO
+# PHYSIOLOGICAL MARKERS SIMULATION & AUDIO
 # =============================================================================
 def extract_mfcc_features(audio_files):
     if librosa is None:
@@ -504,7 +493,7 @@ def simulate_physiological_markers(n_samples, breathing_range=(12, 20), tapping_
     return np.hstack([breathing, tapping, heart_rate])
 
 # =============================================================================
-# 5) MISINFORMATION SIMULATION
+# MISINFORMATION SIMULATION
 # =============================================================================
 def simulate_misinformation(num_nodes, init_infected_frac=0.1, trans_prob=0.2, rec_prob=0.1, steps=20):
     G = nx.barabasi_albert_graph(num_nodes, m=2, seed=42)
@@ -539,7 +528,7 @@ def allocate_resources(severity_scores, capacity=10):
     return idx[:capacity], idx[capacity:]
 
 # =============================================================================
-# 5) STREAMLIT APP
+# STREAMLIT APP
 # =============================================================================
 def run_app():
     st.title("Resource Allocation Using Multimodal AI & Misinformation Modelling in Healthcare")
@@ -756,11 +745,8 @@ def run_app():
                 st.session_state["mfcc_features"] = np.array(mfcc_features_list)
                 st.success("MFCC features extracted successfully!")
 
-    # Display Summary Table with Predicted Severity & Color Styling
     if "audio_results" in st.session_state and "summary_df" in st.session_state["audio_results"]:
         summary_df = st.session_state["audio_results"]["summary_df"].copy()
-
-        # Clean up any pre-existing duplicate columns from previous session states
         summary_df = summary_df.loc[:, ~summary_df.columns.duplicated()]
 
         if "MFCC_Mean" in summary_df.columns:
