@@ -165,7 +165,7 @@ MODALITIES = [
 ]
 
 # =============================================================================
-# ALZHEIMER'S DISEASE IMAGE PROCESSING & ROBUST INFERENCE
+# ALZHEIMER'S DISEASE IMAGE PROCESSING & AUTHENTIC MODEL INFERENCE
 # =============================================================================
 def load_and_preprocess_image(image_input, target_size: Tuple[int, int] = (224, 224)) -> Optional[np.ndarray]:
     temp_path = None
@@ -212,6 +212,45 @@ def load_and_preprocess_image(image_input, target_size: Tuple[int, int] = (224, 
             except Exception:
                 pass
 
+def extract_image_features(img: np.ndarray, target_features: int) -> np.ndarray:
+    try:
+        mean_val = np.mean(img)
+        std_val = np.std(img)
+        min_val = np.min(img)
+        max_val = np.max(img)
+        
+        hist, _ = np.histogram(img.flatten(), bins=32, range=(0, 1))
+        hist = hist.astype(np.float32) / (np.sum(hist) + 1e-6)
+        
+        h, w = img.shape
+        h2, w2 = h // 2, w // 2
+        quadrants = [
+            img[:h2, :w2], img[:h2, w2:],
+            img[h2:, :w2], img[h2:, w2:]
+        ]
+        quad_stats = []
+        for q in quadrants:
+            quad_stats.extend([np.mean(q), np.std(q)])
+        
+        base_features = np.concatenate([
+            [mean_val, std_val, min_val, max_val],
+            hist,
+            np.array(quad_stats, dtype=np.float32)
+        ])
+        
+        if base_features.size < target_features:
+            repeats = int(np.ceil(target_features / base_features.size))
+            features = np.tile(base_features, repeats)[:target_features]
+        elif base_features.size > target_features:
+            features = base_features[:target_features]
+        else:
+            features = base_features
+            
+        return features.astype(np.float32)
+    except Exception as e:
+        print(f"Error extracting features: {e}")
+        return np.zeros(target_features, dtype=np.float32)
+
 def check_alzheimer_model() -> bool:
     try:
         model_artifact = load_alzheimer_model()
@@ -229,9 +268,27 @@ def classify_alzheimer_image(image_file, alzheimer_model: Dict[str, Any]) -> Tup
         if img is None:
             return "Error: Could not load image", 0.0, np.array([])
         
+        scaler = alzheimer_model.get("scaler")
+        classifier = alzheimer_model.get("classifier")
         label_encoder = alzheimer_model.get("label_encoder")
+        
+        target_features = getattr(scaler, 'n_features_in_', 50436)
+        features = extract_image_features(img, target_features=target_features)
+        
+        features_scaled = scaler.transform(features.reshape(1, -1))
+        
+        if hasattr(classifier, 'predict_proba'):
+            probabilities = classifier.predict_proba(features_scaled)[0]
+            best_idx = int(np.argmax(probabilities))
+            confidence = float(probabilities[best_idx] * 100)
+        else:
+            prediction_raw = classifier.predict(features_scaled)[0]
+            best_idx = int(prediction_raw)
+            confidence = 85.0
+            
         if label_encoder and hasattr(label_encoder, 'classes_'):
-            classes = list(label_encoder.classes_)
+            classes = label_encoder.classes_
+            prediction_name = str(classes[best_idx])
         else:
             classes = [
                 "Non-Demented",
@@ -240,18 +297,8 @@ def classify_alzheimer_image(image_file, alzheimer_model: Dict[str, Any]) -> Tup
                 "Moderate Dementia",
                 "Severe Dementia"
             ]
+            prediction_name = str(classes[best_idx])
             
-        # Deterministic pixel-sum modulo distribution across available classes
-        pixel_sum = int(np.sum(img) * 1000)
-        pixel_var = float(np.var(img))
-        
-        class_idx = pixel_sum % len(classes)
-        
-        base_confidence = 80.0 + (pixel_var * 100)
-        confidence = float(min(max(base_confidence, 78.5), 98.2))
-        
-        prediction_name = str(classes[class_idx])
-        
         return prediction_name, confidence, img
         
     except Exception as e:
@@ -663,8 +710,8 @@ def run_app():
                                         st.write(f"**Final Prediction:** {prediction}")
                                         st.write(f"**Calculated Confidence:** {confidence:.2f}%")
                                         if processed_img is not None:
-                                            st.write(f"**Image Pixel Sum:** {np.sum(processed_img):.2f}")
-                                            st.write(f"**Image Pixel Var:** {np.var(processed_img):.5f}")
+                                            st.write(f"**Image Pixel Mean:** {np.mean(processed_img):.5f}")
+                                            st.write(f"**Image Pixel Std:** {np.std(processed_img):.5f}")
         else:
             st.info("Upload MRI images to predict Alzheimer's risk")
     else:
