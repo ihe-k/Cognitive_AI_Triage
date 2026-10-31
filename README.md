@@ -124,6 +124,8 @@ The network graph illustrates the simulated social structure where nodes represe
 
 ## Future Research
 
+Roadmap: Upgrading from batch feature extraction to sub-300ms WebRTC streaming pipelines for live bioacoustic triage.
+
 The code may be extended to simulate or predict:
 
 * The spread of misinformation using network graphs and agent-based models.
