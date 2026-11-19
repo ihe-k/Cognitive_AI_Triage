@@ -1,23 +1,6 @@
 """
 MRI feature extraction for the Alzheimer stage classifier.
 
-This module exists because the feature vector the app was building did not
-resemble the one the model was trained on. `train_model.py` builds 50,436
-features per image: the 224x224 image flattened, then four summary statistics,
-then a 256-bin intensity histogram. The app was building 44 numbers and tiling
-them 1,147 times to reach the same length. Same shape, unrelated contents.
-
-The consequence was not merely reduced accuracy. Standardised by the model's
-own scaler, the tiled vector sat up to 86,000 standard deviations outside the
-training distribution, and the forest degenerated into a constant classifier:
-every image, whatever it showed, came back "Very mild Dementia". Rebuilding the
-vector the way training builds it brings the worst feature back to about 6
-standard deviations and the predictions back to the labels.
-
-    from image_features import features_for_image
-    features = features_for_image(uploaded_file)
-    probabilities = classifier.predict_proba(scaler.transform(features.reshape(1, -1)))
-
 Dependencies are numpy and Pillow only. `train_model.py` used OpenCV, but
 OpenCV is not in requirements.txt and is not installed on the deployed app,
 where the import at streamlit_inference.py falls through to a PIL branch. So
@@ -27,10 +10,6 @@ practice images: identical JPEG decoding, resized pixels within 1/255, the same
 predicted labels, and max |z| of 5.74 against OpenCV's 5.71. The small residue
 is OpenCV's fixed-point arithmetic in its bilinear resize, which rounds to
 1/2048 where this uses float throughout.
-
-Every numbered step below mirrors `train_model.py`. Changing the order of any
-of them changes the feature values, so they are kept in the original order even
-where a different order would read better.
 """
 
 from __future__ import annotations
